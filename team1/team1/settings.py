@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
     'Squadup',
 ]
 
@@ -79,8 +80,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'mydatabase', #your database name
-        'USER': 'postgres', #your username, default is 'postgres'
-        'PASSWORD': 'thivan93', #your password corresponding to your username
+        'USER': 'team1', #your username, default is 'postgres'
+        'PASSWORD': 'mysharedpassword', #your password corresponding to your username
         'HOST': 'localhost', #host name/ IP address
         'PORT': '5432', #port number
         'TEST': {
