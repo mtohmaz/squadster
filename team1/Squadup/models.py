@@ -6,7 +6,6 @@ class User(models.Model):
 	user_id = models.CharField(max_length=200, primary_key=True)
 	permission_level = models.IntegerField(default=0)
 	enabled = models.BooleanField(default=True)
-	
 
 class Event(models.Model):
 	event_id = models.AutoField(primary_key=True)
@@ -14,7 +13,11 @@ class Event(models.Model):
 	description = models.CharField(max_length=250)
 	host_id = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 	enabled = models.BooleanField(default=True)
-	
+
+class User_Event(models.Model):
+	user_id = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+	event_id = models.ForeignKey(Event, on_delete=models.DO_NOTHING)
+
 class Comment(models.Model):
-	parent_event = models.ForeignKey(Event, on_delete=models.CASCADE)
-	text = models.CharField(max_length=)
+	event_id = models.ForeignKey(Event, on_delete=models.CASCADE)
+	text = models.CharField(max_length=250)

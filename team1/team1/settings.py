@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'team1.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydatabase', #your database name
+        'NAME': 'team1db', #your database name
         'USER': 'team1', #your username, default is 'postgres'
         'PASSWORD': 'mysharedpassword', #your password corresponding to your username
         'HOST': 'localhost', #host name/ IP address
