@@ -3,7 +3,7 @@
 default: setupdb
 
 setupdb:
-	psql --username postgres -f setup.sql
+	psql --username postgres -f setup/setup.sql
 
 compile:
 
