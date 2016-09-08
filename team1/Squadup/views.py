@@ -9,4 +9,7 @@ def login(request):
 def join_event(request):
     matcher = re.search('events/([0-9]{7})/join_event', request.url)
     event_id = matcher.group(1)
-    
+
+def map(request):
+    context = {'user': request.user}
+    return render(request, 'map.html', context)
