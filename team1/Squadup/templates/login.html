@@ -4,7 +4,7 @@
    <meta charset="utf-8">
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1">
-   <meta name="google-signin-client_id" content="128792804178-8gt3ljhu040gup41kf8rud0fpfmt37qn.apps.googleusercontent.com">
+   <meta name="google-signin-client_id" content="290427034826-un4ldmeetlngevc5ep3jnt0s71284pjf.apps.googleusercontent.com">
    <title>{% block title %}Login Page{% endblock %}</title>
 
    <!-- Bootstrap -->
@@ -31,9 +31,19 @@
    <div><h1>Welcome to Next Gen of Social Network</h1></div>
 
  <div class="g-signin2" data-onsuccess="onSignIn"></div>
- 
+ <script>
+   function onSignIn(googleUser) {
+     // Useful data for your client-side scripts:
+     //var profile = googleUser.getBasicProfile();
+
+     //Will need to send token to bakend
+     var id_token = googleUser.getAuthResponse().id_token;
+     console.log("ID Token: " + id_token);
+   };
+ </script>
+
  <a href="#" onclick="signOut();">Sign out</a>
-<script>
+ <script>
   function signOut() {
     var auth2 = gapi.auth2.getAuthInstance();
     auth2.signOut().then(function () {
@@ -43,4 +53,3 @@
 </script>
 
 </html>
- 
