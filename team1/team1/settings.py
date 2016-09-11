@@ -79,8 +79,8 @@ WSGI_APPLICATION = 'team1.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'team1db', #your database name
-        'USER': 'team1', #your username, default is 'postgres'
+        'NAME': 'squadsterdb', #your database name
+        'USER': 'squadster_admin', #your username, default is 'postgres'
         'PASSWORD': 'mysharedpassword', #your password corresponding to your username
         'HOST': 'localhost', #host name/ IP address
         'PORT': '5432', #port number
