@@ -4,3 +4,7 @@
 # ignore pyc compiled files, which can vary, but we don't care
 # since they are recompiled per client 
 **/__pycache__
+
+
+# ignore migrations, so that you can make your database from scratch
+team1/squadster/migrations
