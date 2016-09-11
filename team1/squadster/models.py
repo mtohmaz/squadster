@@ -1,10 +1,10 @@
 from django.db import models
-
+"""
 class User(models.Model):
     id = models.CharField(max_length=200, primary_key=True)
     token = models.CharField(max_length=1000)
     enabled = models.BooleanField(default=True)
-
+"""
 class Moderator(models.Model):
     user_id = models.ForeignKey('User', on_delete=models.CASCADE, primary_key=True)
     #automatically add the timestamp

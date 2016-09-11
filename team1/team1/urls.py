@@ -20,7 +20,7 @@ from squadster import views
 
 urlpatterns = [
     #url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^$', views.login, name='login'),
+    url(r'^$', views.home, name='home'),
     url(r'^admin/', admin.site.urls),
     url(r'^map/', views.map, name='map'),
     
