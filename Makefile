@@ -8,7 +8,7 @@ setupdb:
 	# This script is only for commands run as db user 'postgres'
 	# if we need to have other setup commands for the team1 user,
 	# we should put them in a setupteam1.sql script or something
-	psql --username postgres -f setup/setup.sql
+	sudo --username postgres psql --username postgres -f setup/setup.sql
 
 setuppython:
 	# remove pip for python2
