@@ -19,7 +19,7 @@ ubuntu_packages:
 
 
 cleanmigrations:
-	rm -rf 
+	rm -rf team1/squadster/migrations
 
 cleandb:
 	psql --username postgres "drop database squadsterdb;"
