@@ -31,7 +31,15 @@
         //Will need to send token to bakend
         var id_token = googleUser.getAuthResponse().id_token;
         console.log("ID Token: " + id_token);
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'http://localhost:8000/auth/');
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function() {
+            console.log('Signed in as: ' + xhr.responseText);
+        }; xhr.send('idtoken=' + id_token);
       };
+      
+      
     </script>
 
     <a href="#" onclick="signOut();">Sign out</a>
