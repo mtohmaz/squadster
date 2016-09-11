@@ -1,0 +1,6 @@
+# ignore sqlite files
+**/*.sqlite3
+
+# ignore pyc compiled files, which can vary, but we don't care
+# since they are recompiled per client 
+**/__pycache__
