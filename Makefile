@@ -3,7 +3,7 @@
 # the others work on any linux distro
 
 default:
-	
+
 
 install_ubuntu: ubuntu_packages setuppython setupdb
 
@@ -17,25 +17,33 @@ ubuntu_packages:
 	# install pip for python3
 	sudo apt-get install python3-pip
 
-
-cleanmigrations:
+cleanmigrations: cleandb
 	rm -rf team1/squadster/migrations
 
 cleandb:
-	psql --username postgres "drop database squadsterdb;"
+	sudo -u postgres psql "drop database squadsterdb;"
 
 setupdb:
 	# This script is only for commands run as db user 'postgres'
 	# if we need to have other setup commands for the team1 user,
 	# we should put them in a setupteam1.sql script or something
-	psql --username postgres -f setup/setup.sql
+	sudo -u postgres psql -f setup/setup.sql
 
 setuppython:
 	# install django and rest and postgresql driver
-	sudo pip install django djangorestframework psycopg2
+	sudo pip install django djangorestframework psycopg2 oauth2client
+
+
+# NOTE: this allows you to get around the peer authentication
+# but not using right now
+# instead connect with:
+#     psql -h 127.0.0.1 squadsterdb squadster_admin
+createuser:
+	if sudo useradd squadster_admin -s /bin/bash > /dev/null 2>&1; \
+		then echo "squadster_admin:mysharedpassword\n\n" | sudo chpasswd ; fi
+	# you can now connect to postgresql:
+	#     sudo -u squadster_admin psql -d squadsterdb
 
 compile:
-
-makemigrations:
 
 install:
