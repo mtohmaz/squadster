@@ -8,12 +8,12 @@ default:
 install_ubuntu: ubuntu_packages setuppython setupdb
 
 ubuntu_packages:
-	sudo apt-get install postgresql postgresql-contrib postgresql-server-dev-all
+	sudo apt-get install -y postgresql postgresql-contrib postgresql-server-dev-all
 	# remove pip for python2
 	sudo apt-get remove python-pip
 	# set python3 as the default
-	sudo rm -f /usr/bin/python
-	sudo ln -s /usr/bin/python3 /usr/bin/python
+	#sudo rm -f /usr/bin/python
+	#sudo ln -s /usr/bin/python3 /usr/bin/python
 	# install pip for python3
 	sudo apt-get install python3-pip
 
@@ -27,11 +27,13 @@ setupdb:
 	# This script is only for commands run as db user 'postgres'
 	# if we need to have other setup commands for the team1 user,
 	# we should put them in a setupteam1.sql script or something
-	sudo -u postgres psql -f setup/setup.sql
+	sudo cp setup/pg_hba.conf /etc/postgresql/9.3/main/pg_hba.conf
+	sudo chown root:root /etc/postgresql/9.3/main/pg_hba.conf
+	psql --username postgres -f setup/setup.sql
 
 setuppython:
 	# install django and rest and postgresql driver
-	sudo pip install django djangorestframework psycopg2 oauth2client
+	sudo pip3 install django djangorestframework psycopg2 oauth2client python-social-auth
 
 
 # NOTE: this allows you to get around the peer authentication
