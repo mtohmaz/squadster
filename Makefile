@@ -26,9 +26,10 @@ cleandb:
 
 setupdb:
 	# This script is only for commands run as db user 'postgres'
-	# if we need to have other setup commands for the squadster_admin user,
-	# we should put them in a setupsquadster.sql script or something
-	sudo -u postgres psql -c "alter role postgres with password 'squadsterpostgrespw;'"
+	# if we need to have other setup commands for the team1 user,
+	# we should put them in a setupteam1.sql script or something
+	sudo cp setup/pg_hba.conf /etc/postgresql/9.3/main/pg_hba.conf
+	sudo chown root:root /etc/postgresql/9.3/main/pg_hba.conf
 	psql --username postgres -f setup/setup.sql
 
 setuppython:
