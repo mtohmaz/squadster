@@ -8,3 +8,13 @@
 
 # ignore migrations, so that you can make your database from scratch
 team1/squadster/migrations
+
+# do not check in python virtualenv files
+team1/bin/
+team1/include/
+team1/lib/
+team1/share/
+team1/pip-selfcheck.json
+
+
+
