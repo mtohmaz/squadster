@@ -1,7 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from oauth2client.contrib.django_orm import FlowField
-from oauth2client.contrib.django_orm import CredentialsField
 
 """
 class User(models.Model):
@@ -69,12 +67,3 @@ class ReportedComments(models.Model):
     time_reported = models.DateTimeField(auto_now_add=True)
     time_moderated = models.DateTimeField()
 
-#Google Flow object as a model in Django
-class FlowModel(models.Model):
-	id = models.ForeignKey(User, primary_key=True)
-	flow = FlowField()
-
-#Google Credentials object as a model in Django
-class CredentialsModel(models.Model):
-	id = models.ForeignKey(User, primary_key=True)
-	credential = CredentialsField()
