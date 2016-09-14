@@ -5,9 +5,10 @@
 default:
 
 
-install_ubuntu: ubuntu_packages setuppython setupdb
+install_ubuntu: ubuntu_packages setuppython setupdb createuser
 
 ubuntu_packages:
+	sudo apt-get update
 	sudo apt-get install -y postgresql postgresql-contrib postgresql-server-dev-all
 	# remove pip for python2
 	sudo apt-get remove python-pip
@@ -42,7 +43,8 @@ setuppython:
 #     psql -h 127.0.0.1 squadsterdb squadster_admin
 createuser:
 	if sudo useradd squadster_admin -s /bin/bash > /dev/null 2>&1; \
-		then echo "squadster_admin:mysharedpassword\n\n" | sudo chpasswd ; fi
+		then echo "squadster_admin:mysharedpassword" | sudo chpasswd ; fi
+	sudo usermod -a -G sudo squadster_admin
 	# you can now connect to postgresql:
 	#     sudo -u squadster_admin psql -d squadsterdb
 
