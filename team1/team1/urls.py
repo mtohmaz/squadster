@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^$', views.home, name='home'),
     url(r'^auth/', views.auth_login, name='auth_login'),
     url(r'^admin/', admin.site.urls),
+    (r'^oauth2return', views.auth_return, name='oauth2return'),
     url(r'^map/', views.map, name='map'),
     
     url(r'^events/[0-9]{7}/join', views.join_event),
