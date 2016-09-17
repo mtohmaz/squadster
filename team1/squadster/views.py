@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-import re
+
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout, login
