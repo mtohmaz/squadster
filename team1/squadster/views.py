@@ -18,7 +18,6 @@ from django_sample.plus.models import CredentialsModel
 from django_sample import settings
 from oauth2client.contrib import xsrfutil
 from oauth2client.client import flow_from_clientsecrets
-from oauth2client.contrib.django_orm import Storage
 
 
 # CLIENT_SECRETS, name of a file containing the OAuth 2.0 information for this
@@ -70,23 +69,25 @@ def home(request, backend):
 """
 @login_required
 def home(request):
-  storage = Storage(CredentialsModel, 'id', request.user, 'credential')
-  credential = storage.get()
-  if credential is None or credential.invalid == True:
-    FLOW.params['state'] = xsrfutil.generate_token(settings.SECRET_KEY,
+	#get user's token from database
+	storage = Storage(CredentialsModel, 'id', request.user, 'credential')
+	credential = storage.get()
+	#if user's token is not found, it's a new user, 
+	if credential is None or credential.invalid == True:
+		FLOW.params['state'] = xsrfutil.generate_token(settings.SECRET_KEY,
                                                    request.user)
-    authorize_url = FLOW.step1_get_authorize_url()
-    return HttpResponseRedirect(authorize_url)
-  else:
-    http = httplib2.Http()
-    http = credential.authorize(http)
-    service = build("calender", "v3", http=http)
-    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-    print('Getting the upcoming 10 events')
-    eventsResult = service.events().list(
-        calendarId='primary', timeMin=now, maxResults=10, singleEvents=True,
-        orderBy='startTime').execute()
-    #events = eventsResult.get('items', [])
+		authorize_url = FLOW.step1_get_authorize_url()
+		return HttpResponseRedirect(authorize_url)
+	else:
+		http = httplib2.Http()
+		http = credential.authorize(http)
+		service = build("calender", "v3", http=http)
+		now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+		print('Getting the upcoming 10 events')
+		eventsResult = service.events().list(
+			calendarId='primary', timeMin=now, maxResults=10, singleEvents=True,
+			orderBy='startTime').execute()
+		#events = eventsResult.get('items', [])
 	"""
     if not events:
         print('No upcoming events found.')
@@ -100,13 +101,14 @@ def home(request):
 
 
 @login_required
-def auth_login(request):
+def auth_return(request):
     print(request)
     if not xsrfutil.validate_token(settings.SECRET_KEY, request.REQUEST['state'],
                                  request.user):
-    return  HttpResponseBadRequest()
-  credential = FLOW.step2_exchange(request.REQUEST)
-  storage = Storage(CredentialsModel, 'id', request.user, 'credential')
-  storage.put(credential)
-return HttpResponseRedirect("localhost:8000/map")
+		return  HttpResponseBadRequest()
+		credential = FLOW.step2_exchange(request.REQUEST)
+		#store user's credential to database
+		storage = Storage(CredentialsModel, 'id', request.user, 'credential')
+		storage.put(credential)
+	return HttpResponseRedirect("/")
     

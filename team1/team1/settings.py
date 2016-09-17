@@ -56,7 +56,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 	'oauth2client.contrib.django_util',
-	'oauth2client.contrib.django_orm',
 ]
 
 ROOT_URLCONF = 'team1.urls'
