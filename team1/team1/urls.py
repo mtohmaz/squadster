@@ -21,9 +21,7 @@ from squadster import views
 urlpatterns = [
     #url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^$', views.login, name='login'),
-    #url(r'^auth/', views.auth_login, name='auth_login'),
     url(r'^admin/', admin.site.urls),
-	#url(r'^accounts/login/$', views.login, name = 'login'),
 
     url(r'^oauth2return', views.auth_return, name='oauth2return'),
     url(r'^map/', views.map, name='map'),

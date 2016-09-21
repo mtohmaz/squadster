@@ -53,9 +53,6 @@ def join_event(request):
     matcher = re.search('events/([0-9]{7})/join_event', request.url)
     event_id = matcher.group(1)
 
-def index(request):
-    context = {'user': request.user}
-    return render(request, 'login.html', context)
     
 def map(request):
     context = {'user': request.user}
