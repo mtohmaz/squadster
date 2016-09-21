@@ -13,8 +13,9 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEMPLATES_PATH = os.path.join(BASE_DIR, 'Squadup/templates')
 
+
+TEMPLATES_PATH = os.path.join(BASE_DIR, 'templates')
 
 
 # Quick-start development settings - unsuitable for production
@@ -31,6 +32,10 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    'Squadup',
+    'squadster',
+    'social.apps.django_app.default',
 ]
 
 MIDDLEWARE = [
@@ -79,8 +85,8 @@ WSGI_APPLICATION = 'team1.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'team1db', #your database name
-        'USER': 'team1', #your username, default is 'postgres'
+        'NAME': 'squadsterdb', #your database name
+        'USER': 'squadster_admin', #your username, default is 'postgres'
         'PASSWORD': 'mysharedpassword', #your password corresponding to your username
         'HOST': 'localhost', #host name/ IP address
         'PORT': '5432', #port number
