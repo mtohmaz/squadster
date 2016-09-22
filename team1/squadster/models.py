@@ -79,4 +79,12 @@ class ReportedComments(models.Model):
     moderated_by = models.ForeignKey('Moderator', on_delete=models.DO_NOTHING)
     time_reported = models.DateTimeField(auto_now_add=True)
     time_moderated = models.DateTimeField()
+    
+class Tags(models.Model):
+	tag_id = models.AutoField(primary_key=True)
 
+class EventTags(models.Model):
+	event_id = models.ForeignKey('Event', on_delete=models.CASCADE)
+	tag_id = models.ForeignKey('Tags', on_delete=models.CASCADE)
+	
+	
