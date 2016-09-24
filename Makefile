@@ -4,19 +4,18 @@
 
 default:
 
-
 install_ubuntu: ubuntu_packages setuppython
 
 ubuntu_packages:
 	sudo apt-get update
-	sudo apt-get install -y postgresql postgresql-contrib postgresql-server-dev-all
+	sudo apt-get install -y \
+		python3-pip \
+		postgresql postgresql-contrib postgresql-server-dev-all \
+		npm nodejs \
+		nginx
+
 	# remove pip for python2
 	sudo apt-get remove python-pip
-	# set python3 as the default
-	#sudo rm -f /usr/bin/python
-	#sudo ln -s /usr/bin/python3 /usr/bin/python
-	# install pip for python3
-	sudo apt-get install -y python3-pip
 
 cleanmigrations: cleandb
 	rm -rf team1/squadster/migrations

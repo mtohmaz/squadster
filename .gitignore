@@ -17,4 +17,7 @@ team1/share/
 team1/pip-selfcheck.json
 
 
+# don't check in npm things
+team1/squadster/angularjs/node_modules/
+team1/squadster/angularjs/npm-debug.log
 
