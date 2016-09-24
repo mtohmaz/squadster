@@ -1,55 +1,62 @@
 import { Component } from '@angular/core';
 
 export class Event {
+  id: number;
   title: string;
   location: string;
   startDate: string;
   startTime: string;
-  endDate: string;
-  endTime: string;
+  currentAttendees: number;
   maxAttendees: number;
   description: string;
+  host: host;
 }
 
 const EVENTS: Event[] = [
-  { tile: 'Bowling', location: 'AMC', startDate: '09/25/2016', startTime: '9:00pm'},
-  { id: 12, name: 'Narco' },
-  { id: 13, name: 'Bombasto' },
+  { id:1, title: 'Bowling', location: 'AMC', startDate: '09/25/2016', startTime: '9:00pm', currentAttendess: 3, maxAttendees: 10, description: 'Meeting new people at bowling.'},
+  { id:2, title: 'Dinner', location: 'El Toro', startDate: '09/30/2016', startTime: '9:00pm', currentAttendess: 9, maxAttendees: 10, description: 'Meeting new people for dinner.'},
+  { id:3, title: 'Movie', location: 'My apartment', startDate: '10/25/2016', startTime: '9:00pm', currentAttendess: 0, maxAttendees: 2, description: 'Netflix and chill.'},
 ];
 
 @Component({
   selector: 'my-app',
   template: `
     <h1>{{title}}</h1>
-    <h2>My Heroes</h2>
-    <ul class="heroes">
-      <li *ngFor="let hero of heroes"
-        [class.selected]="hero === selectedHero"
-        (click)="onSelect(hero)">
-        <span class="badge">{{hero.id}}</span> {{hero.name}}
+    <h2>Events</h2>
+    <ul class="events">
+      <li *ngFor="let event of events"
+        [class.selected]="event === selectedEvent"
+        (click)="onSelect(event)">
+        <span class="badge">{{event.id}}</span> {{event.title}}
       </li>
     </ul>
-    <div *ngIf="selectedHero">
-      <h2>{{selectedHero.name}} details!</h2>
-      <div><label>id: </label>{{selectedHero.id}}</div>
-      <div>
-        <label>name: </label>
-        <input [(ngModel)]="selectedHero.name" placeholder="name"/>
-      </div>
+    <div *ngIf="selectedEvent">
+      <h2>{{selectedEvent.title}} details:</h2>
+      <div><label>Name of Event: </label>{{selectedEvent.title}}</div>
+      <div><label>Location: </label>{{selectedEvent.location}}</div>
+      <div><label>Description: </label>{{selectedEvent.description}}</div>
+      <div><label>Date: </label>{{selectedEvent.startDate}}</div>
+      <div><label>Time: </label>{{selectedEvent.startTime}}</div>
+      <div><label>Attendees so far: </label> {{selectedEvent.currentAttendess}}/{{selectedEvent.maxAttendees}}</div>
     </div>
+    <div>
+      <br>
+      Create new event (TIE THIS IN WITH MAHMOUD'S PAGE)
+    </div>
+    
   `,
   styles: [`
     .selected {
       background-color: #CFD8DC !important;
       color: white;
     }
-    .heroes {
+    .events {
       margin: 0 0 2em 0;
       list-style-type: none;
       padding: 0;
       width: 15em;
     }
-    .heroes li {
+    .events li {
       cursor: pointer;
       position: relative;
       left: 0;
@@ -59,20 +66,20 @@ const EVENTS: Event[] = [
       height: 1.6em;
       border-radius: 4px;
     }
-    .heroes li.selected:hover {
+    .events li.selected:hover {
       background-color: #BBD8DC !important;
       color: white;
     }
-    .heroes li:hover {
+    .events li:hover {
       color: #607D8B;
       background-color: #DDD;
       left: .1em;
     }
-    .heroes .text {
+    .events .text {
       position: relative;
       top: -3px;
     }
-    .heroes .badge {
+    .events .badge {
       display: inline-block;
       font-size: small;
       color: white;
@@ -88,124 +95,14 @@ const EVENTS: Event[] = [
     }
   `]
 })
-export class AppComponent {
-  title = 'Tour of Heroes';
-  heroes = HEROES;
-  selectedHero: Hero;
 
-  onSelect(hero: Hero): void {
-    this.selectedHero = hero;
+
+export class AppComponent {
+  title = 'Events Nearby';
+  events = EVENTS;
+  selectedEvent: Event;
+
+  onSelect(event: Event): void {
+    this.selectedEvent = event;
   }
 }
-
-
-/*
-Copyright 2016 Google Inc. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at http://angular.io/license
-*/import { Component } from '@angular/core';
-
-export class Event {
-  title: string;
-  location: string;
-  startDate: string;
-  startTime: string;
-  endDate: string;
-  endTime: string;
-  maxAttendees: number;
-  description: string;
-}
-
-const EVENTS: Event[] = [
-  { tile: 'Bowling', location: 'AMC', startDate: '09/25/2016', startTime: '9:00pm'},
-  { id: 12, name: 'Narco' },
-  { id: 13, name: 'Bombasto' },
-];
-
-@Component({
-  selector: 'my-app',
-  template: `
-    <h1>{{title}}</h1>
-    <h2>My Heroes</h2>
-    <ul class="heroes">
-      <li *ngFor="let hero of heroes"
-        [class.selected]="hero === selectedHero"
-        (click)="onSelect(hero)">
-        <span class="badge">{{hero.id}}</span> {{hero.name}}
-      </li>
-    </ul>
-    <div *ngIf="selectedHero">
-      <h2>{{selectedHero.name}} details!</h2>
-      <div><label>id: </label>{{selectedHero.id}}</div>
-      <div>
-        <label>name: </label>
-        <input [(ngModel)]="selectedHero.name" placeholder="name"/>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .selected {
-      background-color: #CFD8DC !important;
-      color: white;
-    }
-    .heroes {
-      margin: 0 0 2em 0;
-      list-style-type: none;
-      padding: 0;
-      width: 15em;
-    }
-    .heroes li {
-      cursor: pointer;
-      position: relative;
-      left: 0;
-      background-color: #EEE;
-      margin: .5em;
-      padding: .3em 0;
-      height: 1.6em;
-      border-radius: 4px;
-    }
-    .heroes li.selected:hover {
-      background-color: #BBD8DC !important;
-      color: white;
-    }
-    .heroes li:hover {
-      color: #607D8B;
-      background-color: #DDD;
-      left: .1em;
-    }
-    .heroes .text {
-      position: relative;
-      top: -3px;
-    }
-    .heroes .badge {
-      display: inline-block;
-      font-size: small;
-      color: white;
-      padding: 0.8em 0.7em 0 0.7em;
-      background-color: #607D8B;
-      line-height: 1em;
-      position: relative;
-      left: -1px;
-      top: -4px;
-      height: 1.8em;
-      margin-right: .8em;
-      border-radius: 4px 0 0 4px;
-    }
-  `]
-})
-export class AppComponent {
-  title = 'Tour of Heroes';
-  heroes = HEROES;
-  selectedHero: Hero;
-
-  onSelect(hero: Hero): void {
-    this.selectedHero = hero;
-  }
-}
-
-
-/*
-Copyright 2016 Google Inc. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at http://angular.io/license
-*/
