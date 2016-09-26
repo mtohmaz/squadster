@@ -82,6 +82,7 @@ class ReportedComments(models.Model):
     
 class Tags(models.Model):
 	tag_id = models.AutoField(primary_key=True)
+	display_name = models.CharField(max_length=64)
 
 class EventTags(models.Model):
 	event_id = models.ForeignKey('Event', on_delete=models.CASCADE)

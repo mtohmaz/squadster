@@ -1,6 +1,6 @@
-	from django.shortcuts import render
+from django.shortcuts import render
 from django.http import HttpResponse
-
+import re
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout, login
@@ -51,7 +51,7 @@ FLOW = flow_from_clientsecrets(
     scope= ['https://www.googleapis.com/auth/calendar.readonly',
 			'https://www.googleapis.com/auth/userinfo.email',
 			'https://www.googleapis.com/auth/userinfo.profile',
-		]
+		],
 	redirect_uri='http://localhost:8000/oauth2return')
 
 def join_event(request):
@@ -117,7 +117,7 @@ def get_user_info(credentials):
   user_info = None
   try:
     user_info = user_info_service.userinfo().get().execute()
-  except errors.HttpError, e:
+  except (errors.HttpError, e):
     logging.error('An error occurred: %s', e)
   if user_info and user_info.get('id'):
     print (user_info)
@@ -147,3 +147,5 @@ def auth_return(request):
 def store_credentials(user_id, credentials):
 	
 def get_stored_credentials(user_id):
+	
+def create_event(request):
