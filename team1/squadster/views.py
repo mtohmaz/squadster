@@ -1,4 +1,4 @@
-from django.shortcuts import render
+	from django.shortcuts import render
 from django.http import HttpResponse
 
 
@@ -25,6 +25,8 @@ from oauth2client import client
 from oauth2client import tools
 from oauth2client import file
 import urllib.parse
+from oauth2client.client import FlowExchangeError
+
 
 try:
     import argparse
@@ -46,7 +48,10 @@ credential_path = os.path.join(credential_dir,'userCredentials.json')
 
 FLOW = flow_from_clientsecrets(
     CLIENT_SECRETS,
-    scope='https://www.googleapis.com/auth/calendar.readonly',
+    scope= ['https://www.googleapis.com/auth/calendar.readonly',
+			'https://www.googleapis.com/auth/userinfo.email',
+			'https://www.googleapis.com/auth/userinfo.profile',
+		]
 	redirect_uri='http://localhost:8000/oauth2return')
 
 def join_event(request):
@@ -72,12 +77,10 @@ def login(request):
 		FLOW.params['state'] = xsrfutil.generate_token(settings.SECRET_KEY,
                                                    request.user)
                                                 
-		print(FLOW.params['state'])
 		authorize_url = FLOW.step1_get_authorize_url()
 		return HttpResponseRedirect(authorize_url)
 	else:
-		http = httplib2.Http()
-		http = credentials.authorize(http)
+		get_user_info(credentials)
 	"""
 	Below is the code to render user's event list based on their Google Calendar:
 		service = build("calendar", "v3", http=http)
@@ -99,16 +102,48 @@ def login(request):
 	"""
 	return HttpResponseRedirect("/map")
 
+def get_user_info(credentials):
+  """Send a request to the UserInfo API to retrieve the user's information.
+
+  Args:
+    credentials: oauth2client.client.OAuth2Credentials instance to authorize the
+                 request.
+  Returns:
+    User information as a dict.
+  """
+  user_info_service = build(
+      serviceName='oauth2', version='v2',
+      http=credentials.authorize(httplib2.Http()))
+  user_info = None
+  try:
+    user_info = user_info_service.userinfo().get().execute()
+  except errors.HttpError, e:
+    logging.error('An error occurred: %s', e)
+  if user_info and user_info.get('id'):
+    print (user_info)
+  else:
+    raise NoUserIdException()
 
 
 def auth_return(request):
-	print(request)
 	#need to check for valid token before exchange, not working yet
 	#if not xsrfutil.validate_token(settings.SECRET_KEY, request.GET['state'],request.user):
 		#return  HttpResponseBadRequest()
-	credentials = FLOW.step2_exchange(request.GET['code'])
-	#store user's token to database
-	store = oauth2client.file.Storage(credential_path)
-	store.put(credentials)
-	return HttpResponseRedirect("/map")
-    
+	try:
+		credentials = FLOW.step2_exchange(request.GET['code'])
+		user_info = get_user_info(credentials)
+		email_address = user_info.get('email')
+		user_id = user_info.get('id')
+		if credentials.refresh_token is not None:
+			#store_credentials(user_id, credentials)
+			store = oauth2client.file.Storage(credential_path)
+			store.put(credentials)
+			return HttpResponseRedirect("/map")
+		else:
+			credentials = get_stored_credentials(user_id)
+			if credentials and credentials.refresh_token is not None:
+				return HttpResponseRedirect("/map")
+	
+def store_credentials(user_id, credentials):
+	
+def get_stored_credentials(user_id):
