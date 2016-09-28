@@ -12,7 +12,7 @@ class EventSerializer(serializers.ModelSerializer):
             'max_attendees']
         read_only_fields = ['event_id']
 
-class EventSearchSerializer(serializers.Serializer)
+class EventSearchSerializer(serializers.Serializer):
     start_date = serializers.DateTimeField()
     host_id = serializers.IntegerField()
     end_date = serializers.DateTimeField()
