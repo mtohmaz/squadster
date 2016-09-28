@@ -20,14 +20,15 @@ from squadster import views
 
 urlpatterns = [
     #url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^$', views.login, name='login'),
-    url(r'^admin/', admin.site.urls),
-    url(r'^oauth2return', views.auth_return, name='oauth2return'),
-    url(r'^map/', views.map, name='map'),
 
+    url(r'^$', views.home, name='home'),
+    #url(r'^auth/', views.auth_login, name='auth_login'),
+    url(r'^admin/', admin.site.urls),
+    #url(r'^map/', views.map, name='map'),
+    url(r'^oauth2return', views.auth_return, name='oauth2return'),
 
 
     # events
     url(r'^events/', views.events),
-    url(r'^events/[0-9]{7}/join', views.join_event),
+    #url(r'^events/[0-9]{7}/join', views.join_event),
 ]

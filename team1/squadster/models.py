@@ -14,14 +14,11 @@ class FlowModel(models.Model):
   flow = FlowField()
 """
 
-"""
-class User(models.Model):
-    id = models.CharField(max_length=200, primary_key=True)
-    token = models.CharField(max_length=1000)
-    enabled = models.BooleanField(default=True)
-"""
 
-class SquadsterUser(User):
+class SquadsterUser(models.Model):
+    user_id = models.AutoField(primary_key=True)
+    token = models.CharField(max_length=4096)
+    email = models.EmailField(unique=True)
     enabled = models.BooleanField(default=True)
 
 class Moderator(models.Model):
