@@ -24,5 +24,10 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^oauth2return', views.auth_return, name='oauth2return'),
     url(r'^map/', views.map, name='map'),
+
+
+
+    # events
+    url(r'^events/', views.events),
     url(r'^events/[0-9]{7}/join', views.join_event),
 ]

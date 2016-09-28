@@ -38,6 +38,8 @@ class Event(models.Model):
     event_id = models.AutoField(primary_key=True)
     host_id = models.ForeignKey('SquadsterUser', on_delete=models.DO_NOTHING)
     title = models.CharField(max_length=64)
+    date = models.DateTimeField()
+    max_attendees = models.IntegerField()
     description = models.CharField(max_length=250)
 
 class JoinedEvents(models.Model):
