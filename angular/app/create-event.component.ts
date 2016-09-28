@@ -4,16 +4,14 @@ import {Component} from '@angular/core'; //calls the decorater core component.
 export class Create {
   title: string;
   location: string;
-  startDate: Date;
-  startTime: Date;
-  endDate: Date;
-  endTime: Date;
+  eventDate: Date;
+  eventTime: Date;
   maxAttendees: number;
   description: string;
 }
 
 @Component({ //tells angular that this file is a component.
-  selector: 'create',
+  selector: 'create-event',
   template: `
   <h2>{{ title }}</h2>
   <div>
@@ -25,18 +23,11 @@ export class Create {
     <input [(ngModel)]="create.location">
     <br><br>
 
-    <label>Start Date: </label>
-    <datepicker [(ngModel)]="create.startDate" [showWeeks]="false"></datepicker>
+    <label>Date: </label>
+    <datepicker [(ngModel)]="create.eventDate" [showWeeks]="false"></datepicker>
 
-    <label>&nbsp; Start Time: </label>
-    <input type="time" [(ngModel)]="create.startTime">
-    <br><br>
-
-    <label>End Date: </label>
-    <datepicker [(ngModel)]="create.endDate" [showWeeks]="false"></datepicker>
-
-    <label>&nbsp; End Time: </label>
-    <input type="time" [(ngModel)]="create.endTime">
+    <label>&nbsp;Time: </label>
+    <input type="time" [(ngModel)]="create.eventTime">
     <br><br>
 
     <label>Max Attendees: </label>
@@ -49,15 +40,13 @@ export class Create {
   `/*,
   providers: [CreateService]*/
 })
-export class CreateComponent {
+export class CreateEventComponent {
   title = "Create Event";
   create: Create = {
     title: null,
     location: null,
-    startDate: null,
-    startTime: null,
-    endDate: null,
-    endTime: null,
+    eventDate: null,
+    eventTime: null,
     maxAttendees: null,
     description: null
   };

@@ -86,9 +86,8 @@ def home(request):
         return render(request, 'login.html')
 
 
-def check_authentication(request):
+def check_authentication(email, sess_id):
     token = ''
-    print(request)
     return False
     """try:
         idinfo = client.verify_id_token(token, CLIENT_ID)

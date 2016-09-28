@@ -1,7 +1,7 @@
 
-node_modules/
-app/*.js
-app/*.map
+angular/node_modules/
+angular/app/*.js
+angular/app/*.map
 
 # ignore sqlite files
 **/*.sqlite3
