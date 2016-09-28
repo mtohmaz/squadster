@@ -1,20 +1,18 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-
+from django.http import JsonResponse
 
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.six import BytesIO
+from rest_framework.parsers import JSONParser
 from django.contrib.auth import logout as auth_logout, login
 
 from oauth2client import client, crypt
 
-"""
-## python-social-auth
-from social.backends.oauth import BaseOAuth2
-from social.backends.google import GooglePlusAuth
-from social.backends.utils import load_backends
-from social.apps.django_app.utils import psa
-##
-"""
+## models
+from .models import Event
+from .serializers import EventSerializer
 
 """
 def login(request):
@@ -38,7 +36,7 @@ def home(request, backend):
         token = request.REQUEST.get('access_token')
     else:
         raise HttpResponseBadRequest('Wrong backend type')
-    
+
     user = request.backend.do_auth(token, ajax=True)
     login(request, user)
     data = {'id': user.id, 'username': user.username}
@@ -75,4 +73,28 @@ def check_authentication(request):
 
 def auth_login(request):
     print(request)
-    
+
+
+
+@csrf_exempt
+def events(request):
+    if request.method == "POST":
+        stream = BytesIO(request.body)
+        data = JSONParser().parse(stream)
+
+        event = EventSearchSerializer(data=data)
+
+        print("got a post")
+        print(event)
+        # enter data
+        # return success/failure response
+    elif request.method == "GET":
+        print("got a GET")
+        # query database for events with parameters
+    else:
+        # return failure
+        print("invalid http method")
+
+
+    print(request)
+    return JsonResponse({'hello': 'world'})
