@@ -5,6 +5,8 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout, login
 
+import json
+from django.http import JsonResponse
 from oauth2client import client, crypt
 
 """
@@ -38,7 +40,7 @@ def home(request, backend):
         token = request.REQUEST.get('access_token')
     else:
         raise HttpResponseBadRequest('Wrong backend type')
-    
+
     user = request.backend.do_auth(token, ajax=True)
     login(request, user)
     data = {'id': user.id, 'username': user.username}
@@ -75,4 +77,10 @@ def check_authentication(request):
 
 def auth_login(request):
     print(request)
-    
+
+
+
+
+def events(request):
+    print(request)
+    return JsonResponse({'hello': 'world'})

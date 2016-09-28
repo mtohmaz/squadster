@@ -34,9 +34,14 @@ setupdb:
 setuppython:
 	bash setup/pythonsetup.sh
 
+
 cleanpython:
 	cd team1
 	rm -rf bin lib share pip* include
+
+setupwebserver:
+	sudo cp nginx.conf /etc/nginx/nginx.conf
+	sudo nginx -s reload
 
 # NOTE: this allows you to get around the peer authentication
 # but not using right now
