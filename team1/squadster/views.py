@@ -79,13 +79,20 @@ def auth_login(request):
 @csrf_exempt
 def events(request):
     if request.method == "POST":
+        print("got a post")
+        
         stream = BytesIO(request.body)
         data = JSONParser().parse(stream)
-
-        event = EventSearchSerializer(data=data)
-
-        print("got a post")
-        print(event)
+        
+        validator = EventSerializer(data=data)
+        if validator.is_valid():
+            stored = validator.save()
+            print(stored)
+        else:
+            print("INVALID EVENT")
+            print(validator.errors)
+        
+        
         # enter data
         # return success/failure response
     elif request.method == "GET":

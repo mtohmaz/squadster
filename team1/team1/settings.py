@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'squadster',
-    'social.apps.django_app.default',
 ]
 
 MIDDLEWARE = [

@@ -8,7 +8,10 @@ class User(models.Model):
     enabled = models.BooleanField(default=True)
 """
 
-class SquadsterUser(User):
+class SquadsterUser(models.Model):
+    user_id = models.AutoField(primary_key=True)
+    token = models.CharField(max_length=4096)
+    email = models.CharField(max_length=64)
     enabled = models.BooleanField(default=True)
 
 class Moderator(models.Model):
