@@ -17,10 +17,6 @@ import { EventService } from './event.service';
       </li>
     </ul>
     <my-event-detail [event]="selectedEvent"></my-event-detail>
-    <div>
-      <br>
-      Create new event (TIE THIS IN WITH MAHMOUD'S PAGE)
-    </div>
   `,
   styles: [`
     .selected {
