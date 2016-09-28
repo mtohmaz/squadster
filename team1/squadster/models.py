@@ -1,12 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-"""
-class User(models.Model):
-    id = models.CharField(max_length=200, primary_key=True)
-    token = models.CharField(max_length=1000)
-    enabled = models.BooleanField(default=True)
-"""
 
 class SquadsterUser(models.Model):
     user_id = models.AutoField(primary_key=True)
