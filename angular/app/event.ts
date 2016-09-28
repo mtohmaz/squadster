@@ -1,6 +1,7 @@
 export class Event {
   id: number;
   title: string;
+  hostName: string;
   location: string;
   startDate: string;
   startTime: string;
