@@ -103,7 +103,7 @@ def login(request):
 		print('line0.1')
 		get_user_info(credentials)
 		print('line0.2')
-	return HttpResponseRedirect("/")
+	return HttpResponseRedirect("/map")
 
 def get_user_info(credentials):
 	user_info_service = build(serviceName='oauth2', version='v2', http=credentials.authorize(httplib2.Http()))
@@ -135,7 +135,7 @@ def auth_return(request):
 	#store_credentials(user_id, credentials)
 	store = oauth2client.file.Storage(credential_path)
 	store.put(credentials)
-	return HttpResponseRedirect("/")
+	return HttpResponseRedirect("/map")
 		
 		
 
@@ -148,98 +148,19 @@ def get_stored_credentials(user_id):
 def create_event(request):
 	print('something')
 
-def login(request):
-    """Gets valid user credentials from storage.If nothing has been stored, or if the stored credentials are invalid,
-    the OAuth2 flow is completed to obtain the new credentials.
-    Returns:
-    Credentials, the obtained credential."""
-    if not os.path.exists(credential_dir):
-        os.makedirs(credential_dir)
-    store = oauth2client.file.Storage(credential_path)
-    credentials = store.get() 
-    
-    if credentials is None or credentials.invalid == True:
-        FLOW.params['state'] = xsrfutil.generate_token(settings.SECRET_KEY,
-                                                   request.user)
-        
-        authorize_url = FLOW.step1_get_authorize_url()
-        return HttpResponseRedirect(authorize_url)
-    else:
-        get_user_info(credentials)
-
-
-def auth_return(request):
-    #need to check for valid token before exchange, not working yet
-    #if not xsrfutil.validate_token(settings.SECRET_KEY, request.GET['state'],request.user):
-        #return  HttpResponseBadRequest()
-    #try:
-        credentials = FLOW.step2_exchange(request.GET['code'])
-        user_info = get_user_info(credentials)
-        email_address = user_info.get('email')
-        user_id = user_info.get('id')
-        if credentials.refresh_token is not None:
-            #store_credentials(user_id, credentials)
-            store = oauth2client.file.Storage(credential_path)
-            store.put(credentials)
-            return HttpResponseRedirect("/map")
-        else:
-            credentials = get_stored_credentials(user_id)
-            if credentials and credentials.refresh_token is not None:
-                return HttpResponseRedirect("/map")
-
-
-
+"""
 def home(request):
     email = request.COOKIES.get("email")
     sess_id = request.COOKIES.get("id_token")
     
-    if check_authentication(email, sess_id):
+    if check_authentication(email):
         pass
     else:
         return render(request, 'login.html')
-
-
-def check_authentication(request):
-    token = ''
-    print(request)
-    return False
-    """try:
-        idinfo = client.verify_id_token(token, CLIENT_ID)
-        # If multiple clients access the backend server:
-        if idinfo['aud'] not in [ANDROID_CLIENT_ID, IOS_CLIENT_ID, WEB_CLIENT_ID]:
-            raise crypt.AppIdentityError("Unrecognized client.")
-        if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-            raise crypt.AppIdentityError("Wrong issuer.")
-        if idinfo['hd'] != APPS_DOMAIN_NAME:
-            raise crypt.AppIdentityError("Wrong hosted domain.")
-    except crypt.AppIdentityError:
-        # Invalid token
-        return False
-    userid = idinfo['sub']
-    print(userid)
-    return True"""
-    #return HttpResponse(json.dumps(userid), mimetype='application/json')
-    
-def get_user_info(credentials):
-    """Send a request to the UserInfo API to retrieve the user's information.
-    Args:
-        credentials: oauth2client.client.OAuth2Credentials instance to authorize the
-                 request.
-    Returns:
-        User information as a dict.
-    """
-    user_info_service = build(
-        serviceName='oauth2', version='v2',
-        http=credentials.authorize(httplib2.Http()))
-    user_info = None
-    try:
-        user_info = user_info_service.userinfo().get().execute()
-    except (errors.HttpError, e):
-        logging.error('An error occurred: %s', e)
-    if user_info and user_info.get('id'):
-        print (user_info)
-    else:
-        raise NoUserIdException()
+"""
+def map(request):
+	context = {'user': request.user}
+	return render(request, 'map.html', context)
 
 @csrf_exempt
 def my_events(request):
