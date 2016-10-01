@@ -24,7 +24,7 @@ urlpatterns = [
     url(r'^$', views.login, name='login'),
     #url(r'^auth/', views.auth_login, name='auth_login'),
     url(r'^admin/', admin.site.urls),
-    url(r'^map/', views.map, name='map'),
+    url(r'^map', views.map, name='map'),
     url(r'^oauth2return', views.auth_return, name='oauth2return'),
 
 

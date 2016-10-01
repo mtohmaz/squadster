@@ -94,10 +94,13 @@ def login(request):
 	credentials = store.get() 
 	print('line0')
 	if credentials is None or credentials.invalid == True:
+		print('line0.3')
 		FLOW.params['state'] = xsrfutil.generate_token(settings.SECRET_KEY,
                                                    request.user)
                                                 
 		authorize_url = FLOW.step1_get_authorize_url()
+		print('line0.4')
+		print(authorize_url)
 		return HttpResponseRedirect(authorize_url)
 	else:
 		print('line0.1')
@@ -148,17 +151,10 @@ def get_stored_credentials(user_id):
 def create_event(request):
 	print('something')
 
-"""
-def home(request):
-    email = request.COOKIES.get("email")
-    sess_id = request.COOKIES.get("id_token")
-    
-    if check_authentication(email):
-        pass
-    else:
-        return render(request, 'login.html')
-"""
 def map(request):
+	print('line5')
+	login(request)
+	print('line6')
 	context = {'user': request.user}
 	return render(request, 'map.html', context)
 
