@@ -59,7 +59,8 @@ FLOW = flow_from_clientsecrets(
         ],
     redirect_uri='http://localhost/api/oauth2return')
 
-
+def home(request):
+    pass
 
 def login(request):
 	"""Send a request to the UserInfo API to retrieve the user's information.
