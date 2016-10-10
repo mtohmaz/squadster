@@ -1,6 +1,20 @@
 from rest_framework import serializers
 
-from .models import Event
+from .models import Event, SquadsterUser
+
+
+class SquadsterUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SquadsterUser
+        fields = [
+            'user_id',
+            'email',
+            'enabled']
+        read_only_fields = ['user_id', 'enabled']
+    
+    def create(self, validated_data):
+        return SquadsterUser.objects.create(**validated_data)
+
 
 class EventSerializer(serializers.ModelSerializer):
     class Meta:

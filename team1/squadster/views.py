@@ -8,13 +8,11 @@ from django.utils.six import BytesIO
 from rest_framework.parsers import JSONParser
 from django.contrib.auth import logout as auth_logout, login
 
+import oauth2client
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client import client, crypt
 import os
 
-## models
-from .models import Event
-from .serializers import EventSerializer
 
 # CLIENT_SECRETS, name of a file containing the OAuth 2.0 information for this
 # application, including client_id and client_secret, which are found
@@ -32,7 +30,7 @@ FLOW = flow_from_clientsecrets(
             'https://www.googleapis.com/auth/userinfo.email',
             'https://www.googleapis.com/auth/userinfo.profile',
         ],
-    redirect_uri='http://localhost:8000/oauth2return')
+    redirect_uri='http://localhost/api/oauth2return')
 
 
 def login(request):
@@ -43,7 +41,7 @@ def login(request):
     if not os.path.exists(credential_dir):
         os.makedirs(credential_dir)
     store = oauth2client.file.Storage(credential_path)
-    credentials = store.get() 
+    credentials = store.get()
     
     if credentials is None or credentials.invalid == True:
         FLOW.params['state'] = xsrfutil.generate_token(settings.SECRET_KEY,
@@ -68,11 +66,11 @@ def auth_return(request):
             #store_credentials(user_id, credentials)
             store = oauth2client.file.Storage(credential_path)
             store.put(credentials)
-            return HttpResponseRedirect("/map")
+            return HttpResponseRedirect("/api/map")
         else:
             credentials = get_stored_credentials(user_id)
             if credentials and credentials.refresh_token is not None:
-                return HttpResponseRedirect("/map")
+                return HttpResponseRedirect("/api/map")
 
 
 
@@ -128,7 +126,7 @@ def get_user_info(credentials):
         raise NoUserIdException()
 
 
-
+"""
 @csrf_exempt
 def events(request):
     if request.method == "POST":
@@ -150,6 +148,10 @@ def events(request):
         # return success/failure response
     elif request.method == "GET":
         print("got a GET")
+        ret = []
+        for event in Event.objects.all():
+            serializers = EventSerializer(event)
+            print(serializers.data)
         # query database for events with parameters
     else:
         # return failure
@@ -158,3 +160,4 @@ def events(request):
     
     print(request)
     return JsonResponse({'hello': 'world'})
+"""

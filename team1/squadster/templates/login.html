@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="google-signin-client_id" content="290427034826-un4ldmeetlngevc5ep3jnt0s71284pjf.apps.googleusercontent.com">
+    <meta name="google-signin-client_id" content="765648849014-kjgtsiqvfmkinasvc5tak562hr7k92sj.apps.googleusercontent.com">
     <title>Login Page</title>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -32,7 +32,7 @@
         var id_token = googleUser.getAuthResponse().id_token;
         console.log("ID Token: " + id_token);
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'http://localhost:8000/auth/');
+        xhr.open('POST', 'http://localhost/api');
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         xhr.onload = function() {
             console.log('Signed in as: ' + xhr.responseText);
