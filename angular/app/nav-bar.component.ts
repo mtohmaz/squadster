@@ -6,7 +6,7 @@ import {Component, ViewEncapsulation, OnInit} from "@angular/core";
     template: `
       <div class="topnav">
         <div id="logo">
-          <img src="../images/SquadsterLogoBG.png" />
+          <img src="../images/SquadsterLogo.png" />
         </div>
         <ul>
           <li><a routerLink="/list-view" routerLinkActive="active">List View</a></li>
@@ -28,14 +28,16 @@ import {Component, ViewEncapsulation, OnInit} from "@angular/core";
         text-align: center;
         margin: 0;
         padding: 0;
+        height: 5%;
       }
       .topnav li {
         line-height: 40px;
         border-bottom: 1px solid #888;
         display: inline-block;
         front-size: 1.2em;
-        height: 40px;
+        height: 5%;
         width: 20%;
+        //margin-top: 30px;
       }
       .topnav a {
         text-decoration: none;
@@ -47,13 +49,13 @@ import {Component, ViewEncapsulation, OnInit} from "@angular/core";
         background-color: #005f5f;
       }
       .topnav a.active {
-        bcakground-color: #fff;
+        background-color: #fff;
         color: #333;
         cursor: default;
       }
       #logo img{
-        height: 40px;
-        width: 5%;
+        height: 5%;
+        width: 10%;
         float:left
       }
     `],
