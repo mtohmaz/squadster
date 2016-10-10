@@ -6,10 +6,9 @@ import {Component, ViewEncapsulation, OnInit} from "@angular/core";
     template: `
       <div class="topnav">
         <div id="logo">
-          <img src="../images/logo.png" />
+          <img src="../images/SquadsterLogoBG.png" />
         </div>
         <ul>
-          <li> Squadster </li>
           <li><a routerLink="/list-view" routerLinkActive="active">List View</a></li>
           <li><a routerLink="/create-event" routerLinkActive="active">Create Event</a></li>
           <li><a routerLink="/my-events" routerLinkActive="active">My Events</a></li>
