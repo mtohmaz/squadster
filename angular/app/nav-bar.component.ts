@@ -56,7 +56,8 @@ import {Component, ViewEncapsulation, OnInit} from "@angular/core";
       #logo img{
         height: 5%;
         width: 10%;
-        float:left
+        float: left;
+        margin-left: 5px;
       }
     `],
 })
