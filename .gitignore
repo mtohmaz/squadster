@@ -25,3 +25,6 @@ team1/pip-selfcheck.json
 # don't check in npm things
 team1/squadster/angularjs/node_modules/
 team1/squadster/angularjs/npm-debug.log
+
+# don't check in credentials generated
+team1/squadster/credentials/
