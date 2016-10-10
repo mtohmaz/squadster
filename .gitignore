@@ -1,3 +1,8 @@
+
+angular/node_modules/
+angular/app/*.js
+angular/app/*.map
+
 # ignore sqlite files
 **/*.sqlite3
 
@@ -21,3 +26,5 @@ team1/pip-selfcheck.json
 team1/squadster/angularjs/node_modules/
 team1/squadster/angularjs/npm-debug.log
 
+# don't check in credentials generated
+team1/squadster/credentials/

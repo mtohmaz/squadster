@@ -18,16 +18,26 @@ from django.contrib import admin
 
 from squadster import views
 
+from squadster import viewsets
+
 urlpatterns = [
     #url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^$', views.login, name='login'),
-    url(r'^admin/', admin.site.urls),
-    url(r'^oauth2return', views.auth_return, name='oauth2return'),
-    url(r'^map/', views.map, name='map'),
-
-
+    url(r'^api$', views.login),
+    url(r'^api/auth/', views.login),
+    
+    #url(r'^auth/', views.auth_login, name='auth_login'),
+    url(r'^api/admin/', admin.site.urls),
+    #url(r'^map/', views.map, name='map'),
+    url(r'^api/oauth2return', views.auth_return, name='oauth2return'),
 
     # events
-    url(r'^events/', views.events),
-    url(r'^events/[0-9]{7}/join', views.join_event),
+    url(r'^api/events/', viewsets.EventViewSet.as_view({
+            'get':'list',
+            'post':'create'})),
+    
+    #url(r'^events/[0-9]{7}/join', views.join_event),
+    
+    
+    url(r'^api/users/$', viewsets.UserViewSet.as_view(
+            {'post':'create'}))
 ]
