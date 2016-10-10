@@ -40,6 +40,4 @@ urlpatterns = [
     
     url(r'^api/users/$', viewsets.UserViewSet.as_view(
             {'post':'create'}))
-    
-    
 ]

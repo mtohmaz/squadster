@@ -1,5 +1,18 @@
 from django.db import models
 from django.contrib.auth.models import User
+"""
+from oauth2client.contrib.django_orm import FlowField
+from oauth2client.contrib.django_orm import CredentialsField
+
+
+class CredentialsModel(models.Model):
+  id = models.ForeignKey(User, primary_key=True)
+  credential = CredentialsField()
+
+class FlowModel(models.Model):
+  id = models.ForeignKey(User, primary_key=True)
+  flow = FlowField()
+"""
 
 
 class SquadsterUser(models.Model):
@@ -65,3 +78,13 @@ class ReportedComments(models.Model):
     moderated_by = models.ForeignKey('Moderator', on_delete=models.DO_NOTHING)
     time_reported = models.DateTimeField(auto_now_add=True)
     time_moderated = models.DateTimeField()
+    
+class Tags(models.Model):
+	tag_id = models.AutoField(primary_key=True)
+	display_name = models.CharField(max_length=64)
+
+class EventTags(models.Model):
+	event_id = models.ForeignKey('Event', on_delete=models.CASCADE)
+	tag_id = models.ForeignKey('Tags', on_delete=models.CASCADE)
+	
+	
