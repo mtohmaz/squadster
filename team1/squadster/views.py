@@ -88,7 +88,7 @@ def login(request):
 		print('line0.1')
 		get_user_info(credentials)
 		print('line0.2')
-	return HttpResponseRedirect("/")
+	return HttpResponseRedirect("/list-view")
 
 def get_user_info(credentials):
 	user_info_service = build(serviceName='oauth2', version='v2', http=credentials.authorize(httplib2.Http()))
@@ -121,7 +121,7 @@ def auth_return(request):
 	#store_credentials(user_id, credentials)
 	store = oauth2client.file.Storage(credential_path)
 	store.put(credentials)
-	return HttpResponseRedirect("/")
+	return HttpResponseRedirect("/list-view")
 		
 		
 

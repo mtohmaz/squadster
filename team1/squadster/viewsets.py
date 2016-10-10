@@ -26,6 +26,9 @@ class EventViewSet(viewsets.ModelViewSet):
     serializer_class = EventSerializer
     
     def create(self, request):
+        
+        
+        
         serializer = EventSerializer(data=request.data)
         
         if serializer.is_valid():
