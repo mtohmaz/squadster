@@ -9,6 +9,7 @@ import { EventDetailComponent } from './event-details.component';
 import { MyEventsComponent } from './my-events.component';
 import { MyEventDetailComponent } from './my-event-details.component';
 import { ListViewComponent } from './list-view.component';
+import { NavBarComponent } from './nav-bar.component';
 import { routing } from './app.routing';
 
 @NgModule({
@@ -19,15 +20,11 @@ import { routing } from './app.routing';
     EventDetailComponent,
     ListViewComponent,
     MyEventsComponent,
-    MyEventDetailComponent
+    MyEventDetailComponent,
+    NavBarComponent
     ],
   bootstrap: [
-    AppComponent,
-    CreateEventComponent,
-    EventDetailComponent,
-    ListViewComponent,
-    MyEventsComponent,
-    MyEventDetailComponent
+    AppComponent
   ]
 })
 export class AppModule { }
