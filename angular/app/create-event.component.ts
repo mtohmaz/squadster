@@ -14,7 +14,7 @@ export class Create {
   selector: 'create-event',
   template: `
   <h2>{{ title }}</h2>
-  <div>
+  <div class="body">
     <label>Event Title: </label>
     <input [(ngModel)]="create.title">
     <br><br>
@@ -37,7 +37,8 @@ export class Create {
     <label>Description: </label>
     <input [(ngModel)]="create.description">
   </div>
-  `/*,
+  `,
+  styleUrls: ['app/styles/master-styles.css'],/*,
   providers: [CreateService]*/
 })
 export class CreateEventComponent {

@@ -7,10 +7,19 @@ import {Component} from '@angular/core';
     <!--<a routerLink="/list-view" routerLinkActive="active">List View</a>
     <a routerLink="/create-event" routerLinkActive="active">Create Event</a>
     <a routerLink="/my-events" routerLinkActive="active">My Events</a>-->
-    <topnav></topnav>
-    <router-outlet></router-outlet>
+    <div id="head">
+
+      <div id="nav">
+        <topnav></topnav>
+        <sidenav></sidenav>
+      </div>
+      <div id="body">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
     <!--<list-view></list-view>-->
     `,
+    styleUrls: ['app/styles/master-styles.css'],
     //state which components are used in the template.
     //directives: [CreateComponent]
 })
