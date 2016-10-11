@@ -11,7 +11,8 @@ import { EventDetailComponent } from './event-details.component';
 import { MyEventsComponent } from './my-events.component';
 import { MyEventDetailComponent } from './my-event-details.component';
 import { ListViewComponent } from './list-view.component';
-import { NavBarComponent } from './nav-bar.component';
+import { TopNavComponent } from './top-nav.component';
+import { SideNavComponent } from './side-nav.component';
 import { LogInComponent } from './log-in.component';
 
 import { EventService } from './event.service';
@@ -26,7 +27,8 @@ import { routing } from './app.routing';
     ListViewComponent,
     MyEventsComponent,
     MyEventDetailComponent,
-    NavBarComponent,
+    TopNavComponent,
+    SideNavComponent,
     LogInComponent
     ],
   providers: [
