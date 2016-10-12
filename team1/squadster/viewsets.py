@@ -22,8 +22,8 @@ class UserViewSet(viewsets.ViewSet,APIView):
             print(user)
             return Response({"status":"success"})
         else:
-            return Response(serializer.errors, 
 
+            return Response(serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST)
 
 
