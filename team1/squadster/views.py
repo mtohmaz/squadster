@@ -189,3 +189,18 @@ def events(request):
     print(request)
     return JsonResponse({'hello': 'world'})
 """
+
+
+"""
+    squadsteruser: a SquadsterUser object
+"""
+def create_api_key(squadsteruser):
+    from rest_framework.authtoken.models import Token
+    
+    token = Token.objects.create(user=squadsteruser)
+    print(token.key)
+
+def get_api_key(user_id):
+    pass
+    
+

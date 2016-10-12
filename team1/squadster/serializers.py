@@ -39,6 +39,8 @@ class JoinedEventsSerializer(serializers.ModelSerializer):
             'event_id'
         ]
         
+        read_only_fields = ['user_id', 'event_id']
+        
 
 class EventSearchSerializer(serializers.Serializer):
     start_date = serializers.DateTimeField()
