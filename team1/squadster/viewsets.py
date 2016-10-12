@@ -12,37 +12,34 @@ from rest_framework.response import Response
 
 from .models import *
 
-<<<<<<< HEAD
 class UserViewSet(viewsets.ViewSet,APIView):
-	authentication_classes = (SessionAuthentication, BasicAuthentication)
-	permission_classes = (IsAuthenticated)
-	def create(self, request):
-		serializer = SquadsterUserSerializer(data=request.data)
-		if serializer.is_valid():
-			user = serializer.save()
-			print(user)
-			return Response({"status":"success"})
-		else:
-			return Response(serializer.errors, 
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated)
+    def create(self, request):
+        serializer = SquadsterUserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            print(user)
+            return Response({"status":"success"})
+        else:
+            return Response(serializer.errors, 
 
                 status=status.HTTP_400_BAD_REQUEST)
 
 
 class EventViewSet(viewsets.ModelViewSet, APIView):
-	authentication_classes = (SessionAuthentication, BasicAuthentication)
-	permission_classes = (IsAuthenticated)
-	serializer_class = EventSerializer
-	def create(self, request):
-		serializer = EventSerializer(data=request.data)
-		if serializer.is_valid():
-			event = serializer.save()
-			print(event)
-			return Response({"status":"success"})
-		else:
-			return Response(serializer.errors,
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated)
+    serializer_class = EventSerializer
+    def create(self, request):
+        serializer = EventSerializer(data=request.data)
+        if serializer.is_valid():
+            event = serializer.save()
+            print(event)
+            return Response({"status":"success"})
+        else:
+            return Response(serializer.errors, 
                 status=status.HTTP_400_BAD_REQUEST)
-
-    
     
     def get_queryset(self):
         # no filter right now

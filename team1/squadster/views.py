@@ -34,6 +34,7 @@ from googleapiclient.discovery import build
 from team1 import settings
 
 
+
 try:
     import argparse
     flags = tools.argparser.parse_args([])
@@ -110,6 +111,7 @@ def get_user_info(credentials):
 
 
 def auth_return(request):
+    from .models import SquadsterUser
     #need to check for valid token before exchange, not working yet
     #if not xsrfutil.validate_token(settings.SECRET_KEY, request.GET['state'],request.user):
         #return  HttpResponseBadRequest()
