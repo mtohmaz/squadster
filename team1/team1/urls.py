@@ -48,7 +48,9 @@ urlpatterns = [
     
     
     url(r'^api/users/$', viewsets.UserViewSet.as_view(
-            {'post':'create'}))
+            {'post':'create'})),
     
+    # TEMPORARY, REMOVE
+    url(r'^api/users/[0-9]+/apikeys/$', views.create_api_key),
     
 ]

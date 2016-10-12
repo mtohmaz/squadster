@@ -4,7 +4,9 @@ import logging
 import httplib2
 import urllib.parse
 from urllib.error import HTTPError
+from datetime import datetime, timedelta
 
+from django.utils import timezone
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import JsonResponse
@@ -16,6 +18,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.six import BytesIO
 from django.contrib.auth import logout as auth_logout, login
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 
@@ -31,6 +34,7 @@ from oauth2client.client import FlowExchangeError
 from googleapiclient.discovery import build
 
 #from squadster.models import CredentialsModel
+from squadster.models import SquadsterUser
 from team1 import settings
 
 
@@ -72,10 +76,36 @@ def login(request):
   Returns:
     User information as a dict.
   """
+    
+    if 'google_token' in request.META:
+        google_token = request.META['google_token']
+        
+        
+        
+        # TODO ASK GOOGLE IF ITS VALID
+            # IF IT IS:
+                # CHECK IF USER EMAIL EXISTS IN DATABASE
+                    # IF NOT, ADD RECORD (and api key)
+                # NOW REDIRECT TO list-view
+            # IF NOT, REDIRECT TO AUTHORIZE_URL
+            
+    else:
+        pass
+        # NO TOKEN GIVEN IN REQUEST, REDIRECT TO AUTHORIZE_URL
+    
+    
+    
+    # TODO CHECK HERE IF USER EMAIL EXISTS & MAKE ENTRY IF NOT, 
+    #    THEN REDIRECT TO list-view
     if not os.path.exists(credential_dir):
         os.makedirs(credential_dir)
     store = oauth2client.file.Storage(credential_path)
     credentials = store.get() 
+    
+    
+    # CHECK IF SESSION IS VALID THROUGH CALL TO GOOGLE
+    #   IF YES, REDIRECT TO list-view
+    #   IF NO, REDIRECT TO AUTHORIZE_URL
     print('line0')
     if credentials is None or credentials.invalid == True:
         print('line0.3')
@@ -91,6 +121,7 @@ def login(request):
         get_user_info(credentials)
         print('line0.2')
     return HttpResponseRedirect("/list-view")
+
 
 def get_user_info(credentials):
     user_info_service = build(serviceName='oauth2', version='v2', http=credentials.authorize(httplib2.Http()))
@@ -121,9 +152,35 @@ def auth_return(request):
     print ('line4')
     email_address = user_info.get('email')
     user_id = user_info.get('id')
-    #store_credentials(user_id, credentials)
-    store = oauth2client.file.Storage(credential_path)
-    store.put(credentials)
+    
+    #store = oauth2client.file.Storage(credential_path)
+    #store.put(credentials)
+    
+    # CHECK IF IN DATABASE YET, IF NOT, CREATE ENTRY
+    print('credentials: ' + str(credentials))
+    print('user_info: ' + str(user_info))
+    
+    
+    try:
+        user = SquadsterUser.objects.get(email=email_address)
+    except ObjectDoesNotExist as e:
+        # CREATE A NEW USER RECORD
+        access_token_info = credentials.get_access_token()
+        print(access_token_info)
+        access_token = access_token_info.access_token
+        expires_seconds = access_token_info.expires_in
+        
+        
+        user = SquadsterUser.objects.create(
+            email=email_address,
+            # TODO api_key
+            api_key="",
+            google_session_token=access_token,
+            google_session_timeout=timedelta(seconds=expires_seconds),
+            google_session_last_auth=timezone.now()
+        )
+        #print(e)
+    
     return HttpResponseRedirect("/list-view")
 
     
@@ -198,6 +255,8 @@ def events(request):
 """
     squadsteruser: a SquadsterUser object
 """
+
+@csrf_exempt
 def create_api_key(squadsteruser):
     from rest_framework.authtoken.models import Token
     
