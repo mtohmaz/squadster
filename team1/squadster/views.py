@@ -76,7 +76,8 @@ def login(request):
   Returns:
     User information as a dict.
   """
-    
+    print('request:')
+    print(request)
     if 'google_token' in request.META:
         google_token = request.META['google_token']
         
