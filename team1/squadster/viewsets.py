@@ -18,7 +18,7 @@ class UserViewSet(viewsets.ViewSet):
             print(user)
             return Response({"status":"success"})
         else:
-            return Response(serializer.errors, 
+            return Response(serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -39,7 +39,8 @@ class EventViewSet(viewsets.ModelViewSet):
     
     
     def get_queryset(self):
-        user = self.request.user
+        # no filter right now
+        # need to filter on the request parameters
         queryset = Event.objects.all()
         return queryset
     
@@ -58,6 +59,7 @@ class JoinedEventsViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST)
     
     def get_queryset(self):
+        # filter to this self.request.user.get('user_id') or something similar
         queryset = JoinedEvents.objects.all()
         return queryset
 

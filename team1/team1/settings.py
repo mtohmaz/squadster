@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'rest_framework',
     'squadster',
+    
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
