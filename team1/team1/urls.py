@@ -31,13 +31,22 @@ urlpatterns = [
     url(r'^api/oauth2return', views.auth_return, name='oauth2return'),
 
     # events
-    url(r'^api/events/', viewsets.EventViewSet.as_view({
+    url(r'^api/events/$', viewsets.EventViewSet.as_view({
             'get':'list',
             'post':'create'})),
+    url(r'^api/events/[0-9]+$^', viewsets.EventViewSet.as_view({
+            'get':'retrieve'})),
+    
+    url(r'^api/joinedevents/$', viewsets.JoinedEventsViewSet.as_view({
+            'get':'list',
+            'post':'create'})),
+    
     
     #url(r'^events/[0-9]{7}/join', views.join_event),
     
     
     url(r'^api/users/$', viewsets.UserViewSet.as_view(
             {'post':'create'}))
+    
+    
 ]
