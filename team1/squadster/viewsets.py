@@ -48,7 +48,9 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
         return queryset
     
 
-class JoinedEventsViewSet(viewsets.ModelViewSet):
+class JoinedEventsViewSet(viewsets.ModelViewSet,APIView):
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated)
     serializer_class = JoinedEventsSerializer
     
     def create(self, request):
