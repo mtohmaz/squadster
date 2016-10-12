@@ -31,6 +31,8 @@ urlpatterns = [
     url(r'^api/oauth2return', views.auth_return, name='oauth2return'),
 
     # events
+    # for this and others, will probably need to look into this
+    # https://docs.djangoproject.com/en/1.10/topics/http/urls/#named-groups
     url(r'^api/events/$', viewsets.EventViewSet.as_view({
             'get':'list',
             'post':'create'})),

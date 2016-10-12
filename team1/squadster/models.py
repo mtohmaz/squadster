@@ -17,9 +17,15 @@ class FlowModel(models.Model):
 
 class SquadsterUser(models.Model):
     user_id = models.AutoField(primary_key=True)
-    token = models.CharField(max_length=4096)
     email = models.EmailField(unique=True)
     enabled = models.BooleanField(default=True)
+    api_key = models.CharField(max_length=64)
+    
+    # google auth things
+    google_session_token = models.CharField(default=None, max_length=4096)
+    google_session_timeout = models.DurationField(default=None)
+    google_session_last_auth = models.DateTimeField(default=None)
+    
 
 class Moderator(models.Model):
     user_id = models.ForeignKey('SquadsterUser', on_delete=models.CASCADE, primary_key=True)
