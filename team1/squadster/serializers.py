@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Event, SquadsterUser
+from .models import *
 
 
 class SquadsterUserSerializer(serializers.ModelSerializer):
@@ -12,8 +12,8 @@ class SquadsterUserSerializer(serializers.ModelSerializer):
             'enabled']
         read_only_fields = ['user_id', 'enabled']
     
-    def create(self, validated_data):
-        return SquadsterUser.objects.create(**validated_data)
+#    def create(self, validated_data):
+#        return SquadsterUser.objects.create(**validated_data)
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -30,6 +30,15 @@ class EventSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return Event.objects.create(**validated_data)
 
+
+class JoinedEventsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JoinedEvents
+        fields = [
+            'user_id',
+            'event_id'
+        ]
+        
 
 class EventSearchSerializer(serializers.Serializer):
     start_date = serializers.DateTimeField()
