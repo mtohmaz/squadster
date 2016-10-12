@@ -44,4 +44,24 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
 		print(user)
 		queryset = Event.objects.all()
 		return queryset
+
+
     
+
+class JoinedEventsViewSet(viewsets.ModelViewSet):
+    serializer_class = JoinedEventsSerializer
+    
+    def create(self, request):
+        serializer = JoinedEventsSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            joined = serializer.save()
+            return Response({"status":"success"})
+        else:
+            return Response(serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST)
+    
+    def get_queryset(self):
+        queryset = JoinedEvents.objects.all()
+        return queryset
+

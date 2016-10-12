@@ -123,7 +123,8 @@ def auth_return(request):
     store = oauth2client.file.Storage(credential_path)
     store.put(credentials)
     return HttpResponseRedirect("/list-view")
-        
+
+    
         
 
 def store_credentials(user_id, email):
