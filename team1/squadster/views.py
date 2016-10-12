@@ -83,12 +83,11 @@ def login(request):
         google_token = request.META['google_token']
         # TODO ASK GOOGLE IF ITS VALID
         # (Receive token by HTTPS POST)
-        print ('google token:')
-        print(google_token)
+        print ('google token:' + str(google_token))
         try:
             idinfo = client.verify_id_token(google_token, CLIENT_ID)
             # If multiple clients access the backend server:
-            if idinfo['aud'] not in [ANDROID_CLIENT_ID, IOS_CLIENT_ID, WEB_CLIENT_ID]:
+            if idinfo['aud'] not in [WEB_CLIENT_ID]:
                 raise crypt.AppIdentityError("Unrecognized client.")
             if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
                 raise crypt.AppIdentityError("Wrong issuer.")
@@ -96,13 +95,13 @@ def login(request):
                 raise crypt.AppIdentityError("Wrong hosted domain.")
         except crypt.AppIdentityError:
             # Invalid token
-            print ('identityError')
+            return Response('Token ID is invalid',status=status.HTTP_401_BAD_REQUEST)
         userid = idinfo['sub']
         # IF IT IS:
         # CHECK IF USER EMAIL EXISTS IN DATABASE
-        user = SquadsterUser.objects.filter(email=idinfo['email']
+        user = SquadsterUser.objects.filter(email=idinfo['email'])
         # IF NOT, REDIRECT TO AUTHORIZE_URL
-        if user is None
+        if user is None :
             FLOW.params['state'] = xsrfutil.generate_token(settings.SECRET_KEY,
                                                    request.user)
                                                 
@@ -116,10 +115,9 @@ def login(request):
         # NO TOKEN GIVEN IN REQUEST, REDIRECT TO AUTHORIZE_URL
         FLOW.params['state'] = xsrfutil.generate_token(settings.SECRET_KEY,
                                                    request.user)
-                                                
         authorize_url = FLOW.step1_get_authorize_url()
         return HttpResponseRedirect(authorize_url)
-
+    
 def get_user_info(credentials):
     user_info_service = build(serviceName='oauth2', version='v2', http=credentials.authorize(httplib2.Http()))
     user_info = None
@@ -144,9 +142,7 @@ def auth_return(request):
     #if not xsrfutil.validate_token(settings.SECRET_KEY, request.GET['state'],request.user):
         #return  HttpResponseBadRequest()
     credentials = FLOW.step2_exchange(request.GET['code'])
-    print ('line3')
     user_info = get_user_info(credentials)
-    print ('line4')
     email_address = user_info.get('email')
     user_id = user_info.get('id')
     
