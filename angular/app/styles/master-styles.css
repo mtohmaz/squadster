@@ -19,3 +19,18 @@
   padding: 0;
   display: inline;
 }
+
+.create {
+  font-size: 50px;
+  position: fixed;
+  bottom: 5%;
+  right: 5%;
+}
+
+.menu {
+  margin-top: 50px;
+}
+
+.sidebar{
+  margin-top: 100px;
+}

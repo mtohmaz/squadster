@@ -12,7 +12,7 @@ import {Component, ViewEncapsulation, OnInit} from "@angular/core";
           <li><a routerLink="/list-view" routerLinkActive="active">List View</a></li>
           <li><a routerLink="/create-event" routerLinkActive="active">Create Event</a></li>
           <li><a routerLink="/my-events" routerLinkActive="active">My Events</a></li>
-          <li> My Account </li>
+          <li><a class="icon ion-person"> My Account </a> </li>
         </ul>
       </div>
     `,

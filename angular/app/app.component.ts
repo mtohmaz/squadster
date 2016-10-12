@@ -4,23 +4,36 @@ import {Component} from '@angular/core';
 @Component({
     selector: 'my-app',
     template: `
-    <!--<a routerLink="/list-view" routerLinkActive="active">List View</a>
-    <a routerLink="/create-event" routerLinkActive="active">Create Event</a>
-    <a routerLink="/my-events" routerLinkActive="active">My Events</a>-->
     <div id="head">
 
       <div id="nav">
         <topnav></topnav>
-        <sidenav></sidenav>
+        
       </div>
       <div id="body">
         <router-outlet></router-outlet>
       </div>
     </div>
-    <!--<list-view></list-view>-->
+    
+    <ng2-sidebar class="sidebar" 
+        [(open)]="_open" 
+        [closeOnClickOutside]="true"
+        [showOverlay]="true">
+      <sidenav></sidenav>
+    </ng2-sidebar>
+
+    <a (click)="_toggleSidebar()" class="menu icon ion-navicon-round">Menu</a>
+    
+    <a routerLink="/create-event" routerLinkActive="active" class="create icon ion-plus-circled" title="Create a new event"></a>
     `,
     styleUrls: ['app/styles/master-styles.css'],
     //state which components are used in the template.
     //directives: [CreateComponent]
 })
-export class AppComponent { }
+export class AppComponent {
+    private _open: boolean = false;
+
+    private _toggleSidebar() {
+        this._open = !this._open;
+    }
+}

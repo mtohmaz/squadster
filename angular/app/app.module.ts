@@ -2,6 +2,7 @@ import { NgModule }      from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule }   from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import { SidebarModule } from 'ng2-sidebar';
 
 import { Ng2BootstrapModule } from 'ng2-bootstrap/ng2-bootstrap';
 
@@ -19,7 +20,7 @@ import { EventService } from './event.service';
 import { routing } from './app.routing';
 
 @NgModule({
-  imports:      [ BrowserModule, FormsModule, Ng2BootstrapModule, routing, HttpModule ],
+  imports:      [ BrowserModule, FormsModule, Ng2BootstrapModule, routing, HttpModule, SidebarModule],
   declarations: [
     AppComponent,
     CreateEventComponent,
