@@ -12,6 +12,7 @@ from rest_framework.response import Response
 
 from .models import *
 
+<<<<<<< HEAD
 class UserViewSet(viewsets.ViewSet,APIView):
 	authentication_classes = (SessionAuthentication, BasicAuthentication)
 	permission_classes = (IsAuthenticated)
@@ -23,6 +24,7 @@ class UserViewSet(viewsets.ViewSet,APIView):
 			return Response({"status":"success"})
 		else:
 			return Response(serializer.errors, 
+
                 status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -39,13 +41,14 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
 		else:
 			return Response(serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST)
-	def get_queryset(self):
-		user = self.request.user
-		print(user)
-		queryset = Event.objects.all()
-		return queryset
 
-
+    
+    
+    def get_queryset(self):
+        # no filter right now
+        # need to filter on the request parameters
+        queryset = Event.objects.all()
+        return queryset
     
 
 class JoinedEventsViewSet(viewsets.ModelViewSet):
@@ -62,6 +65,7 @@ class JoinedEventsViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST)
     
     def get_queryset(self):
+        # filter to this self.request.user.get('user_id') or something similar
         queryset = JoinedEvents.objects.all()
         return queryset
 

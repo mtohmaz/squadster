@@ -15,28 +15,37 @@ class FlowModel(models.Model):
 """
 
 
+# User handling
 class SquadsterUser(models.Model):
     user_id = models.AutoField(primary_key=True)
     email = models.EmailField(unique=True)
     enabled = models.BooleanField(default=True)
-    api_key = models.CharField(max_length=64)
+    
+    api_key = models.CharField(blank=True, max_length=64)
+    api_key_last_auth = models.DateTimeField(default=None, null=True)
     
     # google auth things
-    google_session_token = models.CharField(default=None, max_length=4096)
-    google_session_timeout = models.DurationField(default=None)
-    google_session_last_auth = models.DateTimeField(default=None)
+    google_session_token = models.CharField(blank=True, max_length=4096)
+    google_session_timeout = models.DurationField(default=None, null=True)
+    google_session_last_auth = models.DateTimeField(default=None, null=True)
     
 
 class Moderator(models.Model):
-    user_id = models.ForeignKey('SquadsterUser', on_delete=models.CASCADE, primary_key=True)
+    user_id = models.OneToOneField('SquadsterUser', on_delete=models.DO_NOTHING, primary_key=True)
+    #user_id = models.ForeignKey('SquadsterUser', on_delete=models.CASCADE, primary_key=True)
+    
     #automatically add the timestamp
     date_added = models.DateTimeField(auto_now_add=True)
 
 class Admin(models.Model):
-    user_id = models.ForeignKey('SquadsterUser', on_delete=models.CASCADE, primary_key=True)
+    user_id = models.OneToOneField('SquadsterUser', on_delete=models.DO_NOTHING, primary_key=True)
+    #user_id = models.ForeignKey('SquadsterUser', on_delete=models.CASCADE, primary_key=True)
+    
     #automatically add the timestamp
     date_added = models.DateTimeField(auto_now_add=True)
 
+
+# Event handling
 class Event(models.Model):
     event_id = models.AutoField(primary_key=True)
     host_id = models.ForeignKey('SquadsterUser', on_delete=models.DO_NOTHING)
@@ -84,7 +93,9 @@ class ReportedComments(models.Model):
     moderated_by = models.ForeignKey('Moderator', on_delete=models.DO_NOTHING)
     time_reported = models.DateTimeField(auto_now_add=True)
     time_moderated = models.DateTimeField()
-    
+
+
+# Tag handling
 class Tags(models.Model):
     tag_id = models.AutoField(primary_key=True)
     display_name = models.CharField(max_length=64)

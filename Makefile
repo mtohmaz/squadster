@@ -4,15 +4,11 @@
 
 default:
 
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/angular
 install_ubuntu: ubuntu_packages setuppython
 
 ubuntu_packages:
 	sudo apt-get update
-<<<<<<< HEAD
 	sudo apt-get install -y \
 		python3-pip \
 		postgresql postgresql-contrib postgresql-server-dev-all \
@@ -21,16 +17,6 @@ ubuntu_packages:
 
 	# remove pip for python2
 	sudo apt-get remove python-pip
-=======
-	sudo apt-get install -y postgresql postgresql-contrib postgresql-server-dev-all
-	# remove pip for python2
-	sudo apt-get remove python-pip
-	# set python3 as the default
-	#sudo rm -f /usr/bin/python
-	#sudo ln -s /usr/bin/python3 /usr/bin/python
-	# install pip for python3
-	sudo apt-get install -y python3-pip
->>>>>>> origin/angular
 
 cleanmigrations: cleandb
 	rm -rf team1/squadster/migrations
@@ -49,21 +35,16 @@ setupdb:
 setuppython:
 	bash setup/pythonsetup.sh
 
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/angular
 cleanpython:
 	cd team1
 	rm -rf bin lib share pip* include
 
-<<<<<<< HEAD
 setupwebserver:
 	sudo cp nginx.conf /etc/nginx/nginx.conf
 	sudo nginx -s reload
 
-=======
->>>>>>> origin/angular
+
 # NOTE: this allows you to get around the peer authentication
 # but not using right now
 # instead connect with:
