@@ -86,11 +86,11 @@ class ReportedComments(models.Model):
     time_moderated = models.DateTimeField()
     
 class Tags(models.Model):
-	tag_id = models.AutoField(primary_key=True)
-	display_name = models.CharField(max_length=64)
+    tag_id = models.AutoField(primary_key=True)
+    display_name = models.CharField(max_length=64)
 
 class EventTags(models.Model):
-	event_id = models.ForeignKey('Event', on_delete=models.CASCADE)
-	tag_id = models.ForeignKey('Tags', on_delete=models.CASCADE)
-	
-	
+    event_id = models.ForeignKey('Event', on_delete=models.CASCADE)
+    tag_id = models.ForeignKey('Tags', on_delete=models.CASCADE)
+    
+    
