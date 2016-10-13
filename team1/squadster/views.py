@@ -1,6 +1,4 @@
-import os
-import datetime
-import logging
+import os, datetime, logging
 import httplib2
 import urllib.parse
 from urllib.error import HTTPError
@@ -24,10 +22,7 @@ from rest_framework.views import APIView
 
 import oauth2client
 from oauth2client.client import flow_from_clientsecrets
-from oauth2client import client, crypt
-from oauth2client import client
-from oauth2client import tools
-from oauth2client import file
+from oauth2client import client, crypt, tools, file
 from oauth2client.contrib import xsrfutil
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
@@ -164,7 +159,7 @@ def auth_return(request):
         access_token = access_token_info.access_token
         expires_seconds = access_token_info.expires_in
         
-        
+        # insert the new user record
         user = SquadsterUser.objects.create(
             email=email_address,
             # TODO api_key
@@ -188,6 +183,7 @@ def get_stored_credentials(user_id):
     
 def create_event(request):
     print('something')
+
 """
 def map(request):
     print('line5')
@@ -209,41 +205,8 @@ def my_events(request):
     else: 
         return HttpResponse(json.dumps('Forbidden'), content_type='text/json', 
     status=403)
-
-@csrf_exempt
-def events(request):
-    if request.method == "POST":
-        print("got a post")
-        
-        stream = BytesIO(request.body)
-        data = JSONParser().parse(stream)
-        
-        validator = EventSerializer(data=data)
-        if validator.is_valid():
-            stored = validator.save()
-            print(stored)
-        else:
-            print("INVALID EVENT")
-            print(validator.errors)
-        
-        
-        # enter data
-        # return success/failure response
-    elif request.method == "GET":
-        print("got a GET")
-        ret = []
-        for event in Event.objects.all():
-            serializers = EventSerializer(event)
-            print(serializers.data)
-        # query database for events with parameters
-    else:
-        # return failure
-        print("invalid http method")
-    
-    
-    print(request)
-    return JsonResponse({'hello': 'world'})
 """
+
 
 
 """
