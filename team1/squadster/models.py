@@ -46,7 +46,6 @@ class Admin(models.Model):
 
 
 # Event handling
-
 # TODO location postgres
 class Event(models.Model):
     event_id = models.AutoField(primary_key=True)

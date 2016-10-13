@@ -250,6 +250,7 @@ def events(request):
     squadsteruser: a SquadsterUser object
 """
 
+
 @csrf_exempt
 def create_api_key(squadsteruser):
     from rest_framework.authtoken.models import Token
