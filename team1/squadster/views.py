@@ -50,6 +50,7 @@ except ImportError:
 # on the API Access tab on the Google APIs
 # Console <http://code.google.com/apis/console>
 CLIENT_SECRETS = os.path.join(os.path.dirname(__file__), 'client_secrets.json')
+CLIENT_ID = '765648849014-kjgtsiqvfmkinasvc5tak562hr7k92sj.apps.googleusercontent.com'
 
 #should consider moving these secret files outside of project directory
 credential_dir = os.path.join(os.path.dirname(__file__), 'credentials')
@@ -95,7 +96,7 @@ def login(request):
                 raise crypt.AppIdentityError("Wrong hosted domain.")
         except crypt.AppIdentityError:
             # Invalid token
-            return Response('Token ID is invalid',status=status.HTTP_401_BAD_REQUEST)
+            return Response('Token ID is invalid',status= status.HTTP_401_UNAUTHORIZED)
         userid = idinfo['sub']
         # IF IT IS:
         # CHECK IF USER EMAIL EXISTS IN DATABASE
