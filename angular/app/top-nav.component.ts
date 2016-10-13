@@ -9,9 +9,9 @@ import {Component, ViewEncapsulation, OnInit} from "@angular/core";
           <img src="../images/SquadsterLogo.png" />
         </div>
         <ul>
-          <li><a routerLink="/list-view" routerLinkActive="active">List View</a></li>
-          <li><a routerLink="/create-event" routerLinkActive="active">Create Event</a></li>
-          <li><a routerLink="/my-events" routerLinkActive="active">My Events</a></li>
+          <li><a routerLink="app/list-view" routerLinkActive="active">List View</a></li>
+          <li><a routerLink="app/create-event" routerLinkActive="active">Create Event</a></li>
+          <li><a routerLink="app/my-events" routerLinkActive="active">My Events</a></li>
           <li><a class="icon ion-person"> My Account </a> </li>
         </ul>
       </div>

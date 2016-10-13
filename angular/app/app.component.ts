@@ -8,23 +8,23 @@ import {Component} from '@angular/core';
 
       <div id="nav">
         <topnav></topnav>
-        
+
       </div>
       <div id="body">
         <router-outlet></router-outlet>
       </div>
     </div>
-    
-    <ng2-sidebar class="sidebar" 
-        [(open)]="_open" 
+
+    <ng2-sidebar class="sidebar"
+        [(open)]="_open"
         [closeOnClickOutside]="true"
         [showOverlay]="true">
       <sidenav></sidenav>
     </ng2-sidebar>
 
     <a (click)="_toggleSidebar()" class="menu icon ion-navicon-round">Menu</a>
-    
-    <a routerLink="/create-event" routerLinkActive="active" class="create icon ion-plus-circled" title="Create a new event"></a>
+
+    <a routerLink="app/create-event" routerLinkActive="active" class="create icon ion-plus-circled" title="Create a new event"></a>
     `,
     styleUrls: ['app/styles/master-styles.css'],
     //state which components are used in the template.
