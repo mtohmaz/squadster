@@ -36,7 +36,7 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
         if serializer.is_valid():
             event = serializer.save()
             print(event)
-            return Response({"status":"success"})
+            return Response(event)
         else:
             return Response(serializer.errors, 
                 status=status.HTTP_400_BAD_REQUEST)
