@@ -20,6 +20,7 @@ from django.contrib.auth import logout as auth_logout, login
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.parsers import JSONParser
+from rest_framework.views import APIView
 
 import oauth2client
 from oauth2client.client import flow_from_clientsecrets
@@ -37,6 +38,7 @@ from squadster.models import SquadsterUser
 from team1 import settings
 
 
+
 try:
     import argparse
     flags = tools.argparser.parse_args([])
@@ -48,6 +50,7 @@ except ImportError:
 # on the API Access tab on the Google APIs
 # Console <http://code.google.com/apis/console>
 CLIENT_SECRETS = os.path.join(os.path.dirname(__file__), 'client_secrets.json')
+CLIENT_ID = '765648849014-kjgtsiqvfmkinasvc5tak562hr7k92sj.apps.googleusercontent.com'
 
 #should consider moving these secret files outside of project directory
 credential_dir = os.path.join(os.path.dirname(__file__), 'credentials')
@@ -62,11 +65,13 @@ FLOW = flow_from_clientsecrets(
             'https://www.googleapis.com/auth/userinfo.profile',
         ],
     redirect_uri='http://localhost/api/oauth2return')
-
+    
 def home(request):
     pass
 
 def login(request):
+    from oauth2client import client, crypt
+
     """Send a request to the UserInfo API to retrieve the user's information.
   Args:
     credentials: oauth2client.client.OAuth2Credentials instance to authorize the
@@ -77,50 +82,43 @@ def login(request):
     
     if 'google_token' in request.META:
         google_token = request.META['google_token']
-        
-        
-        
         # TODO ASK GOOGLE IF ITS VALID
-            # IF IT IS:
-                # CHECK IF USER EMAIL EXISTS IN DATABASE
-                    # IF NOT, ADD RECORD (and api key)
-                # NOW REDIRECT TO list-view
-            # IF NOT, REDIRECT TO AUTHORIZE_URL
-            
-    else:
-        pass
-        # NO TOKEN GIVEN IN REQUEST, REDIRECT TO AUTHORIZE_URL
-    
-    
-    
-    # TODO CHECK HERE IF USER EMAIL EXISTS & MAKE ENTRY IF NOT, 
-    #    THEN REDIRECT TO list-view
-    if not os.path.exists(credential_dir):
-        os.makedirs(credential_dir)
-    store = oauth2client.file.Storage(credential_path)
-    credentials = store.get() 
-    
-    
-    # CHECK IF SESSION IS VALID THROUGH CALL TO GOOGLE
-    #   IF YES, REDIRECT TO list-view
-    #   IF NO, REDIRECT TO AUTHORIZE_URL
-    print('line0')
-    if credentials is None or credentials.invalid == True:
-        print('line0.3')
-        FLOW.params['state'] = xsrfutil.generate_token(settings.SECRET_KEY,
+        # (Receive token by HTTPS POST)
+        print ('google token:' + str(google_token))
+        try:
+            idinfo = client.verify_id_token(google_token, CLIENT_ID)
+            # If multiple clients access the backend server:
+            if idinfo['aud'] not in [WEB_CLIENT_ID]:
+                raise crypt.AppIdentityError("Unrecognized client.")
+            if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+                raise crypt.AppIdentityError("Wrong issuer.")
+            if idinfo['hd'] != 'ncsu.edu':
+                raise crypt.AppIdentityError("Wrong hosted domain.")
+        except crypt.AppIdentityError:
+            # Invalid token
+            return Response('Token ID is invalid',status= status.HTTP_401_UNAUTHORIZED)
+        userid = idinfo['sub']
+        # IF IT IS:
+        # CHECK IF USER EMAIL EXISTS IN DATABASE
+        user = SquadsterUser.objects.filter(email=idinfo['email'])
+        # IF NOT, REDIRECT TO AUTHORIZE_URL
+        if user is None :
+            FLOW.params['state'] = xsrfutil.generate_token(settings.SECRET_KEY,
                                                    request.user)
                                                 
-        authorize_url = FLOW.step1_get_authorize_url()
-        print('line0.4')
-        print(authorize_url)
-        return HttpResponseRedirect(authorize_url)
+            authorize_url = FLOW.step1_get_authorize_url()
+            return HttpResponseRedirect(authorize_url)
+        # NOW REDIRECT TO list-view
+        else:
+            return HttpResponseRedirect("/list-view")
+            
     else:
-        print('line0.1')
-        get_user_info(credentials)
-        print('line0.2')
-    return HttpResponseRedirect("/list-view")
-
-
+        # NO TOKEN GIVEN IN REQUEST, REDIRECT TO AUTHORIZE_URL
+        FLOW.params['state'] = xsrfutil.generate_token(settings.SECRET_KEY,
+                                                   request.user)
+        authorize_url = FLOW.step1_get_authorize_url()
+        return HttpResponseRedirect(authorize_url)
+    
 def get_user_info(credentials):
     user_info_service = build(serviceName='oauth2', version='v2', http=credentials.authorize(httplib2.Http()))
     user_info = None
@@ -140,13 +138,12 @@ def get_user_info(credentials):
 
 
 def auth_return(request):
+    from .models import SquadsterUser
     #need to check for valid token before exchange, not working yet
     #if not xsrfutil.validate_token(settings.SECRET_KEY, request.GET['state'],request.user):
         #return  HttpResponseBadRequest()
     credentials = FLOW.step2_exchange(request.GET['code'])
-    print ('line3')
     user_info = get_user_info(credentials)
-    print ('line4')
     email_address = user_info.get('email')
     user_id = user_info.get('id')
     
@@ -179,6 +176,7 @@ def auth_return(request):
         #print(e)
     
     return HttpResponseRedirect("/list-view")
+
     
         
 

@@ -44,7 +44,10 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'rest_framework',
     'squadster',
-    
+    'oauth2_provider',
+    'social.apps.django_app.default',
+    'rest_framework_social_oauth2',
+
     'rest_framework.authtoken',
 ]
 
@@ -71,6 +74,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
                 
             ],
         },
@@ -79,6 +84,33 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'team1.wsgi.application'
 
+#added
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+        'rest_framework_social_oauth2.authentication.SocialAuthentication',
+    ),
+}
+
+AUTHENTICATION_BACKENDS = (
+    'social.backends.google.GoogleOAuth2',
+   'rest_framework_social_oauth2.backends.DjangoOAuth2',
+   'django.contrib.auth.backends.ModelBackend',
+)
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    )
+}
+
+GOOGLE_OAUTH2_CLIENT_ID = '765648849014-kjgtsiqvfmkinasvc5tak562hr7k92sj.apps.googleusercontent.com'
+GOOGLE_OAUTH2_CLIENT_SECRET = 'RkoVqy1I6cHYfKcybhY9NqV0'
+GOOGLE_OAUTH_EXTRA_SCOPE = ['https://www.googleapis.com/auth/calendar.readonly',
+            'https://www.googleapis.com/auth/userinfo.email',
+            'https://www.googleapis.com/auth/userinfo.profile',]
+GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {'access_type': 'offline'}
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
