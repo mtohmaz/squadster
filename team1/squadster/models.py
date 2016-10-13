@@ -46,6 +46,7 @@ class Admin(models.Model):
 
 
 # Event handling
+# TODO location postgres
 class Event(models.Model):
     event_id = models.AutoField(primary_key=True)
     host_id = models.ForeignKey('SquadsterUser', on_delete=models.DO_NOTHING)
@@ -54,6 +55,7 @@ class Event(models.Model):
     max_attendees = models.IntegerField()
     description = models.CharField(max_length=250)
 
+# add indexes to these columns
 class JoinedEvents(models.Model):
     user_id = models.ForeignKey('SquadsterUser', on_delete=models.DO_NOTHING)
     event_id = models.ForeignKey('Event', on_delete=models.DO_NOTHING)
