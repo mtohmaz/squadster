@@ -1,5 +1,7 @@
-import {Component} from '@angular/core'; //calls the decorater core component.
-//import {CreateService} from './create.service';
+import { Component } from '@angular/core';
+
+import { Event } from './event';
+import { EventService } from './event.service';
 
 export class Create {
   title: string;
@@ -36,12 +38,22 @@ export class Create {
 
     <label>Description: </label>
     <input [(ngModel)]="create.description">
+    <br><br>
+
+    <button (click)="add(create)">Add</button>
   </div>
   `,
-  styleUrls: ['app/styles/master-styles.css'],/*,
-  providers: [CreateService]*/
+  styleUrls: ['app/styles/master-styles.css'],
+  providers: [EventService]
 })
 export class CreateEventComponent {
+
+  events: Event[];
+
+  constructor (
+    private eventService: EventService
+  ) {}
+
   title = "Create Event";
   create: Create = {
     title: null,
@@ -52,8 +64,19 @@ export class CreateEventComponent {
     description: null
   };
 
-/*  constructor(createService: CreateService) {
-    this.create = createService.getCreate();
-  }
-*/
+  /*ngOnInit(): void {
+    this.route.params.forEach((params: Params) => {
+       let id = +params['id'];
+       this.eventService.getEvents(id)
+         .then(hero => this.event = event);
+       });
+    }*/
+
+   add(event: Create): void {
+     if (!event) { return; }
+     this.eventService.create(1, this.create.title, this.create.eventDate, this.create.maxAttendees);
+       /*.then(event => {
+         this.events.push(event);
+       });*/
+   }
 }

@@ -7,7 +7,13 @@ import { Event } from './event';
     <div *ngIf="event">
       <h2>{{event.title}} details:</h2>
       <div>
+        <label>Event ID:</label> {{event.event_id}}
+      </div>
+      <div>
         <label>Name of Event:</label> {{event.title}}
+      </div>
+      <div>
+        <label>Host Name:</label> {{event.host_id}}
       </div>
       <div>
         <label>Location:</label> {{event.location}}
@@ -16,13 +22,16 @@ import { Event } from './event';
         <label>Description:</label> {{event.description}}
       </div>
       <div>
-        <label>Date:</label> {{event.startDate}}
+        <label>Date:</label> {{event.date}}
       </div>
       <div>
         <label>Time:</label> {{event.startTime}}
       </div>
       <div>
         <label>Attendees so far:</label> {{event.currentAttendees}}/{{event.maxAttendees}}
+      </div>
+      <div>
+        <label>Max Attendees:</label> {{event.max_attendees}}
       </div>
     </div>
   `

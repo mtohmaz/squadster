@@ -1,11 +1,12 @@
 export class Event {
-  id: number;
+  event_id: number;
+  host_id: number;
   title: string;
-  hostName: string;
-  location: string;
-  startDate: string;
-  startTime: string;
-  currentAttendees: number;
-  maxAttendees: number;
-  description: string;
+  //hostName: string;
+  //location: string;
+  date: string;
+  //startTime: string;
+  //currentAttendees: number;
+  max_attendees: number;
+  //description: string;
 }

@@ -9,7 +9,7 @@ import { LogInComponent } from './log-in.component';
 const appRoutes: Routes = [
   {
     path: '',
-    redirectTo: 'log-in',
+    redirectTo: 'app/list-view',
     pathMatch: 'full'
   },
   {
@@ -17,15 +17,15 @@ const appRoutes: Routes = [
     component: LogInComponent
   },
   {
-    path: 'list-view',
+    path: 'app/list-view',
     component: ListViewComponent
   },
   {
-    path: 'create-event',
+    path: 'app/create-event',
     component: CreateEventComponent
   },
   {
-    path: 'my-events',
+    path: 'app/my-events',
     component: MyEventsComponent
   }
 ];
