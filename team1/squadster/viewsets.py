@@ -11,10 +11,11 @@ from rest_framework.response import Response
 
 
 from .models import *
+from .authenticators import GoogleSessionAuthentication
 
 class UserViewSet(viewsets.ViewSet,APIView):
-    #authentication_classes = (SessionAuthentication, BasicAuthentication)
-    permission_classes = (IsAuthenticated)
+    authentication_classes = (GoogleSessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
     lookup_field = 'user_id'
     
     def create(self, request):
@@ -30,8 +31,8 @@ class UserViewSet(viewsets.ViewSet,APIView):
 
 
 class EventViewSet(viewsets.ModelViewSet, APIView):
-    #authentication_classes = (SessionAuthentication, BasicAuthentication)
-    permission_classes = (IsAuthenticated)
+    authentication_classes = (GoogleSessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = EventSerializer
     lookup_field = 'event_id'
     
@@ -41,7 +42,7 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
         if serializer.is_valid():
             event = serializer.save()
             print(event)
-            return Response(event)
+            return Response(serializer.data)
         else:
             return Response(serializer.errors, 
                 status=status.HTTP_400_BAD_REQUEST)
@@ -54,8 +55,8 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
     
 
 class JoinedEventsViewSet(viewsets.ModelViewSet,APIView):
-    #authentication_classes = (SessionAuthentication, BasicAuthentication)
-    permission_classes = (IsAuthenticated)
+    authentication_classes = (SessionAuthentication, BasicAuthentication,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = JoinedEventsSerializer
     
 
@@ -76,8 +77,8 @@ class JoinedEventsViewSet(viewsets.ModelViewSet,APIView):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
-    permission_classes = (IsAuthenticated)
+    authentication_classes = (SessionAuthentication, BasicAuthentication,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = CommentSerializer
     lookup_field = 'comment_id'
     
