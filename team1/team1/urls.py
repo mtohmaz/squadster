@@ -35,9 +35,25 @@ urlpatterns = [
     # https://docs.djangoproject.com/en/1.10/topics/http/urls/#named-groups
     url(r'^api/events/$', viewsets.EventViewSet.as_view({
             'get':'list',
-            'post':'create'})),
-    url(r'^api/events/[0-9]+$^', viewsets.EventViewSet.as_view({
-            'get':'retrieve'})),
+            'post':'create'}),
+        name='event-list'),
+    url(r'^api/events/(?P<event_id>[0-9]+)$', viewsets.EventViewSet.as_view({
+            'get':'retrieve'}),
+        name='event-detail'),
+    
+    url(r'^api/events/(?P<event_id>[0-9]+)/comments/$', viewsets.CommentViewSet.as_view({
+            'get':'list',
+            'post':'create'}),
+        name='event-comment-list'),
+    
+    # NEW NOT SURE IF THESE WORK
+    url(r'^api/events/(?P<event_id>[0-9]+)/comments/(?P<comment_id>[0-9]+)$', viewsets.CommentViewSet.as_view({
+            'get':'retrieve'}),
+        name='event-comment-detail'),
+    url(r'^api/events/(?P<event_id>[0-9]+)/comments/(?P<comment_id>[0-9]+)/children/$', viewsets.CommentViewSet.as_view({
+            'get':'list'}),
+        name='event-comment-children-list'),
+    # END NEW
     
     url(r'^api/joinedevents/$', viewsets.JoinedEventsViewSet.as_view({
             'get':'list',
