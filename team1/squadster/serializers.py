@@ -1,4 +1,6 @@
+
 from rest_framework import serializers
+from django.urls import reverse
 
 from .models import *
 
@@ -17,6 +19,18 @@ class SquadsterUserSerializer(serializers.ModelSerializer):
 
 
 class EventSerializer(serializers.ModelSerializer):
+    """comments = serializers.HyperlinkedIdentityField(
+        many=True,
+        read_only=True,
+        view_name='event-comment-list',
+        lookup_field='parent_event',
+        lookup_url_kwarg='event_id')
+    """
+    #comments = serializers.SerializerMethodField()
+    
+    #def get_comments(self, event):
+    #    return reverse('event-comments', kwargs={'event_id':event.event_id})
+    
     class Meta:
         model = Event
         fields = [
@@ -24,7 +38,9 @@ class EventSerializer(serializers.ModelSerializer):
             'host_id',
             'title',
             'date',
-            'max_attendees']
+            'max_attendees',
+            #'comments',
+        ]
         read_only_fields = ['event_id']
     
     def create(self, validated_data):
@@ -42,10 +58,28 @@ class JoinedEventsSerializer(serializers.ModelSerializer):
         read_only_fields = ['user_id', 'event_id']
         
 
-class EventSearchSerializer(serializers.Serializer):
-    start_date = serializers.DateTimeField()
-    host_id = serializers.IntegerField()
-    end_date = serializers.DateTimeField()
-    description = serializers.CharField(max_length=250)
-    max_attendees = serializers.IntegerField()
+class CommentSerializer(serializers.ModelSerializer):
+    children = serializers.HyperlinkedIdentityField(
+        many=True, read_only=True, view_name='event-comment-children-list')
+    
+    class Meta:
+        model = Comment
+        fields = [
+            'comment_id',
+            'parent_event',
+            'author',
+            'date_added',
+            'text',
+            'parent_comment',
+            'children'
+        ]
+        
+        read_only_fields = [
+            'comment_id',
+            'parent_event',
+            'author',
+            'date_added',
+            'text', # allow editing the text in future? would also need date_edited
+            'parent_comment'
+        ]
     
