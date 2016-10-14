@@ -18,14 +18,14 @@
   margin: 0;
   padding: 0;
   display: inline;
-  margin-left: 20%;
+  margin-left: 150px;
 }
 
 .menu {
   margin-top: 50px;
 }
 
-.icon {
+#createicon {
   font-size: 50px;
   position: fixed;
   bottom: 5%;
@@ -41,19 +41,4 @@
   position: fixed;
   bottom: 5%;
   right: 5%;
-}
-
-.create {
-  font-size: 50px;
-  position: fixed;
-  bottom: 5%;
-  right: 5%;
-}
-
-.menu {
-  margin-top: 50px;
-}
-
-.sidebar{
-  margin-top: 100px;
 }

@@ -2,7 +2,7 @@ angular/npm-debug.log
 angular/node_modules/
 angular/app/*.js
 angular/app/*.map
-
+team1/.Python
 # ignore sqlite files
 **/*.sqlite3
 
