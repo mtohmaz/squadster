@@ -163,18 +163,22 @@ def auth_return(request):
         print(access_token_info)
         access_token = access_token_info.access_token
         expires_seconds = access_token_info.expires_in
-        
-        
-        user = SquadsterUser.objects.create(
+        username = email.split('@').[0]
+        print('about to create new user')
+        newUser = SquadsterUser.objects.create(
+            username=username,
             email=email_address,
-            # TODO api_key
-            api_key="",
             google_session_token=access_token,
             google_session_timeout=timedelta(seconds=expires_seconds),
             google_session_last_auth=timezone.now()
         )
-        #print(e)
-    
+        print('newUser created')
+        #create api key for user and save to database
+        key = create_api_key(newUser)
+        print('api key obtained')
+        newUser.api_key = key
+        newUser.save()
+        newUser.api_key_last_auth = timezone.now()
     return HttpResponseRedirect("/list-view")
 
     
@@ -251,11 +255,13 @@ def events(request):
 """
 
 @csrf_exempt
-def create_api_key(squadsteruser):
+def create_api_key(newUser):
     from rest_framework.authtoken.models import Token
-    
-    token = Token.objects.create(user=squadsteruser)
-    print(token.key)
+    print('about to create token')
+    token = Token.objects.create(user=newUser)
+    print('token created')
+    print('API Key: ' + str(token))
+    return token
 
 def get_api_key(user_id):
     pass

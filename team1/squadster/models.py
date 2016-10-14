@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+
 """
 from oauth2client.contrib.django_orm import FlowField
 from oauth2client.contrib.django_orm import CredentialsField
@@ -16,13 +17,14 @@ class FlowModel(models.Model):
 
 
 # User handling
-class SquadsterUser(models.Model):
+class SquadsterUser(User):
     user_id = models.AutoField(primary_key=True)
+    # we actually don' use password, this is just to prevent django to throw errors
     email = models.EmailField(unique=True)
     enabled = models.BooleanField(default=True)
-    
     api_key = models.CharField(blank=True, max_length=64)
     api_key_last_auth = models.DateTimeField(default=None, null=True)
+    
     
     # google auth things
     google_session_token = models.CharField(blank=True, max_length=4096)
@@ -46,8 +48,6 @@ class Admin(models.Model):
 
 
 # Event handling
-
-# TODO location postgres
 class Event(models.Model):
     event_id = models.AutoField(primary_key=True)
     host_id = models.ForeignKey('SquadsterUser', on_delete=models.DO_NOTHING)
@@ -56,7 +56,6 @@ class Event(models.Model):
     max_attendees = models.IntegerField()
     description = models.CharField(max_length=250)
 
-# add indexes to these columns
 class JoinedEvents(models.Model):
     user_id = models.ForeignKey('SquadsterUser', on_delete=models.DO_NOTHING)
     event_id = models.ForeignKey('Event', on_delete=models.DO_NOTHING)
