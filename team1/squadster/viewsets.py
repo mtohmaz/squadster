@@ -20,7 +20,7 @@ class UserViewSet(viewsets.ViewSet,APIView):
         if serializer.is_valid():
             user = serializer.save()
             print(user)
-            return Response({"status":"success"})
+            return Response({user})
         else:
 
             return Response(serializer.errors,
@@ -58,7 +58,7 @@ class JoinedEventsViewSet(viewsets.ModelViewSet,APIView):
         
         if serializer.is_valid():
             joined = serializer.save()
-            return Response({"status":"success"})
+            return Response({joined})
         else:
             return Response(serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST)
