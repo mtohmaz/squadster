@@ -15,14 +15,16 @@ from .models import *
 class UserViewSet(viewsets.ViewSet,APIView):
     #authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated)
+    lookup_field = 'user_id'
+    
     def create(self, request):
         serializer = SquadsterUserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             print(user)
+
             return Response({user})
         else:
-
             return Response(serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST)
 
@@ -31,6 +33,9 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
     #authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated)
     serializer_class = EventSerializer
+    lookup_field = 'event_id'
+    
+    
     def create(self, request):
         serializer = EventSerializer(data=request.data)
         if serializer.is_valid():
@@ -53,6 +58,7 @@ class JoinedEventsViewSet(viewsets.ModelViewSet,APIView):
     permission_classes = (IsAuthenticated)
     serializer_class = JoinedEventsSerializer
     
+
     def create(self, request):
         serializer = JoinedEventsSerializer(data=request.data)
         
@@ -68,3 +74,30 @@ class JoinedEventsViewSet(viewsets.ModelViewSet,APIView):
         queryset = JoinedEvents.objects.all()
         return queryset
 
+
+class CommentViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated)
+    serializer_class = CommentSerializer
+    lookup_field = 'comment_id'
+    
+    def list(self, request, event_id):
+        req_event_id = event_id
+        #req_event_id = request.GET.get('event_id', '')
+        comment = Comment.objects.get(parent_event=req_event_id)
+        
+        #children = Comment.objects \
+        #    .filter(parent_comment=req_event_id) \
+        #    .order_by('date_added')
+        
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data)
+        #.select_related('parent_comment')
+        
+    
+    def get_queryset(self):
+        id = self.kwargs['event_id']
+        
+        return Comment.objects.filter(event_id=id)
+        
+        

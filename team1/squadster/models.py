@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import User
+
 
 """
 from oauth2client.contrib.django_orm import FlowField
@@ -49,6 +51,7 @@ class Admin(models.Model):
 
 
 # Event handling
+# TODO location postgres
 class Event(models.Model):
     event_id = models.AutoField(primary_key=True)
     host_id = models.ForeignKey('SquadsterUser', on_delete=models.DO_NOTHING)
@@ -63,11 +66,12 @@ class JoinedEvents(models.Model):
 
 class Comment(models.Model):
     comment_id = models.AutoField(primary_key=True)
-    parent_event = models.ForeignKey('Event', on_delete=models.CASCADE)
+    parent_event = models.ForeignKey('Event', on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey('SquadsterUser', on_delete=models.DO_NOTHING)
     date_added = models.DateTimeField(auto_now_add=True)
     text = models.CharField(max_length=250)
     moderated = models.BooleanField(default=False)
+    parent_comment = models.ForeignKey('Comment', on_delete=models.CASCADE, null=True, related_name='children')
 
 
 # Report handling
