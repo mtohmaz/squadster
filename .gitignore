@@ -28,3 +28,6 @@ team1/squadster/angularjs/npm-debug.log
 
 # don't check in credentials generated
 team1/squadster/credentials/
+
+# webstorm files
+.idea/*

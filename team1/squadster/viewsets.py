@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from .models import *
 
 class UserViewSet(viewsets.ViewSet,APIView):
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    #authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated)
     lookup_field = 'user_id'
     
@@ -22,15 +22,15 @@ class UserViewSet(viewsets.ViewSet,APIView):
         if serializer.is_valid():
             user = serializer.save()
             print(user)
-            return Response(user)
-        else:
 
+            return Response({user})
+        else:
             return Response(serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST)
 
 
 class EventViewSet(viewsets.ModelViewSet, APIView):
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    #authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated)
     serializer_class = EventSerializer
     lookup_field = 'event_id'
@@ -54,19 +54,20 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
     
 
 class JoinedEventsViewSet(viewsets.ModelViewSet,APIView):
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    #authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated)
     serializer_class = JoinedEventsSerializer
     
-#    def create(self, request):
-#        serializer = JoinedEventsSerializer(data=request.data)
-#        
-#        if serializer.is_valid():
-#            joined = serializer.save()
-#            return Response({"status":"success"})
-#        else:
-#            return Response(serializer.errors,
-#                status=status.HTTP_400_BAD_REQUEST)
+
+    def create(self, request):
+        serializer = JoinedEventsSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            joined = serializer.save()
+            return Response({joined})
+        else:
+            return Response(serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST)
     
     def get_queryset(self):
         # filter to this self.request.user.get('user_id') or something similar
