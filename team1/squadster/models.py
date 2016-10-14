@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import User
 
 """
 from oauth2client.contrib.django_orm import FlowField
@@ -17,15 +16,17 @@ class FlowModel(models.Model):
 
 
 # User handling
-class SquadsterUser(User):
+class SquadsterUser(models.Model):
     user_id = models.AutoField(primary_key=True)
+    username = models.CharField(max_length=64, unique = True, default = '')
     # we actually don' use password, this is just to prevent django to throw errors
     email = models.EmailField(unique=True)
     enabled = models.BooleanField(default=True)
-    api_key = models.CharField(blank=True, max_length=64)
     api_key_last_auth = models.DateTimeField(default=None, null=True)
-    
-    
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+    is_anonymous = False
+    is_authenticated = True
     # google auth things
     google_session_token = models.CharField(blank=True, max_length=4096)
     google_session_timeout = models.DurationField(default=None, null=True)

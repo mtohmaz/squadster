@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from .models import *
 
 class UserViewSet(viewsets.ViewSet,APIView):
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    #authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated)
     def create(self, request):
         serializer = SquadsterUserSerializer(data=request.data)
@@ -28,7 +28,7 @@ class UserViewSet(viewsets.ViewSet,APIView):
 
 
 class EventViewSet(viewsets.ModelViewSet, APIView):
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    #authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated)
     serializer_class = EventSerializer
     def create(self, request):
@@ -49,7 +49,7 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
     
 
 class JoinedEventsViewSet(viewsets.ModelViewSet,APIView):
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    #authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated)
     serializer_class = JoinedEventsSerializer
     
