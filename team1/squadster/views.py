@@ -19,6 +19,8 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
 import oauth2client
 from oauth2client.client import flow_from_clientsecrets
@@ -75,9 +77,11 @@ def login(request):
     User information as a dict.
   """
     print('request:' + str(request))
-    if 'google_token' in request.META:
+    #if 'google_token' in request.META:
+    if 'google_token' in request.COOKIES:
         print('google token in request')
-        google_token = request.META['google_token']
+        google_token = request.COOKIES.get('google_token')
+        #google_token = request.session['google_token']
         # TODO ASK GOOGLE IF ITS VALID
         # (Receive token by HTTPS POST)
         print ('google token:' + str(google_token))
@@ -90,23 +94,27 @@ def login(request):
                 raise crypt.AppIdentityError("Wrong issuer.")
             if idinfo['hd'] != 'ncsu.edu':
                 raise crypt.AppIdentityError("Wrong hosted domain.")
-        except crypt.AppIdentityError:
+        except crypt.AppIdentityError as e:
             # Invalid token
-            return Response('Token ID is invalid',status= status.HTTP_401_UNAUTHORIZED)
+            return HttpResponse('Token ID is invalid: ' +  str(e),status= status.HTTP_401_UNAUTHORIZED)
+        
         userid = idinfo['sub']
         # IF IT IS:
         # CHECK IF USER EMAIL EXISTS IN DATABASE
         user = get_user_model().objects.filter(email=idinfo['email'])
         # IF NOT, REDIRECT TO AUTHORIZE_URL
         if user is None :
-            FLOW.params['state'] = xsrfutil.generate_token(settings.SECRET_KEY,
-                                                   request.user)
-                                                
+            FLOW.params['state'] = xsrfutil.generate_token(
+                settings.SECRET_KEY, request.user)
+            
             authorize_url = FLOW.step1_get_authorize_url()
             return HttpResponseRedirect(authorize_url)
         # NOW REDIRECT TO list-view
         else:
-            return HttpResponseRedirect("/list-view")
+            response = HttpResponseRedirect("/api/events/")
+            #print(credentials)
+            #request.session['google_token'] = credentials.get_access_token().access_token
+            return response
             
     else:
         print('no google token in request')
@@ -142,13 +150,16 @@ def auth_return(request):
     # CHECK IF IN DATABASE YET, IF NOT, CREATE ENTRY
     print('credentials: ' + str(credentials))
     print('user_info: ' + str(user_info))
-    
-    
+    print('id_token: ' + str(credentials.id_token))
+    id_token = credentials.token_response['id_token']
     try:
         print('checking if email exists')
         user = get_user_model().objects.get(email=email_address)
         print('email exist... Proceed to list-view')
-        return HttpResponseRedirect("/list-view")
+        
+        response = HttpResponseRedirect("/api/events/")
+        response.set_cookie('google_token', id_token)
+        return response
     except get_user_model().DoesNotExist as e:
         # CREATE A NEW USER RECORD
         print('email not exist')
@@ -156,13 +167,13 @@ def auth_return(request):
         print(access_token_info)
         access_token = access_token_info.access_token
         expires_seconds = access_token_info.expires_in
-
+        
         username = email_address.split('@')[0]
         print('about to create new user')
         newUser = get_user_model().objects.create(
             username=username,
             email=email_address,
-            google_session_token=access_token,
+            google_session_token=id_token,
             google_session_timeout=timedelta(seconds=expires_seconds),
             google_session_last_auth=timezone.now()
         )
@@ -172,10 +183,13 @@ def auth_return(request):
         print('api key obtained')
         newUser.api_key_last_auth = timezone.now()
         newUser.save()
-        return HttpResponseRedirect("/list-view")
-
-    
         
+        response = HttpResponseRedirect("/api/events/")
+        response.set_cookie('google_token', id_token)
+        # credentials.get_access_token().access_token
+        return response
+    
+
 
 def store_credentials(user_id, email):
     print('something')

@@ -11,9 +11,10 @@ from rest_framework.response import Response
 
 
 from .models import *
+from .authenticators import GoogleSessionAuthentication
 
 class UserViewSet(viewsets.ViewSet,APIView):
-    authentication_classes = (SessionAuthentication, BasicAuthentication,)
+    authentication_classes = (GoogleSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     lookup_field = 'user_id'
     
@@ -30,7 +31,7 @@ class UserViewSet(viewsets.ViewSet,APIView):
 
 
 class EventViewSet(viewsets.ModelViewSet, APIView):
-    authentication_classes = (SessionAuthentication, BasicAuthentication,)
+    authentication_classes = (GoogleSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = EventSerializer
     lookup_field = 'event_id'
@@ -41,7 +42,7 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
         if serializer.is_valid():
             event = serializer.save()
             print(event)
-            return Response(event)
+            return Response(serializer.data)
         else:
             return Response(serializer.errors, 
                 status=status.HTTP_400_BAD_REQUEST)

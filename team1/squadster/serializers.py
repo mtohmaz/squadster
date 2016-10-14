@@ -26,10 +26,10 @@ class EventSerializer(serializers.ModelSerializer):
         lookup_field='parent_event',
         lookup_url_kwarg='event_id')
     """
-    comments = serializers.SerializerMethodField()
+    #comments = serializers.SerializerMethodField()
     
-    def get_comments(self, event):
-        return reverse('event-comments', kwargs={'event_id':event.event_id})
+    #def get_comments(self, event):
+    #    return reverse('event-comments', kwargs={'event_id':event.event_id})
     
     class Meta:
         model = Event
@@ -39,7 +39,7 @@ class EventSerializer(serializers.ModelSerializer):
             'title',
             'date',
             'max_attendees',
-            'comments',
+            #'comments',
         ]
         read_only_fields = ['event_id']
     
