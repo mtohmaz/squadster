@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 TEMPLATES_PATH = os.path.join(BASE_DIR, 'templates')
 
-
+AUTH_USER_MODEL = 'squadster.SquadsterUser'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'social.apps.django_app.default',
     'rest_framework_social_oauth2',
-
     'rest_framework.authtoken',
 ]
 
@@ -87,8 +86,10 @@ WSGI_APPLICATION = 'team1.wsgi.application'
 #added
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'oauth2_provider.ext.rest_framework.OAuth2Authentication',
-        'rest_framework_social_oauth2.authentication.SocialAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        #'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+        #'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ),
 }
 
@@ -111,7 +112,6 @@ GOOGLE_OAUTH_EXTRA_SCOPE = ['https://www.googleapis.com/auth/calendar.readonly',
             'https://www.googleapis.com/auth/userinfo.email',
             'https://www.googleapis.com/auth/userinfo.profile',]
 GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {'access_type': 'offline'}
-
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
@@ -128,7 +128,6 @@ DATABASES = {
         },
     },
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators

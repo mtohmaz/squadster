@@ -13,14 +13,14 @@ from rest_framework.response import Response
 from .models import *
 
 class UserViewSet(viewsets.ViewSet,APIView):
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    #authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated)
     def create(self, request):
         serializer = SquadsterUserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             print(user)
-            return Response({"status":"success"})
+            return Response({user})
         else:
 
             return Response(serializer.errors,
@@ -28,7 +28,7 @@ class UserViewSet(viewsets.ViewSet,APIView):
 
 
 class EventViewSet(viewsets.ModelViewSet, APIView):
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    #authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated)
     serializer_class = EventSerializer
     def create(self, request):
@@ -49,7 +49,7 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
     
 
 class JoinedEventsViewSet(viewsets.ModelViewSet,APIView):
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    #authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated)
     serializer_class = JoinedEventsSerializer
     
@@ -58,7 +58,7 @@ class JoinedEventsViewSet(viewsets.ModelViewSet,APIView):
         
         if serializer.is_valid():
             joined = serializer.save()
-            return Response({"status":"success"})
+            return Response({joined})
         else:
             return Response(serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST)

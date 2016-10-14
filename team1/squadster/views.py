@@ -34,7 +34,7 @@ from oauth2client.client import FlowExchangeError
 from googleapiclient.discovery import build
 
 #from squadster.models import CredentialsModel
-from squadster.models import SquadsterUser
+from django.contrib.auth import get_user_model
 from team1 import settings
 
 
@@ -79,8 +79,9 @@ def login(request):
   Returns:
     User information as a dict.
   """
-    
+    print('request:' + str(request))
     if 'google_token' in request.META:
+        print('google token in request')
         google_token = request.META['google_token']
         # TODO ASK GOOGLE IF ITS VALID
         # (Receive token by HTTPS POST)
@@ -100,7 +101,7 @@ def login(request):
         userid = idinfo['sub']
         # IF IT IS:
         # CHECK IF USER EMAIL EXISTS IN DATABASE
-        user = SquadsterUser.objects.filter(email=idinfo['email'])
+        user = get_user_model().objects.filter(email=idinfo['email'])
         # IF NOT, REDIRECT TO AUTHORIZE_URL
         if user is None :
             FLOW.params['state'] = xsrfutil.generate_token(settings.SECRET_KEY,
@@ -113,10 +114,12 @@ def login(request):
             return HttpResponseRedirect("/list-view")
             
     else:
+        print('no google token in request')
         # NO TOKEN GIVEN IN REQUEST, REDIRECT TO AUTHORIZE_URL
         FLOW.params['state'] = xsrfutil.generate_token(settings.SECRET_KEY,
                                                    request.user)
         authorize_url = FLOW.step1_get_authorize_url()
+        print('about to be redirected to google oauth2')
         return HttpResponseRedirect(authorize_url)
     
 def get_user_info(credentials):
@@ -128,8 +131,6 @@ def get_user_info(credentials):
     except HTTPError as e:
         logging.error('An error occurred: %s', e)
     if user_info and user_info.get('id'):
-        print (user_info)
-        print ('line2')
         return user_info
     else:
         raise NoUserIdException()
@@ -138,17 +139,10 @@ def get_user_info(credentials):
 
 
 def auth_return(request):
-    from .models import SquadsterUser
-    #need to check for valid token before exchange, not working yet
-    #if not xsrfutil.validate_token(settings.SECRET_KEY, request.GET['state'],request.user):
-        #return  HttpResponseBadRequest()
     credentials = FLOW.step2_exchange(request.GET['code'])
     user_info = get_user_info(credentials)
     email_address = user_info.get('email')
     user_id = user_info.get('id')
-    
-    #store = oauth2client.file.Storage(credential_path)
-    #store.put(credentials)
     
     # CHECK IF IN DATABASE YET, IF NOT, CREATE ENTRY
     print('credentials: ' + str(credentials))
@@ -156,26 +150,33 @@ def auth_return(request):
     
     
     try:
-        user = SquadsterUser.objects.get(email=email_address)
-    except ObjectDoesNotExist as e:
+        print('checking if email exists')
+        user = get_user_model().objects.get(email=email_address)
+        print('email exist... Proceed to list-view')
+        return HttpResponseRedirect("/list-view")
+    except get_user_model().DoesNotExist as e:
         # CREATE A NEW USER RECORD
+        print('email not exist')
         access_token_info = credentials.get_access_token()
         print(access_token_info)
         access_token = access_token_info.access_token
         expires_seconds = access_token_info.expires_in
-        
-        
-        user = SquadsterUser.objects.create(
+        username = email_address.split('@')[0]
+        print('about to create new user')
+        newUser = get_user_model().objects.create(
+            username=username,
             email=email_address,
-            # TODO api_key
-            api_key="",
             google_session_token=access_token,
             google_session_timeout=timedelta(seconds=expires_seconds),
             google_session_last_auth=timezone.now()
         )
-        #print(e)
-    
-    return HttpResponseRedirect("/list-view")
+        print('newUser created')
+        #create api key for user and save to database
+        key = create_api_key(newUser)
+        print('api key obtained')
+        newUser.api_key_last_auth = timezone.now()
+        newUser.save()
+        return HttpResponseRedirect("/list-view")
 
     
         
@@ -251,11 +252,13 @@ def events(request):
 """
 
 @csrf_exempt
-def create_api_key(squadsteruser):
+def create_api_key(newUser):
     from rest_framework.authtoken.models import Token
-    
-    token = Token.objects.create(user=squadsteruser)
-    print(token.key)
+    print('about to create token')
+    token = Token.objects.create(user=newUser)
+    print('token created')
+    print('API Key: ' + str(token))
+    return token
 
 def get_api_key(user_id):
     pass
