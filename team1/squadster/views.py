@@ -55,6 +55,10 @@ credential_path = os.path.join(credential_dir,'userCredentials.json')
 
 
 
+def login(request):
+    pass
+
+"""
 FLOW = flow_from_clientsecrets(
     CLIENT_SECRETS,
     scope= ['https://www.googleapis.com/auth/calendar.readonly',
@@ -66,16 +70,10 @@ FLOW = flow_from_clientsecrets(
 def home(request):
     pass
 
+
 def login(request):
     from oauth2client import client, crypt
 
-    """Send a request to the UserInfo API to retrieve the user's information.
-  Args:
-    credentials: oauth2client.client.OAuth2Credentials instance to authorize the
-                 request.
-  Returns:
-    User information as a dict.
-  """
     print('request:' + str(request))
     #if 'google_token' in request.META:
     if 'google_token' in request.COOKIES:
@@ -88,7 +86,7 @@ def login(request):
         try:
             idinfo = client.verify_id_token(google_token, CLIENT_ID)
             # If multiple clients access the backend server:
-            if idinfo['aud'] not in [WEB_CLIENT_ID]:
+            if idinfo['aud'] not in [CLIENT_ID]:
                 raise crypt.AppIdentityError("Unrecognized client.")
             if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
                 raise crypt.AppIdentityError("Wrong issuer.")
@@ -188,8 +186,7 @@ def auth_return(request):
         response.set_cookie('google_token', id_token)
         # credentials.get_access_token().access_token
         return response
-    
-
+"""
 
 def store_credentials(user_id, email):
     print('something')
