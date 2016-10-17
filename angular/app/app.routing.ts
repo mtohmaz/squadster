@@ -4,7 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { ListViewComponent }   from './list-view.component';
 import { CreateEventComponent } from './create-event.component';
 import { MyEventsComponent } from './my-events.component';
-import { LogInComponent } from './log-in.component';
+import { LoginComponent } from './login.component';
 
 const appRoutes: Routes = [
   {
@@ -13,8 +13,8 @@ const appRoutes: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'log-in',
-    component: LogInComponent
+    path: 'app/login',
+    component: LoginComponent
   },
   {
     path: 'app/list-view',
