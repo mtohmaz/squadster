@@ -21,6 +21,7 @@
     "@angular/router": "3.0.0",
     "@angular/upgrade": "2.0.0",
     "angular2-in-memory-web-api": "0.0.20",
+    "angular2-jwt": "^0.1.24",
     "bootstrap": "^3.3.6",
     "core-js": "^2.4.1",
     "ng2-bootstrap": "^1.1.5",
