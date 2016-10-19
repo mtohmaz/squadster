@@ -4,17 +4,22 @@ import {Component, ViewEncapsulation, OnInit} from "@angular/core";
     selector: "topnav",
     //templateUrl: "app/main/topNavbar/TopNavbar.html",
     template: `
+    <div class="row">
       <div id="topnav">
-        <div id="logo">
-          <img src="../images/SquadsterLogo.png" />
+        <div class="col-xs-3 element">
+            <a routerLink="app/list-view" routerLinkActive="active">List View</a>
         </div>
-        <ul>
-          <li><a routerLink="app/list-view" routerLinkActive="active">List View</a></li>
-          <li><a routerLink="app/create-event" routerLinkActive="active">Create Event</a></li>
-          <li><a routerLink="app/my-events" routerLinkActive="active">My Events</a></li>
-          <li><a routerLink="app/login" routerlinkActive="active" class="icon ion-person">My Account</a></li>
-        </ul>
+        <div class="col-xs-3 element">
+            <a routerLink="app/create-event" routerLinkActive="active">Create Event</a>
+        </div>
+        <div class="col-xs-3 element">
+            <a routerLink="app/my-events" routerLinkActive="active">My Events</a>
+        </div>
+        <div class="col-xs-3 element">
+            <a routerLink="app/login" routerLinkActive="active" class="icon ion-person"> My Account </a>
+        </div>
       </div>
+    </div>
     `,
     encapsulation: ViewEncapsulation.None,
     styleUrls: ['app/styles/top-nav.component.css'],
