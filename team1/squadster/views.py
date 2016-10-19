@@ -58,7 +58,7 @@ credential_path = os.path.join(credential_dir,'userCredentials.json')
 def login(request):
     pass
 
-"""
+
 FLOW = flow_from_clientsecrets(
     CLIENT_SECRETS,
     scope= ['https://www.googleapis.com/auth/calendar.readonly',
@@ -186,7 +186,7 @@ def auth_return(request):
         response.set_cookie('google_token', id_token)
         # credentials.get_access_token().access_token
         return response
-"""
+
 
 def store_credentials(user_id, email):
     print('something')

@@ -26,6 +26,8 @@ urlpatterns = [
     url(r'^api/auth/', views.login),
     
     #url(r'^auth/', views.auth_login, name='auth_login'),
+    url(r'^social/', include('social.apps.django_app.urls', namespace='social')),
+    url(r'^auth/', include('rest_framework_social_oauth2.urls')),
     url(r'^api/admin/', admin.site.urls),
     #url(r'^map/', views.map, name='map'),
     #url(r'^api/oauth2return', views.auth_return, name='oauth2return'),
