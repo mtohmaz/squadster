@@ -103,13 +103,13 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-
+PROPRIETARY_BACKEND_NAME = 'Google'
 GOOGLE_OAUTH2_CLIENT_ID = '765648849014-kjgtsiqvfmkinasvc5tak562hr7k92sj.apps.googleusercontent.com'
 GOOGLE_OAUTH2_CLIENT_SECRET = 'RkoVqy1I6cHYfKcybhY9NqV0'
 GOOGLE_OAUTH_EXTRA_SCOPE = ['https://www.googleapis.com/auth/calendar.readonly',
             'https://www.googleapis.com/auth/userinfo.email',
             'https://www.googleapis.com/auth/userinfo.profile',]
-GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {'access_type': 'offline'}
+#GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {'access_type': 'offline'}
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 

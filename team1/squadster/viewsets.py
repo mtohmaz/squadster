@@ -13,22 +13,28 @@ from rest_framework.response import Response
 from .models import *
 from .authenticators import GoogleSessionAuthentication
 
-class UserViewSet(viewsets.ViewSet,APIView):
+class UserViewSet(viewsets.ModelViewSet,APIView):
     authentication_classes = (SessionAuthentication, BasicAuthentication,)
     permission_classes = (IsAuthenticated,)
+    serializer_class = SquadsterUserSerializer
     lookup_field = 'user_id'
+    
     
     def create(self, request):
         serializer = SquadsterUserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             print(user)
-
-            return Response({user})
+            return Response(serializer.data)
         else:
-            return Response(serializer.errors,
+            return Response(serializer.errors, 
                 status=status.HTTP_400_BAD_REQUEST)
-
+    
+    def get_queryset(self):
+        # no filter right now
+        # need to filter on the request parameters
+        queryset = SquadsterUser.objects.all()
+        return queryset
 
 class EventViewSet(viewsets.ModelViewSet, APIView):
     authentication_classes = (SessionAuthentication, BasicAuthentication,)
