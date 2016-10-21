@@ -1,0 +1,21 @@
+
+#searchbar {
+    background-color: #444;
+}
+
+.ion-search{
+    font-size: 20px;
+    color: white;
+}
+
+#logo img{
+    height: 40px;
+    width: 150px;
+    float: left;
+    margin-left: 50px;
+}
+
+.searchbox {
+    width: 700px;
+    margin-top: 5px;
+}

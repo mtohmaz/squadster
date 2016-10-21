@@ -18,7 +18,6 @@
   margin: 0;
   padding: 0;
   display: inline;
-  margin-left: 150px;
 }
 
 .menu {
@@ -36,9 +35,3 @@
   margin-top: 100px;
 }
 
-.create {
-  font-size: 50px;
-  position: fixed;
-  bottom: 5%;
-  right: 5%;
-}
