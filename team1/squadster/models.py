@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 
 
 """
@@ -18,32 +21,42 @@ class FlowModel(models.Model):
 
 
 # User handling
+
 class SquadsterUser(models.Model):
-    user_id = models.AutoField(primary_key=True)
-    username = models.CharField(max_length=64, unique = True, default = '')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name = 'profile')
+    #user_id = models.AutoField(primary_key=True)
+    #username = models.CharField(max_length=64, unique = True, default = '')
     # we actually don' use password, this is just to prevent django to throw errors
-    email = models.EmailField(unique=True)
-    enabled = models.BooleanField(default=True)
+    #email = models.EmailField(unique=True)
+    #enabled = models.BooleanField(default=True)
     api_key_last_auth = models.DateTimeField(default=None, null=True)
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
-    is_anonymous = False
-    is_authenticated = True
+    #USERNAME_FIELD = 'email'
+    #REQUIRED_FIELDS = []
+    #is_anonymous = False
+    #is_authenticated = True
     # google auth things
     google_session_token = models.CharField(blank=True, max_length=4096)
-    google_session_timeout = models.DurationField(default=None, null=True)
-    google_session_last_auth = models.DateTimeField(default=None, null=True)
+    #google_session_timeout = models.DurationField(default=None, null=True)
+    #google_session_last_auth = models.DateTimeField(default=None, null=True)
+    @receiver(post_save, sender=User)
+    def create_user(sender, instance, created, **kwargs):
+        if created:
+            SquadsterUser.objects.create(user=instance)
     
+    @receiver(post_save, sender=User)
+    def save_user(sender, instance, **kwargs):
+        instance.profile.save()
+
 
 class Moderator(models.Model):
-    user_id = models.OneToOneField('SquadsterUser', on_delete=models.DO_NOTHING, primary_key=True)
+    user_id = models.OneToOneField(User, on_delete=models.DO_NOTHING, primary_key=True)
     #user_id = models.ForeignKey('SquadsterUser', on_delete=models.CASCADE, primary_key=True)
     
     #automatically add the timestamp
     date_added = models.DateTimeField(auto_now_add=True)
 
 class Admin(models.Model):
-    user_id = models.OneToOneField('SquadsterUser', on_delete=models.DO_NOTHING, primary_key=True)
+    user_id = models.OneToOneField(User, on_delete=models.DO_NOTHING, primary_key=True)
     #user_id = models.ForeignKey('SquadsterUser', on_delete=models.CASCADE, primary_key=True)
     
     #automatically add the timestamp
@@ -54,20 +67,20 @@ class Admin(models.Model):
 # TODO location postgres
 class Event(models.Model):
     event_id = models.AutoField(primary_key=True)
-    host_id = models.ForeignKey('SquadsterUser', on_delete=models.DO_NOTHING)
+    host_id = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     title = models.CharField(max_length=64)
     date = models.DateTimeField()
     max_attendees = models.IntegerField()
     description = models.CharField(max_length=250)
 
 class JoinedEvents(models.Model):
-    user_id = models.ForeignKey('SquadsterUser', on_delete=models.DO_NOTHING)
+    user_id = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     event_id = models.ForeignKey('Event', on_delete=models.DO_NOTHING)
 
 class Comment(models.Model):
     comment_id = models.AutoField(primary_key=True)
     parent_event = models.ForeignKey('Event', on_delete=models.CASCADE, related_name='comments')
-    author = models.ForeignKey('SquadsterUser', on_delete=models.DO_NOTHING)
+    author = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date_added = models.DateTimeField(auto_now_add=True)
     text = models.CharField(max_length=250)
     moderated = models.BooleanField(default=False)
@@ -77,8 +90,8 @@ class Comment(models.Model):
 # Report handling
 class ReportedUsers(models.Model):
     incident_id = models.AutoField(primary_key=True)
-    reported_id = models.ForeignKey('SquadsterUser', on_delete=models.CASCADE, related_name='reported_id')
-    reported_by = models.ForeignKey('SquadsterUser', on_delete=models.DO_NOTHING, related_name='reported_by')
+    reported_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reported_id')
+    reported_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='reported_by')
     moderated_by = models.ForeignKey('Moderator', on_delete=models.DO_NOTHING)
     disabled_by = models.ForeignKey('Admin', on_delete=models.DO_NOTHING)
     time_reported = models.DateTimeField(auto_now_add=True)

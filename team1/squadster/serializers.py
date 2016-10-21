@@ -7,15 +7,14 @@ from .models import *
 
 class SquadsterUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SquadsterUser
+        model = User
         fields = [
             'user_id',
-            'email',
-            'enabled']
-        read_only_fields = ['user_id', 'enabled']
+            'email']
+        read_only_fields = ['user_id']
     
-#    def create(self, validated_data):
-#        return SquadsterUser.objects.create(**validated_data)
+    def create(self, validated_data):
+        return User.objects.create(**validated_data)
 
 
 class EventSerializer(serializers.ModelSerializer):

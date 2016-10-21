@@ -26,9 +26,11 @@ urlpatterns = [
     url(r'^api/auth/', views.login),
     
     #url(r'^auth/', views.auth_login, name='auth_login'),
+    url(r'^social/', include('social.apps.django_app.urls', namespace='social')),
+    url(r'^auth/', include('rest_framework_social_oauth2.urls')),
     url(r'^api/admin/', admin.site.urls),
     #url(r'^map/', views.map, name='map'),
-    url(r'^api/oauth2return', views.auth_return, name='oauth2return'),
+    #url(r'^api/oauth2return', views.auth_return, name='oauth2return'),
 
     # events
     # for this and others, will probably need to look into this
@@ -63,8 +65,10 @@ urlpatterns = [
     #url(r'^events/[0-9]{7}/join', views.join_event),
     
     
-    url(r'^api/users/$', viewsets.UserViewSet.as_view(
-            {'post':'create'})),
+    url(r'^api/users/$', viewsets.UserViewSet.as_view({
+            'get':'list',
+            'post':'create'
+            })),
     
     # TEMPORARY, REMOVE
     url(r'^api/users/[0-9]+/apikeys/$', views.create_api_key),
