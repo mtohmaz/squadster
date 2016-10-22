@@ -89,10 +89,13 @@ def login(request):
     """
     
     #if 'google_token' in request.META:
-    if 'google_token' in request.COOKIES:
+    print(request.session.keys())
+    
+    if 'google_token' in request.session:
         print('google token in request')
-        google_token = request.COOKIES.get('google_token')
-        #google_token = request.session['google_token']
+        #google_token = request.COOKIES.get('google_token')
+        google_token = request.session['google_token']
+        
         # TODO ASK GOOGLE IF ITS VALID
         # (Receive token by HTTPS POST)
         print ('google token:' + str(google_token))
@@ -124,8 +127,8 @@ def login(request):
         else:
             response = HttpResponseRedirect("/api/events/")
             #print(credentials)
-            #request.session['google_token'] = credentials.get_access_token().access_token
-            response.set_cookie('google_token', google_token)
+            request.session['google_token'] = google_token
+            #response.set_cookie('google_token', google_token)
             return response
             
     else:
@@ -197,7 +200,8 @@ def auth_return(request):
             id_token = user.profile.google_session_token
         
         response = HttpResponseRedirect("/api/events/")
-        response.set_cookie('google_token', id_token)
+        #response.set_cookie('google_token', id_token)
+        request.session['google_token'] = id_token
         return response
     except User.DoesNotExist as e:
         # CREATE A NEW USER RECORD
@@ -234,7 +238,8 @@ def auth_return(request):
         #user = authenticate(username=newUser.username)
         #auth_login(request, user)
         
-        response.set_cookie('google_token', id_token)
+        #response.set_cookie('google_token', id_token)
+        request.session['google_token'] = id_token
         return response
 
 
