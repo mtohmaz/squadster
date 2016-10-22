@@ -69,8 +69,9 @@ urlpatterns = [
             'get':'list',
             'post':'create'
             })),
+        
     
     # TEMPORARY, REMOVE
-    url(r'^api/users/[0-9]+/apikeys/$', views.create_api_key),
+    #url(r'^api/users/[0-9]+/apikeys/$', views.create_api_key),
     
 ]

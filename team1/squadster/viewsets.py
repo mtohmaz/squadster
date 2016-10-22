@@ -14,7 +14,7 @@ from .models import *
 from .authenticators import GoogleSessionAuthentication
 
 class UserViewSet(viewsets.ModelViewSet,APIView):
-    authentication_classes = (SessionAuthentication, BasicAuthentication,)
+    authentication_classes = (GoogleSessionAuthentication, BasicAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = SquadsterUserSerializer
     lookup_field = 'user_id'
@@ -37,7 +37,7 @@ class UserViewSet(viewsets.ModelViewSet,APIView):
         return queryset
 
 class EventViewSet(viewsets.ModelViewSet, APIView):
-    authentication_classes = (SessionAuthentication, BasicAuthentication,)
+    authentication_classes = (GoogleSessionAuthentication, BasicAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = EventSerializer
     lookup_field = 'event_id'
@@ -61,7 +61,7 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
     
 
 class JoinedEventsViewSet(viewsets.ModelViewSet,APIView):
-    authentication_classes = (SessionAuthentication, BasicAuthentication,)
+    authentication_classes = (GoogleSessionAuthentication, BasicAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = JoinedEventsSerializer
     
@@ -83,7 +83,7 @@ class JoinedEventsViewSet(viewsets.ModelViewSet,APIView):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    authentication_classes = (SessionAuthentication, BasicAuthentication,)
+    authentication_classes = (GoogleSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = CommentSerializer
     lookup_field = 'comment_id'
