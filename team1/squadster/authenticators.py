@@ -11,11 +11,12 @@ from datetime import datetime, timedelta
 class GoogleSessionAuthentication(authentication.BaseAuthentication):
     # TODO add checking for timeout, and removing from db if timed out
     def authenticate(self, request):
-        id_token = request.COOKIES['google_token']
         
-        if not id_token:
-            print('No token to authenticate')
+        if 'google_token' not in request.session:
             return None
+        
+        
+        id_token = request.session['google_token']
         
         try:
             print('GoogleSessionAuthentication: id_token=' + id_token)
@@ -36,12 +37,15 @@ class GoogleSessionAuthentication(authentication.BaseAuthentication):
                 user.save()
                 
                 user.is_authenticated = False
-                request.COOKIES.pop('google_token', None)
+                request.session.pop('google_token', None)
+                print("Timeout for user: " + str(user.user.username))
+                return None
                 
             
             
         except SquadsterUser.DoesNotExist:
-            request.COOKIES.pop('google_token', None)
+            # delete cookies somehow
+            request.session.pop('google_token', None)
             raise exceptions.AuthenticationFailed('user not found')
         
         user.is_authenticated = True

@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 
 from .models import *
@@ -91,8 +92,12 @@ class CommentViewSet(viewsets.ModelViewSet):
     def list(self, request, event_id):
         req_event_id = event_id
         #req_event_id = request.GET.get('event_id', '')
-        comment = Comment.objects.get(parent_event=req_event_id)
-        
+        #try:
+        comment = get_object_or_404(Comment, parent_event=req_event_id)
+
+        #except Comment.DoesNotExist:
+        #    return Response([])
+            
         #children = Comment.objects \
         #    .filter(parent_comment=req_event_id) \
         #    .order_by('date_added')
