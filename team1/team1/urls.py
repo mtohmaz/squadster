@@ -30,7 +30,7 @@ urlpatterns = [
     url(r'^auth/', include('rest_framework_social_oauth2.urls')),
     url(r'^api/admin/', admin.site.urls),
     #url(r'^map/', views.map, name='map'),
-    #url(r'^api/oauth2return', views.auth_return, name='oauth2return'),
+    url(r'^api/oauth2return', views.auth_return, name='oauth2return'),
 
     # events
     # for this and others, will probably need to look into this
@@ -69,8 +69,9 @@ urlpatterns = [
             'get':'list',
             'post':'create'
             })),
+        
     
     # TEMPORARY, REMOVE
-    url(r'^api/users/[0-9]+/apikeys/$', views.create_api_key),
+    #url(r'^api/users/[0-9]+/apikeys/$', views.create_api_key),
     
 ]
