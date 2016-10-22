@@ -7,7 +7,7 @@ from .models import *
 
 class SquadsterUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = SquadsterUser
         fields = [
             'user_id',
             'email']
