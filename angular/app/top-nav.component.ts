@@ -3,26 +3,9 @@ import {Component, ViewEncapsulation, OnInit} from "@angular/core";
 @Component({
     selector: "topnav",
     //templateUrl: "app/main/topNavbar/TopNavbar.html",
-    template: `
-    <div class="row">
-      <div id="topnav">
-        <div class="col-xs-3 element">
-            <a routerLink="app/list-view" routerLinkActive="active">List View</a>
-        </div>
-        <div class="col-xs-3 element">
-            <a routerLink="app/create-event" routerLinkActive="active">Create Event</a>
-        </div>
-        <div class="col-xs-3 element">
-            <a routerLink="app/my-events" routerLinkActive="active">My Events</a>
-        </div>
-        <div class="col-xs-3 element">
-            <a routerLink="app/login" routerLinkActive="active" class="icon ion-person"> My Account </a>
-        </div>
-      </div>
-    </div>
-    `,
+    templateUrl: 'app/html/top-nav.component.html',
     encapsulation: ViewEncapsulation.None,
-    styleUrls: ['app/styles/top-nav.component.css'],
+    styleUrls: ['app/styles/top-nav.component.css', 'app/styles/mapswitch.css'],
 })
 
 /*export class TopNavbarComponent  {

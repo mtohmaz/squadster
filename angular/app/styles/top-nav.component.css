@@ -2,47 +2,9 @@
   white-space: nowrap;
   overflow: hidden;
 }
-#topnav ul {
-  list-style: none;
-  background-color: #444;
-  text-align: center;
-  margin: 0;
-  padding: 0;
-  height: 40px;
-}
-#topnav li {
-  line-height: 40px;
-  border-bottom: 1px solid #888;
-  display: inline-block;
-  font-size: 1.2em;
-  height: 40px;
-  width: 300px;
-}
-.element{
-  line-height: 40px;
-  border-bottom: 1px solid #888;
-  display: inline-block;
-  font-size: 1.2em;
-  list-style: none;
-  background-color: #444;
-  text-align: center;
-  margin: 0;
-  padding: 0;
-  height: 40px;
-}
-#topnav a {
-  text-decoration: none;
-  color: #fff;
-  display: block;
-  transition: .3s background-color;
-}
-#topnav a:hover {
-  background-color: #1b96fe;
-}
-#topnav a.active {
-  background-color: #fff;
-  color: #333;
-  cursor: default;
-  text-decoration: underline;
+
+#topnav .margin {
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 

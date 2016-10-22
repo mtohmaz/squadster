@@ -1,21 +1,50 @@
 
 #searchbar {
     background-color: #444;
+    font-size: large;
+    height: 60px;
 }
 
-.ion-search{
-    font-size: 20px;
-    color: white;
+#searchbar .ion-person{
+    font-size: 14px;
 }
 
 #logo img{
     height: 40px;
     width: 150px;
     float: left;
-    margin-left: 50px;
+    margin-left: 80px;
+    margin-top: 7px;
+    margin-bottom: 7px;
 }
 
-.searchbox {
-    width: 700px;
-    margin-top: 5px;
+#searchbar .searchbox {
+    width: 100%;
+    display: block;
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    border: 2px solid #ccc;
+    border-radius: 20px;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+    transition: border-color ease-in-out .15s;
+    margin-top: 13px;
+    margin-bottom: 13px;
+}
+
+#searchbar .btn-warning {
+    margin-top: 7px;
+    margin-bottom: 7px;
+    margin-left: 20px;
+    width: 90%;
+}
+
+#searchbar .btn-success{
+    margin-top: 12px;
+    margin-bottom: 12px;
+    margin-left: 30px;
+    width: 80%;
 }

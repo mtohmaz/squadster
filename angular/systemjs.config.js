@@ -27,7 +27,8 @@
       'rxjs':                       'npm:rxjs',
       'angular2-in-memory-web-api': 'npm:angular2-in-memory-web-api',
       'ng2-sidebar':                'npm:ng2-sidebar',
-      'angular2-jwt':               'https://npmcdn.com/angular2-jwt@0.1.23/angular2-jwt.js'
+      'angular2-jwt':               'https://npmcdn.com/angular2-jwt@0.1.23/angular2-jwt.js',
+      'angular2-google-maps/core':  'npm:angular2-google-maps/core/core.umd.js'
     },
     // packages tells the System loader how to load when no filename and/or no extension
     packages: {
