@@ -6,17 +6,15 @@ import {Component, ViewEncapsulation, OnInit} from "@angular/core";
     template: `
     <div class="row">
       <div id="topnav">
-        <div class="col-xs-3 element">
-            <a routerLink="app/list-view" routerLinkActive="active">List View</a>
+        <div class="col-xs-1">
         </div>
-        <div class="col-xs-3 element">
-            <a routerLink="app/create-event" routerLinkActive="active">Create Event</a>
+        <div class="col-xs-2 margin">
+            <button type="button" class="btn btn-info btn-block" routerLink="app/list-view" routerLinkActive="active">Events Nearby</button>
         </div>
-        <div class="col-xs-3 element">
-            <a routerLink="app/my-events" routerLinkActive="active">My Events</a>
+        <div class="col-xs-2 margin">
+            <button type="button" class="btn btn-info btn-block" routerLink="app/my-events" routerLinkActive="active">My Events</button>
         </div>
-        <div class="col-xs-3 element">
-            <a routerLink="app/login" routerLinkActive="active" class="icon ion-person"> My Account </a>
+        <div class="col-xs-3">
         </div>
       </div>
     </div>
