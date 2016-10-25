@@ -3,24 +3,9 @@ import {Component, ViewEncapsulation, OnInit} from "@angular/core";
 @Component({
     selector: "topnav",
     //templateUrl: "app/main/topNavbar/TopNavbar.html",
-    template: `
-    <div class="row">
-      <div id="topnav">
-        <div class="col-xs-1">
-        </div>
-        <div class="col-xs-2 margin">
-            <button type="button" class="btn btn-info btn-block" routerLink="app/list-view" routerLinkActive="active">Events Nearby</button>
-        </div>
-        <div class="col-xs-2 margin">
-            <button type="button" class="btn btn-info btn-block" routerLink="app/my-events" routerLinkActive="active">My Events</button>
-        </div>
-        <div class="col-xs-3">
-        </div>
-      </div>
-    </div>
-    `,
+    templateUrl: 'app/html/top-nav.component.html',
     encapsulation: ViewEncapsulation.None,
-    styleUrls: ['app/styles/top-nav.component.css'],
+    styleUrls: ['app/styles/top-nav.component.css', 'app/styles/mapswitch.css'],
 })
 
 /*export class TopNavbarComponent  {
