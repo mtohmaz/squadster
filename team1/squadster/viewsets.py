@@ -8,13 +8,14 @@ from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 
 from .models import *
 from .authenticators import GoogleSessionAuthentication
 
 class UserViewSet(viewsets.ModelViewSet,APIView):
-    authentication_classes = (SessionAuthentication, BasicAuthentication,)
+    authentication_classes = (GoogleSessionAuthentication, BasicAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = SquadsterUserSerializer
     lookup_field = 'user_id'
@@ -37,7 +38,7 @@ class UserViewSet(viewsets.ModelViewSet,APIView):
         return queryset
 
 class EventViewSet(viewsets.ModelViewSet, APIView):
-    authentication_classes = (SessionAuthentication, BasicAuthentication,)
+    authentication_classes = (GoogleSessionAuthentication, BasicAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = EventSerializer
     lookup_field = 'event_id'
@@ -61,7 +62,7 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
     
 
 class JoinedEventsViewSet(viewsets.ModelViewSet,APIView):
-    authentication_classes = (SessionAuthentication, BasicAuthentication,)
+    authentication_classes = (GoogleSessionAuthentication, BasicAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = JoinedEventsSerializer
     
@@ -83,7 +84,7 @@ class JoinedEventsViewSet(viewsets.ModelViewSet,APIView):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    authentication_classes = (SessionAuthentication, BasicAuthentication,)
+    authentication_classes = (GoogleSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = CommentSerializer
     lookup_field = 'comment_id'
@@ -91,8 +92,12 @@ class CommentViewSet(viewsets.ModelViewSet):
     def list(self, request, event_id):
         req_event_id = event_id
         #req_event_id = request.GET.get('event_id', '')
-        comment = Comment.objects.get(parent_event=req_event_id)
-        
+        #try:
+        comment = get_object_or_404(Comment, parent_event=req_event_id)
+
+        #except Comment.DoesNotExist:
+        #    return Response([])
+            
         #children = Comment.objects \
         #    .filter(parent_comment=req_event_id) \
         #    .order_by('date_added')

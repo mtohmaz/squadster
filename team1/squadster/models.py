@@ -36,8 +36,8 @@ class SquadsterUser(models.Model):
     #is_authenticated = True
     # google auth things
     google_session_token = models.CharField(blank=True, max_length=4096)
-    #google_session_timeout = models.DurationField(default=None, null=True)
-    #google_session_last_auth = models.DateTimeField(default=None, null=True)
+    google_session_timeout = models.DurationField(default=None, null=True)
+    google_session_last_auth = models.DateTimeField(default=None, null=True)
     @receiver(post_save, sender=User)
     def create_user(sender, instance, created, **kwargs):
         if created:

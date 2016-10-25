@@ -11,10 +11,15 @@ from django.http import JsonResponse
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseRedirect
 
+
+from django.contrib.auth import authenticate
+from django.contrib.auth import login as auth_login
+from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.six import BytesIO
-from django.contrib.auth import logout as auth_logout, login
+from django.contrib.auth import logout as auth_logout
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.parsers import JSONParser
@@ -30,8 +35,7 @@ from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 from googleapiclient.discovery import build
 
-#from squadster.models import CredentialsModel
-from django.contrib.auth import get_user_model
+from squadster.models import SquadsterUser
 from team1 import settings
 
 
@@ -55,9 +59,6 @@ credential_path = os.path.join(credential_dir,'userCredentials.json')
 
 
 
-def login(request):
-    pass
-
 
 FLOW = flow_from_clientsecrets(
     CLIENT_SECRETS,
@@ -75,11 +76,26 @@ def login(request):
     from oauth2client import client, crypt
 
     print('request:' + str(request))
+    """
+    if request.user.is_authenticated:
+        response = HttpResponseRedirect("/api/events/")
+        return response
+    else:
+        FLOW.params['state'] = xsrfutil.generate_token(
+                settings.SECRET_KEY, request.user)
+            
+        authorize_url = FLOW.step1_get_authorize_url()
+        return HttpResponseRedirect(authorize_url)
+    """
+    
     #if 'google_token' in request.META:
-    if 'google_token' in request.COOKIES:
+    print(request.session.keys())
+    
+    if 'google_token' in request.session:
         print('google token in request')
-        google_token = request.COOKIES.get('google_token')
-        #google_token = request.session['google_token']
+        #google_token = request.COOKIES.get('google_token')
+        google_token = request.session['google_token']
+        
         # TODO ASK GOOGLE IF ITS VALID
         # (Receive token by HTTPS POST)
         print ('google token:' + str(google_token))
@@ -111,7 +127,8 @@ def login(request):
         else:
             response = HttpResponseRedirect("/api/events/")
             #print(credentials)
-            #request.session['google_token'] = credentials.get_access_token().access_token
+            request.session['google_token'] = google_token
+            #response.set_cookie('google_token', google_token)
             return response
             
     else:
@@ -122,7 +139,8 @@ def login(request):
         authorize_url = FLOW.step1_get_authorize_url()
         print('about to be redirected to google oauth2')
         return HttpResponseRedirect(authorize_url)
-    
+
+
 def get_user_info(credentials):
     user_info_service = build(serviceName='oauth2', version='v2', http=credentials.authorize(httplib2.Http()))
     user_info = None
@@ -150,15 +168,42 @@ def auth_return(request):
     print('user_info: ' + str(user_info))
     print('id_token: ' + str(credentials.id_token))
     id_token = credentials.token_response['id_token']
+    
+    
+    try:
+        idinfo = client.verify_id_token(id_token, CLIENT_ID)
+        # If multiple clients access the backend server:
+        if idinfo['aud'] not in [CLIENT_ID]:
+            raise crypt.AppIdentityError("Unrecognized client.")
+        if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+            raise crypt.AppIdentityError("Wrong issuer.")
+        if idinfo['hd'] != 'ncsu.edu':
+            raise crypt.AppIdentityError("Wrong hosted domain.")
+    except crypt.AppIdentityError as e:
+        # Invalid token
+        return HttpResponse('Token ID is invalid: ' +  str(e),status= status.HTTP_401_UNAUTHORIZED)
+    
+    
+    
     try:
         print('checking if email exists')
-        user = get_user_model().objects.get(email=email_address)
+        user = User.objects.get(email=email_address)
         print('email exist... Proceed to list-view')
         
+        #user = authenticate(email=email_address)
+        #auth_login(request, user)
+        
+        # TODO if user.profile.google_session_token already exists,
+        # set the session token to that instead of the new one
+        
+        if user.profile.google_session_token:
+            id_token = user.profile.google_session_token
+        
         response = HttpResponseRedirect("/api/events/")
-        response.set_cookie('google_token', id_token)
+        #response.set_cookie('google_token', id_token)
+        request.session['google_token'] = id_token
         return response
-    except get_user_model().DoesNotExist as e:
+    except User.DoesNotExist as e:
         # CREATE A NEW USER RECORD
         print('email not exist')
         access_token_info = credentials.get_access_token()
@@ -168,23 +213,33 @@ def auth_return(request):
         
         username = email_address.split('@')[0]
         print('about to create new user')
-        newUser = get_user_model().objects.create(
+        newUser = User.objects.create(
             username=username,
-            email=email_address,
-            google_session_token=id_token,
-            google_session_timeout=timedelta(seconds=expires_seconds),
-            google_session_last_auth=timezone.now()
+            email=email_address
         )
+        newUser.backend='social.backends.google.GoogleOAuth2'
+        
         print('newUser created')
         #create api key for user and save to database
-        key = create_api_key(newUser)
+        from rest_framework.authtoken.models import Token
+        print('about to create token')
+        token = Token.objects.create(user=newUser)
+        
         print('api key obtained')
-        newUser.api_key_last_auth = timezone.now()
         newUser.save()
+
+        newUser.profile.google_session_token = id_token
+        newUser.profile.google_session_timeout = timedelta(seconds=expires_seconds)
+        newUser.profile.google_session_last_auth = timezone.now()
+        newUser.profile.save()
         
         response = HttpResponseRedirect("/api/events/")
-        response.set_cookie('google_token', id_token)
-        # credentials.get_access_token().access_token
+        
+        #user = authenticate(username=newUser.username)
+        #auth_login(request, user)
+        
+        #response.set_cookie('google_token', id_token)
+        request.session['google_token'] = id_token
         return response
 
 
@@ -225,17 +280,4 @@ def my_events(request):
 """
     squadsteruser: a SquadsterUser object
 """
-
-@csrf_exempt
-def create_api_key(newUser):
-    from rest_framework.authtoken.models import Token
-    print('about to create token')
-    token = Token.objects.create(user=newUser)
-    print('token created')
-    print('API Key: ' + str(token))
-    return token
-
-def get_api_key(user_id):
-    pass
-    
 
