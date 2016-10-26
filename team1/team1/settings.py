@@ -59,7 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
+
 ]
 
 ROOT_URLCONF = 'team1.urls'
@@ -77,7 +77,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'social.apps.django_app.context_processors.backends',
                 'social.apps.django_app.context_processors.login_redirect',
-                
+
             ],
         },
     },
@@ -105,8 +105,8 @@ AUTHENTICATION_BACKENDS = (
 )
 
 PROPRIETARY_BACKEND_NAME = 'Google'
-GOOGLE_OAUTH2_CLIENT_ID = '765648849014-kjgtsiqvfmkinasvc5tak562hr7k92sj.apps.googleusercontent.com'
-GOOGLE_OAUTH2_CLIENT_SECRET = 'RkoVqy1I6cHYfKcybhY9NqV0'
+GOOGLE_OAUTH2_CLIENT_ID = '290427034826-un4ldmeetlngevc5ep3jnt0s71284pjf.apps.googleusercontent.com'
+GOOGLE_OAUTH2_CLIENT_SECRET = 'SJq_nQFSuEhrvggROBOoYeXC'
 GOOGLE_OAUTH_EXTRA_SCOPE = ['https://www.googleapis.com/auth/calendar.readonly',
             'https://www.googleapis.com/auth/userinfo.email',
             'https://www.googleapis.com/auth/userinfo.profile',]
@@ -171,7 +171,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-#STATICFILES_FINDERS = (  
+#STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.FileSystemFinder',
 #    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'pipeline.finders.PipelineFinder',
