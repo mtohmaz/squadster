@@ -30,6 +30,7 @@ class EventSerializer(serializers.ModelSerializer):
     
     def get_summary_fields(self, obj):
         return {
+            'host_email': User.objects.get(id=obj.host_id.id).email,
             'number_of_children': Comment.objects.filter(parent_event=obj.event_id).count()
         
         }
@@ -51,7 +52,7 @@ class EventSerializer(serializers.ModelSerializer):
         return Event.objects.create(**validated_data)
   
 
-# TODO if keeping, maybe move this to new custom fields file
+# TODO if keeping, maybe move this to new custom fields file, or just integrate in CommentSerializer
 class ChildCommentHyperlinkField(serializers.HyperlinkedIdentityField):
     def get_url(self, obj, request, format):
         url_kwargs = {
