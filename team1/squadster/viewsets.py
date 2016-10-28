@@ -8,10 +8,11 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied
+from django.forms.models import model_to_dict
 
-from .serializers import *
-from .models import *
-from .authenticators import GoogleSessionAuthentication
+from squadster.serializers import *
+from squadster.models import *
+from squadster.authenticators import GoogleSessionAuthentication
 
 class UserViewSet(viewsets.ModelViewSet,APIView):
     authentication_classes = (GoogleSessionAuthentication, BasicAuthentication,)
@@ -43,9 +44,17 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
     serializer_class = EventSerializer
     lookup_field = 'event_id'
     
+    def list(self, request, format=None):
+        events = Event.objects.all()
+        serializer = EventSerializer(events, many=True, context={'request': request, 'format':format})
+        
+        return Response(serializer.data)
     
     def create(self, request):
-        serializer = EventSerializer(data=request.data)
+        d = request.data.dict()
+        d['host_id'] = int(request.user.id)
+        
+        serializer = EventSerializer(data=d)
         if serializer.is_valid():
             event = serializer.save()
             print(event)
@@ -75,12 +84,15 @@ class UserEventViewSet(viewsets.ViewSet, APIView):
         queryset = (user.hostedevents.all() | user.joinedevents.all()).order_by('date')
         #queryset = (user.hostedevents | user.joinedevents)
         
-        #events_as_host = Event.objects.all() \
-        #    .filter(host_id=user_id) \
-        #    .order_by('date')
         serializer = EventSerializer(queryset, many=True)
         return Response(serializer.data)
     
+    def create(self, request):
+        request['host_id'] = request.user.id
+        event_viewset = EventViewSet()
+        event_viewset.create(request)
+        
+        
     """
     def get_queryset(self):
         user = self.request.user
@@ -89,28 +101,6 @@ class UserEventViewSet(viewsets.ViewSet, APIView):
         )
     """
 
-"""
-class JoinedEventsViewSet(viewsets.ModelViewSet,APIView):
-    authentication_classes = (GoogleSessionAuthentication, BasicAuthentication,)
-    permission_classes = (IsAuthenticated,)
-    serializer_class = JoinedEventsSerializer
-    
-
-    def create(self, request):
-        serializer = JoinedEventsSerializer(data=request.data)
-        
-        if serializer.is_valid():
-            joined = serializer.save()
-            return Response({joined})
-        else:
-            return Response(serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST)
-    
-    def get_queryset(self):
-        # filter to this self.request.user.get('user_id') or something similar
-        queryset = JoinedEvents.objects.all()
-        return queryset
-"""
 
 class CommentViewSet(viewsets.ModelViewSet):
     authentication_classes = (GoogleSessionAuthentication,)
@@ -118,27 +108,38 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     lookup_field = 'comment_id'
     
-    def list(self, request, event_id):
+    def list(self, request, event_id, parent_comment=None, format=None):
         req_event_id = event_id
-        #req_event_id = request.GET.get('event_id', '')
-        #try:
-        comment = get_object_or_404(Comment, parent_event=req_event_id)
-
-        #except Comment.DoesNotExist:
-        #    return Response([])
-            
-        #children = Comment.objects \
-        #    .filter(parent_comment=req_event_id) \
-        #    .order_by('date_added')
+        req_parent_comment = parent_comment
+        comments = Comment.objects.filter(parent_event=req_event_id, parent_comment=req_parent_comment)
         
-        serializer = CommentSerializer(comment)
+        serializer = CommentSerializer(comments, many=True, context={'request': request, 'format':format})
         return Response(serializer.data)
-        #.select_related('parent_comment')
+    
+    def create(self, request, event_id):
+        user = request.user
+        d = request.data.dict()
+        d['parent_event'] = int(event_id)
+        d['author'] = user.id
+        #print('d: ' + str(d))
+        serializer = CommentSerializer(data=d, context={'request':request})
+        if serializer.is_valid():
+            comment = serializer.save()
+            print('saved comment: ' + str(model_to_dict(comment)))
+        else:
+            return Response(serializer.errors, 
+                status=status.HTTP_400_BAD_REQUEST)
+        
+        print('new comment: ' + str(comment))
+        return Response(serializer.data)
+
+    def get_serializer_context(self):
+        return {'request': self.request}
         
     
     def get_queryset(self):
         id = self.kwargs['event_id']
         
-        return Comment.objects.filter(event_id=id)
+        return Comment.objects.filter(parent_event=id)
         
         

@@ -61,10 +61,10 @@ class Event(models.Model):
     date = models.DateTimeField()
     max_attendees = models.IntegerField()
     description = models.CharField(max_length=250)
+    
+    def __str__(self):
+        return '%s on %s' % (self.title, self.date.isoformat())
 
-#class JoinedEvents(models.Model):
-#    user_id = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='joinedevents')
-#    event_id = models.ForeignKey('Event', on_delete=models.DO_NOTHING, related_name='attendees')
 
 class Comment(models.Model):
     comment_id = models.AutoField(primary_key=True)
@@ -73,7 +73,11 @@ class Comment(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     text = models.CharField(max_length=250)
     moderated = models.BooleanField(default=False)
-    parent_comment = models.ForeignKey('Comment', on_delete=models.CASCADE, null=True, related_name='children')
+    parent_comment = models.ForeignKey('Comment', on_delete=models.CASCADE, 
+            default=None, blank=True, null=True, related_name='children')
+    
+    def __str__(self):
+        return '%s: %s' % (self.author.email, self.text)
 
 
 # Report handling
