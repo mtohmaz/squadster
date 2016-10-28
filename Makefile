@@ -2,6 +2,13 @@
 # any target with apt-get commands must be run on Ubuntu
 # the others work on any linux distro
 
+# if postgresql *admin* user is not postgres, set it here
+postgresrootuser='postgres'
+postgresrootdb='postgres'
+
+# if someone runs the makefile from a different directory than the makefile
+export ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+
 default:
 
 
@@ -14,15 +21,37 @@ ubuntu_packages:
 		postgresql postgresql-contrib postgresql-server-dev-all \
 		npm nodejs \
 		nginx
-
+	
 	# remove pip for python2
 	sudo apt-get remove python-pip
 
-cleanmigrations: cleandb
-	rm -rf team1/squadster/migrations
 
+# drops the database and completely recreates it
+resetdb:
+	psql ${postgresrootdb} ${postgresrootuser} -f sql/reset.sql
+	#psql ${postgresrootdb} ${postgresrootuser} -c 'drop database squadsterdb;'
+	#psql ${postgresrootdb} ${postgresrootuser} -c 'create database squadsterdb;'
+	#psql ${postgresrootdb} ${postgresrootuser} -c 'grant all privileges on database squadsterdb to squadster_admin;'
+
+
+# wipes contents of the squasterdb database
 cleandb:
-	sudo -u postgres psql "drop database squadsterdb;"
+	# contents that contain user keys
+	psql squadster_admin squadsterdb -c 'delete from squadster_comment;'
+	psql squadster_admin squadsterdb -c 'delete from squadster_joinedevents;'
+	psql squadster_admin squadsterdb -c 'delete from squadster_event;'
+	
+	# user related tables
+	psql squadster_admin squadsterdb -c 'delete from authtoken_token;'
+	psql squadster_admin squadsterdb -c 'delete from authtoken_token;'
+	psql squadster_admin squadsterdb -c 'delete from auth_user;'
+
+
+# NOTE: must have already run setuppython to create the virtualenv for django
+cleanmigrations: resetdb
+	rm -rf team1/squadster/migrations
+	bash setup/makemigrations.sh
+
 
 setupdb:
 	# This script is only for commands run as db user 'postgres'
@@ -30,7 +59,7 @@ setupdb:
 	# we should put them in a setupteam1.sql script or something
 	sudo cp setup/pg_hba.conf /etc/postgresql/9.3/main/pg_hba.conf
 	sudo chown root:root /etc/postgresql/9.3/main/pg_hba.conf
-	psql --username postgres -f setup/setup.sql
+	psql --username ${postgresrootuser} -f setup/setup.sql
 
 setuppython:
 	bash setup/pythonsetup.sh

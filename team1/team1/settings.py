@@ -29,7 +29,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+# using db backed sessions for simplicity for now
+#SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 # Application definition
 
@@ -176,3 +177,6 @@ STATICFILES_DIRS = (
 #    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'pipeline.finders.PipelineFinder',
 #)
+
+
+dateformat = "%Y-%m-%dT%H:%M:%S.%fZ"
