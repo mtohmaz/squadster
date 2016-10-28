@@ -52,7 +52,11 @@ urlpatterns = [
     url(r'^api/events/(?P<event_id>[0-9]+)/comments/(?P<comment_id>[0-9]+)$', viewsets.CommentViewSet.as_view({
             'get':'retrieve'}),
         name='event-comment-detail'),
-    
+    url(r'^api/events/(?P<event_id>[0-9]+)/attendees/$', viewsets.EventAttendeesViewSet.as_view({
+            'get':'list',
+            'post':'create'
+        }),
+        name='event-attendees-list'),
     
     url(r'^api/users/$', viewsets.UserViewSet.as_view({
             'get':'list',

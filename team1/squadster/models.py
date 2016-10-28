@@ -55,7 +55,7 @@ class Admin(models.Model):
 # TODO location postgres
 class Event(models.Model):
     event_id = models.AutoField(primary_key=True)
-    host_id = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='hostedevents')
+    host = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='hostedevents')
     attendees = models.ManyToManyField(User, related_name='joinedevents')
     title = models.CharField(max_length=64)
     date = models.DateTimeField()

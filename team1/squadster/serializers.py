@@ -1,17 +1,18 @@
 
 from rest_framework import serializers
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 from squadster.models import *
 
 def datetime_serializer(obj):
     return obj.isoformat()
 
-class SquadsterUserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
-        model = SquadsterUser
-        fields = '__all__'
+        model = User
+        fields = ['email']
         # need all read only?
         #read_only_fields = '__all__'
     
@@ -22,28 +23,34 @@ class SquadsterUserSerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
     summary_fields = serializers.SerializerMethodField()
+    attendees = serializers.SerializerMethodField()
     
     def get_comments(self, event):
-        request = self.context.get('request')
+        request = self.context['request']
         return request.build_absolute_uri(
-                reverse('event-comment-list', kwargs={'event_id':event.event_id}))
+            reverse('event-comment-list', kwargs={'event_id':event.event_id}))
+    
+    def get_attendees(self, event):
+        request = self.context['request']
+        return request.build_absolute_uri(
+            reverse('event-attendees-list', kwargs={'event_id':event.event_id}))
     
     def get_summary_fields(self, obj):
         return {
-            'host_email': User.objects.get(id=obj.host_id.id).email,
+            'host_email': User.objects.get(id=obj.host.id).email,
             'number_of_children': Comment.objects.filter(parent_event=obj.event_id).count()
-        
         }
     
     class Meta:
         model = Event
         fields = [
             'event_id',
-            'host_id',
+            'host',
             'title',
             'date',
             'max_attendees',
             'comments',
+            'attendees',
             'summary_fields'
         ]
         read_only_fields = ['event_id']
@@ -77,7 +84,6 @@ class CommentSerializer(serializers.ModelSerializer):
     def get_summary_fields(self, obj):
         return {
             'number_of_children': Comment.objects.filter(parent_comment=obj.comment_id).count()
-        
         }
     
     class Meta:
