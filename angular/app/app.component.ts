@@ -9,7 +9,10 @@ import {Component} from '@angular/core';
         <searchbar></searchbar>
         <topnav></topnav>
       </div>
-      <div class="col-xs-3"></div>
+      <div class="col-xs-2" id="filter">
+        <filters></filters>
+      </div>
+      <div class="col-xs-1"></div>
       <div id="body" class="col-xs-6">
         <router-outlet></router-outlet>
       </div>

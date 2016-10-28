@@ -22,4 +22,15 @@ import {Component, ViewEncapsulation, OnInit} from "@angular/core";
 
 }*/
 
-export class TopNavComponent { }
+export class TopNavComponent {
+    private mapOn: boolean = true;
+
+    toggle() {
+        this.mapOn = (this.mapOn) ? false : true;
+        console.log('mapOn value is ' + this.mapOn);
+    }
+
+    isMapOn() : boolean{
+        return this.mapOn;
+    }
+}

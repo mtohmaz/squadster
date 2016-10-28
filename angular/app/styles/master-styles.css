@@ -35,3 +35,10 @@
   margin-top: 100px;
 }
 
+#filter {
+  padding: 0 6px 0 9px;
+  line-height: normal;
+  border-right: 1px solid #DDD;
+  margin-bottom: 20px;
+}
+
