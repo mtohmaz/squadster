@@ -2,16 +2,18 @@
 from rest_framework import serializers
 from django.urls import reverse
 
-from .models import *
+from squadster.models import *
 
+def datetime_serializer(obj):
+    return obj.isoformat()
 
 class SquadsterUserSerializer(serializers.ModelSerializer):
+    
     class Meta:
-        model = User
-        fields = [
-            'user_id',
-            'email']
-        read_only_fields = ['user_id']
+        model = SquadsterUser
+        fields = '__all__'
+        # need all read only?
+        #read_only_fields = '__all__'
     
     def create(self, validated_data):
         return User.objects.create(**validated_data)
@@ -45,7 +47,7 @@ class EventSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return Event.objects.create(**validated_data)
 
-
+"""
 class JoinedEventsSerializer(serializers.ModelSerializer):
     class Meta:
         model = JoinedEvents
@@ -55,7 +57,7 @@ class JoinedEventsSerializer(serializers.ModelSerializer):
         ]
         
         read_only_fields = ['user_id', 'event_id']
-        
+"""        
 
 class CommentSerializer(serializers.ModelSerializer):
     children = serializers.HyperlinkedIdentityField(

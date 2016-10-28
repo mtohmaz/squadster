@@ -1,7 +1,4 @@
 
-#from django.shortcuts import get_object_or_404
-
-from .serializers import *
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.views import APIView
@@ -9,8 +6,10 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
+from django.core.exceptions import PermissionDenied
 
-
+from .serializers import *
 from .models import *
 from .authenticators import GoogleSessionAuthentication
 
@@ -37,6 +36,7 @@ class UserViewSet(viewsets.ModelViewSet,APIView):
         queryset = SquadsterUser.objects.all()
         return queryset
 
+
 class EventViewSet(viewsets.ModelViewSet, APIView):
     authentication_classes = (GoogleSessionAuthentication, BasicAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -59,8 +59,37 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
         # need to filter on the request parameters
         queryset = Event.objects.all()
         return queryset
-    
 
+
+class UserEventViewSet(viewsets.ViewSet, APIView):
+    authentication_classes = (GoogleSessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
+    def list(self, request, user_id):
+        # check current user is authorized to see these
+        user = request.user
+        print('request user.id: ' + str(user.id) + ' url user_id: ' + str(user_id))
+        if user.id != int(user_id):
+            raise PermissionDenied('You can\'t view other user\'s events')
+        
+        queryset = (user.hostedevents.all() | user.joinedevents.all()).order_by('date')
+        #queryset = (user.hostedevents | user.joinedevents)
+        
+        #events_as_host = Event.objects.all() \
+        #    .filter(host_id=user_id) \
+        #    .order_by('date')
+        serializer = EventSerializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    """
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Events.objects.filter(
+            Q(host_id=user.id) | Q()
+        )
+    """
+
+"""
 class JoinedEventsViewSet(viewsets.ModelViewSet,APIView):
     authentication_classes = (GoogleSessionAuthentication, BasicAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -81,7 +110,7 @@ class JoinedEventsViewSet(viewsets.ModelViewSet,APIView):
         # filter to this self.request.user.get('user_id') or something similar
         queryset = JoinedEvents.objects.all()
         return queryset
-
+"""
 
 class CommentViewSet(viewsets.ModelViewSet):
     authentication_classes = (GoogleSessionAuthentication,)

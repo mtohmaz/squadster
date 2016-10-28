@@ -57,9 +57,9 @@ urlpatterns = [
         name='event-comment-children-list'),
     # END NEW
     
-    url(r'^api/joinedevents/$', viewsets.JoinedEventsViewSet.as_view({
-            'get':'list',
-            'post':'create'})),
+    #url(r'^api/joinedevents/$', viewsets.JoinedEventsViewSet.as_view({
+    #        'get':'list',
+    #        'post':'create'})),
     
     
     #url(r'^events/[0-9]{7}/join', views.join_event),
@@ -71,6 +71,12 @@ urlpatterns = [
             })),
         
     
+    # MY EVENTS
+    url(r'api/users/(?P<user_id>[0-9]+)/events/', viewsets.UserEventViewSet.as_view({
+        'get':'list',
+        #'post':'create'
+    })),
+
     # TEMPORARY, REMOVE
     #url(r'^api/users/[0-9]+/apikeys/$', views.create_api_key),
     
