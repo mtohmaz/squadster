@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import exceptions
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.contrib.auth import logout
 
 from squadster.models import SquadsterUser, Admin
 from team1.settings import dateformat
@@ -12,7 +13,9 @@ import pytz
 
 class GoogleSessionAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
-        print('keys: ' + str(request.session.keys()))
+        print('request: ' + str(request.data.dict()))
+        #print('keys: ' + str(request.session.keys()))
+        print('sessionid: ' + request.session.session_key)
         print('items: ' + str(request.session.items()))
         
         if 'google_session_token' not in request.session \
@@ -26,16 +29,12 @@ class GoogleSessionAuthentication(authentication.BaseAuthentication):
         id_token = request.session['google_session_token']
         
         try:
-            #print('GoogleSessionAuthentication: id_token=' + id_token)
-            #user = SquadsterUser.objects.get(google_session_token=id_token)
             user = User.objects.get(id=user_id)
             
             # check expiration + delete if not valid anymore, then return 
             # is_authenticated = False 
             # delete the session
             # then Redirect to /api again
-            #last_auth = user.google_session_last_auth
-            #timeout = user.google_session_timeout
             last_auth_str = request.session['google_session_last_auth']
             last_auth = datetime.strptime(last_auth_str, dateformat)
             utctz = pytz.timezone('UTC')
@@ -45,9 +44,9 @@ class GoogleSessionAuthentication(authentication.BaseAuthentication):
             current_time = datetime.now(utctz) #timezone.now()
             
             if (current_time - last_auth) > timeout:
+                request.session.clear()
+                request.session.delete()
                 
-                user.is_authenticated = False
-                request.session.flush()
                 print("Timeout for user: " + str(user.user.username))
                 return None
                 
@@ -56,7 +55,6 @@ class GoogleSessionAuthentication(authentication.BaseAuthentication):
             request.session.flush()
             raise exceptions.AuthenticationFailed('user not found')
         
-        #user.is_authenticated = True
         print("GoogleSessionAuthentication succeeded")
         return (user, None)
 
@@ -78,3 +76,4 @@ class SquadsterAuthentication(authentication.BaseAuthentication):
         
         
         return (user, None)
+

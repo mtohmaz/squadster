@@ -1,6 +1,4 @@
-import os, datetime, logging
-import httplib2, json
-import urllib.parse
+import os, datetime, logging, httplib2, json
 from urllib.error import HTTPError
 from datetime import datetime, timedelta
 
@@ -11,14 +9,12 @@ from django.http import JsonResponse
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseRedirect
 
-
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from django.utils.six import BytesIO
 from django.contrib.auth import logout as auth_logout
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
@@ -26,6 +22,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 
 import oauth2client
 from oauth2client.client import flow_from_clientsecrets
@@ -135,7 +132,6 @@ def get_user_info(credentials):
 
 
 
-
 def auth_return(request):
     credentials = FLOW.step2_exchange(request.GET['code'])
     user_info = get_user_info(credentials)
@@ -147,7 +143,7 @@ def auth_return(request):
     print('user_info: ' + str(user_info))
     print('id_token: ' + str(credentials.id_token))
     id_token = credentials.token_response['id_token']
-
+    
 
     try:
         idinfo = client.verify_id_token(id_token, CLIENT_ID)
@@ -161,7 +157,11 @@ def auth_return(request):
     except crypt.AppIdentityError as e:
         # Invalid token
         return HttpResponse('ID Token is invalid: ' +  str(e),status= status.HTTP_401_UNAUTHORIZED)
-
+    
+    access_token_info = credentials.get_access_token()
+    access_token = access_token_info.access_token
+    expires_seconds = access_token_info.expires_in
+    username = email_address.split('@')[0]
 
     try:
         print('checking if email exists')
@@ -178,17 +178,15 @@ def auth_return(request):
 
         response = HttpResponseRedirect("/api/events/")
         #response.set_cookie('google_token', id_token)
+        request.session['google_session_timeout'] = expires_seconds
+        request.session['google_session_last_auth'] = timezone.now().strftime(settings.dateformat)
         request.session['google_session_token'] = id_token
+        request.session['user_id'] = user.id
         return response
     except User.DoesNotExist as e:
         # CREATE A NEW USER RECORD
         print('email not exist')
-        access_token_info = credentials.get_access_token()
-        print(access_token_info)
-        access_token = access_token_info.access_token
-        expires_seconds = access_token_info.expires_in
-
-        username = email_address.split('@')[0]
+        
         print('about to create new user')
         newUser = User.objects.create(
             username=username,
@@ -198,7 +196,6 @@ def auth_return(request):
 
         print('newUser created')
         #create api key for user and save to database
-        from rest_framework.authtoken.models import Token
         print('about to create token')
         token = Token.objects.create(user=newUser)
 
@@ -208,30 +205,16 @@ def auth_return(request):
         
         # save session information
         request.session['google_session_timeout'] = expires_seconds
-        #request.session['google_session_last_auth'] = json.dumps(
-        #    timezone.now(), default=datetime_serializer)
         request.session['google_session_last_auth'] = timezone.now().strftime(settings.dateformat)
         request.session['google_session_token'] = id_token
         request.session['user_id'] = newUser.id
 
         response = HttpResponseRedirect("/api/events/")
-
-        #user = authenticate(username=newUser.username)
+        
         #auth_login(request, user)
-
-        #response.set_cookie('google_token', id_token)
         
         return response
 
-
-def store_credentials(user_id, email):
-    print('something')
-
-def get_stored_credentials(user_id):
-    print('something')
-
-def create_event(request):
-    print('something')
 
 """
 def map(request):
@@ -256,8 +239,3 @@ def my_events(request):
     status=403)
 """
 
-
-
-"""
-    squadsteruser: a SquadsterUser object
-"""
