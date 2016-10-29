@@ -4,34 +4,7 @@ import { Router } from '@angular/router';
 
 @Component({
     selector: 'my-app',
-    template: `
-    <div id="head">
-      <div id="nav">
-        <searchbar></searchbar>
-        <topnav></topnav>
-      </div>
-      <div class="col-xs-2" id="filter">
-        <filters></filters>
-      </div>
-      <div class="col-xs-1"></div>
-      <div id="body" class="col-xs-6">
-        <router-outlet></router-outlet>
-      </div>
-      <div class="col-xs-3">
-        <a routerLink="app/create-event" routerLinkActive="active" id="createicon" class="icon ion-plus-circled" title="Host a new event"></a>
-      </div>
-    </div>
-    <div *ngIf="isEdited()" class="col-xs-3 margin">
-        <div class="mapswitch">
-            <input type="checkbox" name="mapswitch" class="mapswitch-checkbox" id="mymapswitch" [checked]="check()" (change)="toggle()">
-            <label class="mapswitch-label" for="mymapswitch">
-                <span class="mapswitch-inner"></span>
-                <span class="mapswitch-switch"></span>
-            </label>
-        </div>
-    </div>
-
-    `,
+    templateUrl: 'app/html/app.component.html',
     styleUrls: ['app/styles/master-styles.css', 'app/styles/mapswitch.css'],
     //state which components are used in the template.
     //directives: [CreateComponent]

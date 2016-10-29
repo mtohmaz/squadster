@@ -8,5 +8,5 @@ export class Event {
   //startTime: string;
   //currentAttendees: number;
   max_attendees: number;
-  //description: string;
+  description: string;
 }

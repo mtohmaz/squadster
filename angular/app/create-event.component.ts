@@ -29,7 +29,7 @@ export class CreateEventComponent {
     private eventService: EventService,
     private route: ActivatedRoute )
   {
-    (this.minDate = new Date()).setDate(this.minDate.getDate() - 1000);
+    (this.minDate = new Date()).setDate(this.minDate.getDate());
   }
 
   ngOnInit() {
@@ -48,6 +48,7 @@ export class CreateEventComponent {
     title: null,
     date: null,
     max_attendees: null,
+    description: null
   };
 
   /*ngOnInit(): void {
@@ -60,7 +61,7 @@ export class CreateEventComponent {
 
    add(event: Create): void {
      if (!event) { return; }
-     this.eventService.create(1, this.create.title, this.create.date, this.create.max_attendees);
+     this.eventService.create(this.create.title, this.create.date, this.create.max_attendees);
        /*.then(event => {
          this.events.push(event);
        });*/
