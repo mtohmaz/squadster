@@ -61,7 +61,7 @@ export class CreateEventComponent {
 
    add(event: Create): void {
      if (!event) { return; }
-     this.eventService.create(this.create.title, this.create.date, this.create.max_attendees);
+     this.eventService.create(this.create.title, this.create.date, this.create.max_attendees, this.create.description);
        /*.then(event => {
          this.events.push(event);
        });*/

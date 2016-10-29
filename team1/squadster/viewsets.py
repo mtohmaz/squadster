@@ -1,4 +1,4 @@
-
+import json
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.views import APIView
@@ -54,7 +54,7 @@ class EventAttendeesViewSet(viewsets.ModelViewSet, APIView):
     def create(self, request, event_id):
         #return Response('not implemented yet')
         #params = request.POST
-        d = request.data.dict()
+        d = request.data
         d['event_id'] = event_id
         # if a specific user was specified in the call, allow it?
         # should one user be able to add other users to an event? probably not
@@ -90,7 +90,7 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
         return Response(serializer.data)
     
     def create(self, request):
-        d = request.data.dict()
+        d = request.data
         d['host'] = int(request.user.id)
         
         serializer = EventSerializer(data=d, context={'request':request})
@@ -160,7 +160,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     
     def create(self, request, event_id):
         user = request.user
-        d = request.data.dict()
+        d = request.POST.dict()
         d['parent_event'] = int(event_id)
         d['author'] = user.id
         #print('d: ' + str(d))

@@ -24,6 +24,11 @@ ubuntu_packages:
 	
 	# remove pip for python2
 	sudo apt-get remove python-pip
+	
+	# PostGIS
+	sudo add-apt-repository ppa:ubuntugis/ppa
+	sudo apt-get update
+	sudo apt-get install postgis
 
 
 # drops the database and completely recreates it
@@ -57,9 +62,13 @@ setupdb:
 	# This script is only for commands run as db user 'postgres'
 	# if we need to have other setup commands for the team1 user,
 	# we should put them in a setupteam1.sql script or something
-	sudo cp setup/pg_hba.conf /etc/postgresql/9.3/main/pg_hba.conf
-	sudo chown root:root /etc/postgresql/9.3/main/pg_hba.conf
+	
+	# The following two are path dependent based on version of postgresql
+	#sudo cp setup/pg_hba.conf /etc/postgresql/9.3/main/pg_hba.conf
+	#sudo chown root:root /etc/postgresql/9.3/main/pg_hba.conf
+	
 	psql --username ${postgresrootuser} -f setup/setup.sql
+	psql -d squadsterdb --username ${postgresrootuser} -c 'CREATE EXTENSION postgis';
 
 setuppython:
 	bash setup/pythonsetup.sh
