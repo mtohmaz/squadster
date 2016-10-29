@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import * as moment from 'moment';
 
 import { Event } from './event';
 import { EventService } from './event.service';
@@ -26,7 +27,7 @@ export class Create {
     <br><br>
 
     <label>Date: </label>
-    <datepicker [(ngModel)]="create.eventDate" [showWeeks]="false"></datepicker>
+    <datepicker [(ngModel)]="create.eventDate" [showWeeks]="false" [minDate]="minDate"></datepicker>
 
     <label>&nbsp;Time: </label>
     <input type="time" [(ngModel)]="create.eventTime">
@@ -49,10 +50,11 @@ export class Create {
 export class CreateEventComponent {
 
   events: Event[];
+  public minDate: Date = void 0;
 
-  constructor (
-    private eventService: EventService
-  ) {}
+  constructor( private eventService: EventService ){
+    (this.minDate = new Date()).setDate(this.minDate.getDate() - 1000);
+  }
 
   title = "Create Event";
   create: Create = {

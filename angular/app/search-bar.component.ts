@@ -1,27 +1,24 @@
-import {Component, ViewEncapsulation, OnInit} from "@angular/core";
+import { Component, ViewEncapsulation, OnInit } from "@angular/core";
+import { DropdownModule } from "ng2-bootstrap/ng2-bootstrap";
 
 @Component({
-    selector: "searchbar",
-    template: `
-    <div class="row" id="searchbar">
-        <div class="col-xs-2">
-            <div id="logo">
-                  <img src="../images/SquadsterLogo.png" />
-            </div>
-        </div>
-        <div class="col-xs-6">
-            <input type="text" class="searchbox" placeholder=" Find an event nearby...">
-        </div>
-        <div class="col-xs-2">
-            <button type="button" class="btn btn-warning btn-lg" routerLink="app/create-event" routerLinkActive="active">Host a New Event</button>
-        </div>
-        <div class="col-xs-2">
-            <button type="button" class="btn btn-success icon ion-person" routerLink="app/login" routerLinkActive="active"> My Account</button>
-        </div>
-    </div>
-    `,
+    selector: 'searchbar',
+    templateUrl: 'app/html/search-bar.component.html',
     encapsulation: ViewEncapsulation.None,
     styleUrls: ['app/styles/search-bar.component.css'],
 })
 
-export class SearchBarComponent { }
+export class SearchBarComponent {
+    public disabled:boolean = false;
+    public status:{isopen:boolean} = {isopen: false};
+
+    public toggled(open:boolean):void {
+        console.log('Dropdown is now: ', open);
+    }
+
+    public toggleDropdown($event:MouseEvent):void {
+        $event.preventDefault();
+        $event.stopPropagation();
+        this.status.isopen = !this.status.isopen;
+    }
+}

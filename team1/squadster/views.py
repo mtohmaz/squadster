@@ -1,6 +1,4 @@
-import os, datetime, logging
-import httplib2
-import urllib.parse
+import os, datetime, logging, httplib2, json
 from urllib.error import HTTPError
 from datetime import datetime, timedelta
 
@@ -11,14 +9,12 @@ from django.http import JsonResponse
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseRedirect
 
-
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from django.utils.six import BytesIO
 from django.contrib.auth import logout as auth_logout
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
@@ -26,6 +22,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 
 import oauth2client
 from oauth2client.client import flow_from_clientsecrets
@@ -36,6 +33,7 @@ from oauth2client.client import FlowExchangeError
 from googleapiclient.discovery import build
 
 from squadster.models import SquadsterUser
+from squadster.serializers import datetime_serializer
 from team1 import settings
 
 
@@ -51,12 +49,11 @@ except ImportError:
 # on the API Access tab on the Google APIs
 # Console <http://code.google.com/apis/console>
 CLIENT_SECRETS = os.path.join(os.path.dirname(__file__), 'client_secrets.json')
-CLIENT_ID = '765648849014-kjgtsiqvfmkinasvc5tak562hr7k92sj.apps.googleusercontent.com'
+CLIENT_ID = '290427034826-un4ldmeetlngevc5ep3jnt0s71284pjf.apps.googleusercontent.com'
 
 #should consider moving these secret files outside of project directory
 credential_dir = os.path.join(os.path.dirname(__file__), 'credentials')
 credential_path = os.path.join(credential_dir,'userCredentials.json')
-
 
 
 
@@ -67,37 +64,16 @@ FLOW = flow_from_clientsecrets(
             'https://www.googleapis.com/auth/userinfo.profile',
         ],
     redirect_uri='http://localhost/api/oauth2return')
-    
+
 def home(request):
     pass
 
 
 def login(request):
-    from oauth2client import client, crypt
+    if 'google_session_token' in request.session:
+        print('google_session_token in session')
+        google_token = request.session['google_session_token']
 
-    print('request:' + str(request))
-    """
-    if request.user.is_authenticated:
-        response = HttpResponseRedirect("/api/events/")
-        return response
-    else:
-        FLOW.params['state'] = xsrfutil.generate_token(
-                settings.SECRET_KEY, request.user)
-            
-        authorize_url = FLOW.step1_get_authorize_url()
-        return HttpResponseRedirect(authorize_url)
-    """
-    
-    #if 'google_token' in request.META:
-    print(request.session.keys())
-    
-    if 'google_token' in request.session:
-        print('google token in request')
-        #google_token = request.COOKIES.get('google_token')
-        google_token = request.session['google_token']
-        
-        # TODO ASK GOOGLE IF ITS VALID
-        # (Receive token by HTTPS POST)
         print ('google token:' + str(google_token))
         try:
             idinfo = client.verify_id_token(google_token, CLIENT_ID)
@@ -110,8 +86,8 @@ def login(request):
                 raise crypt.AppIdentityError("Wrong hosted domain.")
         except crypt.AppIdentityError as e:
             # Invalid token
-            return HttpResponse('Token ID is invalid: ' +  str(e),status= status.HTTP_401_UNAUTHORIZED)
-        
+            return HttpResponse('ID Token is invalid: ' +  str(e),status= status.HTTP_401_UNAUTHORIZED)
+
         userid = idinfo['sub']
         # IF IT IS:
         # CHECK IF USER EMAIL EXISTS IN DATABASE
@@ -120,17 +96,17 @@ def login(request):
         if user is None :
             FLOW.params['state'] = xsrfutil.generate_token(
                 settings.SECRET_KEY, request.user)
-            
+
             authorize_url = FLOW.step1_get_authorize_url()
             return HttpResponseRedirect(authorize_url)
-        # NOW REDIRECT TO list-view
+        # NOW REDIRECT TO logged-in landing page
         else:
             response = HttpResponseRedirect("/api/events/")
             #print(credentials)
-            request.session['google_token'] = google_token
+            #request.session['google_session_token'] = google_token
             #response.set_cookie('google_token', google_token)
             return response
-            
+
     else:
         print('no google token in request')
         # NO TOKEN GIVEN IN REQUEST, REDIRECT TO AUTHORIZE_URL
@@ -153,7 +129,6 @@ def get_user_info(credentials):
         return user_info
     else:
         raise NoUserIdException()
-  
 
 
 
@@ -162,14 +137,14 @@ def auth_return(request):
     user_info = get_user_info(credentials)
     email_address = user_info.get('email')
     user_id = user_info.get('id')
-    
+
     # CHECK IF IN DATABASE YET, IF NOT, CREATE ENTRY
     print('credentials: ' + str(credentials))
     print('user_info: ' + str(user_info))
     print('id_token: ' + str(credentials.id_token))
     id_token = credentials.token_response['id_token']
     
-    
+
     try:
         idinfo = client.verify_id_token(id_token, CLIENT_ID)
         # If multiple clients access the backend server:
@@ -181,76 +156,65 @@ def auth_return(request):
             raise crypt.AppIdentityError("Wrong hosted domain.")
     except crypt.AppIdentityError as e:
         # Invalid token
-        return HttpResponse('Token ID is invalid: ' +  str(e),status= status.HTTP_401_UNAUTHORIZED)
+        return HttpResponse('ID Token is invalid: ' +  str(e),status= status.HTTP_401_UNAUTHORIZED)
     
-    
-    
+    access_token_info = credentials.get_access_token()
+    access_token = access_token_info.access_token
+    expires_seconds = access_token_info.expires_in
+    username = email_address.split('@')[0]
+
     try:
         print('checking if email exists')
         user = User.objects.get(email=email_address)
-        print('email exist... Proceed to list-view')
-        
+        print('email exists... Proceed to logged in view')
+
         #user = authenticate(email=email_address)
         #auth_login(request, user)
-        
-        # TODO if user.profile.google_session_token already exists,
+
+        # if already has a session,
         # set the session token to that instead of the new one
-        
-        if user.profile.google_session_token:
-            id_token = user.profile.google_session_token
-        
+        if 'google_session_token' in request.session:
+            id_token = request.session['google_session_token']
+
         response = HttpResponseRedirect("/api/events/")
         #response.set_cookie('google_token', id_token)
-        request.session['google_token'] = id_token
+        request.session['google_session_timeout'] = expires_seconds
+        request.session['google_session_last_auth'] = timezone.now().strftime(settings.dateformat)
+        request.session['google_session_token'] = id_token
+        request.session['user_id'] = user.id
         return response
     except User.DoesNotExist as e:
         # CREATE A NEW USER RECORD
         print('email not exist')
-        access_token_info = credentials.get_access_token()
-        print(access_token_info)
-        access_token = access_token_info.access_token
-        expires_seconds = access_token_info.expires_in
         
-        username = email_address.split('@')[0]
         print('about to create new user')
         newUser = User.objects.create(
             username=username,
             email=email_address
         )
         newUser.backend='social.backends.google.GoogleOAuth2'
-        
+
         print('newUser created')
         #create api key for user and save to database
-        from rest_framework.authtoken.models import Token
         print('about to create token')
         token = Token.objects.create(user=newUser)
-        
+
         print('api key obtained')
         newUser.save()
-
-        newUser.profile.google_session_token = id_token
-        newUser.profile.google_session_timeout = timedelta(seconds=expires_seconds)
-        newUser.profile.google_session_last_auth = timezone.now()
         newUser.profile.save()
         
+        # save session information
+        request.session['google_session_timeout'] = expires_seconds
+        request.session['google_session_last_auth'] = timezone.now().strftime(settings.dateformat)
+        request.session['google_session_token'] = id_token
+        request.session['user_id'] = newUser.id
+
         response = HttpResponseRedirect("/api/events/")
         
-        #user = authenticate(username=newUser.username)
         #auth_login(request, user)
         
-        #response.set_cookie('google_token', id_token)
-        request.session['google_token'] = id_token
         return response
 
-
-def store_credentials(user_id, email):
-    print('something')
-    
-def get_stored_credentials(user_id):
-    print('something')
-    
-def create_event(request):
-    print('something')
 
 """
 def map(request):
@@ -270,14 +234,8 @@ def my_events(request):
 
         return HttpResponse(json.dumps(events), content_type='text/json',
             status=200)
-    else: 
-        return HttpResponse(json.dumps('Forbidden'), content_type='text/json', 
+    else:
+        return HttpResponse(json.dumps('Forbidden'), content_type='text/json',
     status=403)
-"""
-
-
-
-"""
-    squadsteruser: a SquadsterUser object
 """
 

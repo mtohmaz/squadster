@@ -3,52 +3,59 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import exceptions
 from django.utils import timezone
+from django.contrib.auth.models import User
+from django.contrib.auth import logout
 
 from squadster.models import SquadsterUser, Admin
-
+from team1.settings import dateformat
 from datetime import datetime, timedelta
+import pytz
 
 class GoogleSessionAuthentication(authentication.BaseAuthentication):
-    # TODO add checking for timeout, and removing from db if timed out
     def authenticate(self, request):
+        print('request: ' + str(request.data.dict()))
+        #print('keys: ' + str(request.session.keys()))
+        print('sessionid: ' + request.session.session_key)
+        print('items: ' + str(request.session.items()))
         
-        if 'google_token' not in request.session:
+        if 'google_session_token' not in request.session \
+                or 'google_session_last_auth' not in request.session \
+                or 'google_session_timeout' not in request.session \
+                or 'user_id' not in request.session:
+            print('invalid session, login again')
             return None
         
-        
-        id_token = request.session['google_token']
+        user_id = request.session['user_id']
+        id_token = request.session['google_session_token']
         
         try:
-            print('GoogleSessionAuthentication: id_token=' + id_token)
-            user = SquadsterUser.objects.get(google_session_token=id_token)
+            user = User.objects.get(id=user_id)
             
-            # TODO check expiration + delete if not valid anymore, then return 
+            # check expiration + delete if not valid anymore, then return 
             # is_authenticated = False 
-            # delete the cookie google_token
+            # delete the session
             # then Redirect to /api again
-            last_auth = user.google_session_last_auth
-            timeout = user.google_session_timeout
-            current_time = timezone.now()
+            last_auth_str = request.session['google_session_last_auth']
+            last_auth = datetime.strptime(last_auth_str, dateformat)
+            utctz = pytz.timezone('UTC')
+            last_auth = utctz.localize(last_auth)
+            timeout_seconds = request.session['google_session_timeout']
+            timeout = timedelta(seconds=timeout_seconds)
+            current_time = datetime.now(utctz) #timezone.now()
             
             if (current_time - last_auth) > timeout:
-                user.google_session_token = ""
-                user.google_session_last_auth = None
-                user.google_session_timeout = None
-                user.save()
+                request.session.clear()
+                request.session.delete()
                 
-                user.is_authenticated = False
-                request.session.pop('google_token', None)
                 print("Timeout for user: " + str(user.user.username))
                 return None
                 
-            
-            
         except SquadsterUser.DoesNotExist:
-            # delete cookies somehow
-            request.session.pop('google_token', None)
+            # delete session + cookie
+            request.session.flush()
             raise exceptions.AuthenticationFailed('user not found')
         
-        user.is_authenticated = True
+        print("GoogleSessionAuthentication succeeded")
         return (user, None)
 
 
@@ -69,3 +76,4 @@ class SquadsterAuthentication(authentication.BaseAuthentication):
         
         
         return (user, None)
+
