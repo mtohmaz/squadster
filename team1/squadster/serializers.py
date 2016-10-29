@@ -49,6 +49,7 @@ class EventSerializer(serializers.ModelSerializer):
             'title',
             'date',
             'max_attendees',
+            'description',
             'comments',
             'attendees',
             'summary_fields'
