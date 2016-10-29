@@ -5,7 +5,7 @@ import { ListViewComponent }   from './list-view.component';
 import { CreateEventComponent } from './create-event.component';
 import { MyEventsComponent } from './my-events.component';
 import { LoginComponent } from './login.component';
-import {MapComponent} from "./map.component";
+import { MapComponent } from "./map.component";
 
 const appRoutes: Routes = [
   {

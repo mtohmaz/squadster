@@ -4,7 +4,7 @@ export class Event {
   title: string;
   //hostName: string;
   //location: string;
-  date: string;
+  date: Date;
   //startTime: string;
   //currentAttendees: number;
   max_attendees: number;

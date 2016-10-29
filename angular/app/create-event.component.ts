@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import * as moment from 'moment';
+import { ActivatedRoute, Params } from '@angular/router';
 
 import { Event } from './event';
 import { EventService } from './event.service';
@@ -15,35 +16,7 @@ export class Create {
 
 @Component({ //tells angular that this file is a component.
   selector: 'create-event',
-  template: `
-  <h2>{{ title }}</h2>
-  <div class="body">
-    <label>Event Title: </label>
-    <input [(ngModel)]="create.title">
-    <br><br>
-
-    <label>Event Location: </label>
-    <input [(ngModel)]="create.location">
-    <br><br>
-
-    <label>Date: </label>
-    <datepicker [(ngModel)]="create.eventDate" [showWeeks]="false" [minDate]="minDate"></datepicker>
-
-    <label>&nbsp;Time: </label>
-    <input type="time" [(ngModel)]="create.eventTime">
-    <br><br>
-
-    <label>Max Attendees: </label>
-    <input [(ngModel)]="create.maxAttendees">
-    <br><br>
-
-    <label>Description: </label>
-    <input [(ngModel)]="create.description">
-    <br><br>
-
-    <button (click)="add(create)">Add</button>
-  </div>
-  `,
+  templateUrl: 'app/html/create-event.component.html',
   styleUrls: ['app/styles/master-styles.css'],
   providers: [EventService]
 })
@@ -52,18 +25,29 @@ export class CreateEventComponent {
   events: Event[];
   public minDate: Date = void 0;
 
-  constructor( private eventService: EventService ){
+  constructor(
+    private eventService: EventService,
+    private route: ActivatedRoute )
+  {
     (this.minDate = new Date()).setDate(this.minDate.getDate() - 1000);
   }
 
+  ngOnInit() {
+      this.route.queryParams.forEach((params: Params) => {
+        let id = +params['id'] || 0;
+        if (id != 0) {
+          this.eventService.getEvent(id).then(ret => this.create = ret);
+        }
+      });
+  }
+
   title = "Create Event";
-  create: Create = {
+  create: Event = {
+    event_id: null,
+    host_id: null,
     title: null,
-    location: null,
-    eventDate: null,
-    eventTime: null,
-    maxAttendees: null,
-    description: null
+    date: null,
+    max_attendees: null,
   };
 
   /*ngOnInit(): void {
@@ -76,7 +60,7 @@ export class CreateEventComponent {
 
    add(event: Create): void {
      if (!event) { return; }
-     this.eventService.create(1, this.create.title, this.create.eventDate, this.create.maxAttendees);
+     this.eventService.create(1, this.create.title, this.create.date, this.create.max_attendees);
        /*.then(event => {
          this.events.push(event);
        });*/

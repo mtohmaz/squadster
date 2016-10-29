@@ -1,0 +1,27 @@
+<h2>{{ title }}</h2>
+<div class="body">
+  <label>Event Title: </label>
+  <input [(ngModel)]="create.title">
+  <br><br>
+
+  <label>Event Location: </label>
+  <input [(ngModel)]="create.location">
+  <br><br>
+
+  <label>Date: </label>
+  <datepicker [(ngModel)]="create.date" [showWeeks]="false" [minDate]="minDate"></datepicker>
+
+  <label>&nbsp;Time: </label>
+  <input type="time" [(ngModel)]="create.eventTime">
+  <br><br>
+
+  <label>Max Attendees: </label>
+  <input [(ngModel)]="create.max_attendees">
+  <br><br>
+
+  <label>Description: </label>
+  <input [(ngModel)]="create.description">
+  <br><br>
+
+  <button (click)="add(create)">Add</button>
+</div>

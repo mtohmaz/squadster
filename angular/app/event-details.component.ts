@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { Event } from './event';
 
 @Component({
@@ -33,10 +34,17 @@ import { Event } from './event';
       <div>
         <label>Max Attendees:</label> {{event.max_attendees}}
       </div>
+      <button (click)="onClick(event)">View Details</button>
     </div>
   `
 })
 
 export class EventDetailComponent {
   @Input() event: Event;
+
+  constructor( private router: Router) {}
+
+  onClick() {
+    this.router.navigate(['app/create-event'], { queryParams: { id: this.event.event_id }});
+  }
 }
