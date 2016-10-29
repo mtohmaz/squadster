@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 
 import { Event } from './event';
 import { EventService } from './event.service';
-import { TopNavComponent } from './top-nav.component';
 
 @Component({
   //moduleId: module.id,
@@ -13,21 +12,20 @@ import { TopNavComponent } from './top-nav.component';
 })
 
 export class ListViewComponent implements OnInit {
+  @Output() isMap = new EventEmitter<boolean>();
+
   title = 'Events Nearby';
   events: Event[];
   selectedEvent: Event;
 
-  constructor(private eventService: EventService) {
-    let topNav = new TopNavComponent();
-    console.log('value of isMapOn when in list-view is:' + topNav.isMapOn());
-  }
+  constructor(private eventService: EventService) { }
 
-  getEvents(): void {
-    this.eventService.getEvents().then(events => this.events = events);
+  getAllEvents(): void {
+    this.eventService.getAllEvents().then(events => this.events = events);
   }
 
   ngOnInit(): void {
-    this.getEvents();
+    this.getAllEvents();
   }
 
   onSelect(event: Event): void {

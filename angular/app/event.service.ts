@@ -5,7 +5,6 @@ import 'rxjs/add/operator/toPromise';
 
 import { Event } from './event';
 import { Create } from './create-event.component';
-import { EVENTS } from './mock-events';
 
 @Injectable()
 export class EventService {
@@ -15,16 +14,23 @@ export class EventService {
 
   constructor(private http: Http) { }
 
-  getEvents(): Promise<Event[]> {
+  getAllEvents(): Promise<Event[]> {
     return this.http.get(this.eventsUrl)
                     .toPromise()
                     .then(response => response.json() as Event[])
                     .catch(this.handleError);
   }
 
-  create(host_id: number, title: string, date: Date, max_attendees: number): Promise<Event> {
+  getEvent(event_id: number): Promise<Event> {
+    return this.http.get(this.eventsUrl + event_id)
+                    .toPromise()
+                    .then(response => response.json() as Event)
+                    .catch(this.handleError);
+  }
+
+  create(title: string, date: Date, max_attendees: number): Promise<Event> {
     return this.http
-               .post(this.eventsUrl, JSON.stringify({host_id: host_id, title: title, date: date, max_attendees: max_attendees}), {headers: this.headers})
+               .post(this.eventsUrl, JSON.stringify({title: title, date: date, max_attendees: max_attendees}), {headers: this.headers})
                .toPromise()
                .then(response => response.json().data)
                .catch(this.handleError);
