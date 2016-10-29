@@ -16,7 +16,7 @@ from squadster.models import *
 from squadster.authenticators import GoogleSessionAuthentication
 
 class UserViewSet(viewsets.ModelViewSet,APIView):
-    authentication_classes = (GoogleSessionAuthentication, BasicAuthentication,)
+    authentication_classes = (GoogleSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = UserSerializer
     lookup_field = 'user_id'
@@ -40,7 +40,7 @@ class UserViewSet(viewsets.ModelViewSet,APIView):
 
 
 class EventAttendeesViewSet(viewsets.ModelViewSet, APIView):
-    authentication_classes = (GoogleSessionAuthentication, BasicAuthentication,)
+    authentication_classes = (GoogleSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = UserSerializer
     #lookup_field = 'event_id'
@@ -56,30 +56,20 @@ class EventAttendeesViewSet(viewsets.ModelViewSet, APIView):
         #params = request.POST
         d = request.data.dict()
         d['event_id'] = event_id
-        if 'id' in d:
+        # if a specific user was specified in the call, allow it?
+        # should one user be able to add other users to an event? probably not
+        if 'id' in d and d['id'] == request.user.id:
             user_id = d['id']
         else:
             user_id = request.user.id
         
         event = Event.objects.get(event_id=event_id)
-        
         user = User.objects.get(id=user_id)
         event.attendees.add(user)
         
-        
         return HttpResponseRedirect(
                 reverse('event-attendees-list', kwargs={'event_id':event_id}))
-
-        
-        #serializer = UserSerializer(data=d)
-        #if serializer.is_valid():
-        #    newattendee = serializer.save()
-        #    print(model_to_dict(newattendee))
-        #    return Response(serializer.data)
-        #else:
-        #    return Response(serializer.errors, 
-        #        status=status.HTTP_400_BAD_REQUEST)
-        
+    
     def get_queryset(self):
         event_id = self.kwargs['event_id']
         return Event.objects.get(event_id=event_id).attendees
@@ -103,7 +93,7 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
         d = request.data.dict()
         d['host'] = int(request.user.id)
         
-        serializer = EventSerializer(data=d)
+        serializer = EventSerializer(data=d, context={'request':request})
         if serializer.is_valid():
             event = serializer.save()
             print(model_to_dict(event))
