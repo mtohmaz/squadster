@@ -7,7 +7,7 @@ team1/.Python
 **/*.sqlite3
 
 # ignore pyc compiled files, which can vary, but we don't care
-# since they are recompiled per client 
+# since they are recompiled per client
 **/__pycache__
 
 
@@ -19,6 +19,7 @@ team1/bin/
 team1/include/
 team1/lib/
 team1/share/
+team1/lib64
 team1/pip-selfcheck.json
 
 

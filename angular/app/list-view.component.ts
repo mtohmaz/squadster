@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 
 import { Event } from './event';
 import { EventService } from './event.service';
@@ -6,35 +6,26 @@ import { EventService } from './event.service';
 @Component({
   //moduleId: module.id,
   selector: 'list-view',
-  template: `
-    <h1>{{title}}</h1>
-    <h2>Events</h2>
-    <ul class="events">
-      <li *ngFor="let event of events"
-        [class.selected]="event === selectedEvent"
-        (click)="onSelect(event)">
-        <span class="badge">{{event.id}}</span> {{event.title}}
-      </li>
-    </ul>
-    <my-event-detail [event]="selectedEvent"></my-event-detail>
-  `,
+  templateUrl: 'app/html/list-view.component.html',
   styleUrls: ['app/styles/list-view.component.css'],
   providers: [EventService]
 })
 
 export class ListViewComponent implements OnInit {
+  @Output() isMap = new EventEmitter<boolean>();
+
   title = 'Events Nearby';
   events: Event[];
   selectedEvent: Event;
 
   constructor(private eventService: EventService) { }
 
-  getEvents(): void {
-    this.eventService.getEvents().then(events => this.events = events);
+  getAllEvents(): void {
+    this.eventService.getAllEvents().then(events => this.events = events);
   }
 
   ngOnInit(): void {
-    this.getEvents();
+    this.getAllEvents();
   }
 
   onSelect(event: Event): void {

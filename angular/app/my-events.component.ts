@@ -26,12 +26,12 @@ export class MyEventsComponent {
 
   constructor(private eventService: EventService) { }
 
-  getEvents(): void {
-    this.eventService.getEvents().then(events => this.events = events);
+  getAllEvents(): void {
+    this.eventService.getAllEvents().then(events => this.events = events);
   }
 
   ngOnInit(): void {
-    this.getEvents();
+    this.getAllEvents();
   }
 
   onSelect(event: Event): void {

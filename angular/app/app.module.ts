@@ -19,6 +19,7 @@ import { SideNavComponent } from './side-nav.component';
 import { SearchBarComponent } from './search-bar.component';
 import { LoginComponent } from './login.component';
 import { MapComponent } from './map.component';
+import { FiltersComponent } from './filters.component';
 
 import { EventService } from './event.service';
 import { routing } from './app.routing';
@@ -46,7 +47,8 @@ import { routing } from './app.routing';
     SideNavComponent,
     SearchBarComponent,
     LoginComponent,
-    MapComponent
+    MapComponent,
+    FiltersComponent
   ],
   providers: [
     EventService,
