@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-
+from django.contrib.gis.db import models as gismodels
 
 """
 from oauth2client.contrib.django_orm import FlowField
@@ -61,7 +61,7 @@ class Event(models.Model):
     date = models.DateTimeField()
     max_attendees = models.IntegerField()
     description = models.CharField(max_length=250)
-    
+    coordinates = gismodels.PointField
     def __str__(self):
         return '%s on %s' % (self.title, self.date.isoformat())
 
