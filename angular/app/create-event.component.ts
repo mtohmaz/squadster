@@ -5,15 +5,6 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { Event } from './event';
 import { EventService } from './event.service';
 
-export class Create {
-  title: string;
-  location: string;
-  eventDate: Date;
-  eventTime: Date;
-  maxAttendees: number;
-  description: string;
-}
-
 @Component({ //tells angular that this file is a component.
   selector: 'create-event',
   templateUrl: 'app/html/create-event.component.html',
@@ -22,10 +13,21 @@ export class Create {
 })
 export class CreateEventComponent {
 
+  status: string;
   events: Event[];
   public minDate: Date = void 0;
+  title = "Create Event";
 
-  constructor(
+  create: Event = {
+    event_id: null,
+    host_id: null,
+    title: null,
+    date: null,
+    max_attendees: null,
+    description: null
+  };
+
+  constructor (
     private eventService: EventService,
     private route: ActivatedRoute )
   {
@@ -41,29 +43,9 @@ export class CreateEventComponent {
       });
   }
 
-  title = "Create Event";
-  create: Event = {
-    event_id: null,
-    host_id: null,
-    title: null,
-    date: null,
-    max_attendees: null,
-    description: null
-  };
-
-  /*ngOnInit(): void {
-    this.route.params.forEach((params: Params) => {
-       let id = +params['id'];
-       this.eventService.getEvents(id)
-         .then(hero => this.event = event);
-       });
-    }*/
-
-   add(event: Create): void {
+   add(event: Event): void {
      if (!event) { return; }
-     this.eventService.create(this.create.title, this.create.date, this.create.max_attendees, this.create.description);
-       /*.then(event => {
-         this.events.push(event);
-       });*/
+     this.eventService.create(this.create.title, this.create.date, this.create.max_attendees, this.create.description)
+                      .then(response => this.status = response);
    }
 }

@@ -1,4 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { Event } from './event';
 import { EventService } from './event.service';
@@ -16,9 +17,12 @@ export class ListViewComponent implements OnInit {
 
   title = 'Events Nearby';
   events: Event[];
-  selectedEvent: Event;
+  //selectedEvent: Event;
 
-  constructor(private eventService: EventService) { }
+  constructor(
+    private eventService: EventService,
+    private router: Router
+  ) { }
 
   getAllEvents(): void {
     this.eventService.getAllEvents().then(events => this.events = events);
@@ -29,6 +33,6 @@ export class ListViewComponent implements OnInit {
   }
 
   onSelect(event: Event): void {
-    this.selectedEvent = event;
+    this.router.navigate(['app/event-details'], { queryParams: { id: event.event_id }});
   }
 }
