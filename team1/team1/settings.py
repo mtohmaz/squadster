@@ -95,17 +95,22 @@ REST_FRAMEWORK = {
         'oauth2_provider.ext.rest_framework.OAuth2Authentication',
         'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ),
-    'DEFAULT_PARSER_CLASSES': (
-        'rest_framework.parsers.JSONParser',
+    #'DEFAULT_PARSER_CLASSES': (
+    #    'rest_framework.parsers.JSONParser',
+    #)
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
     )
 }
 
 AUTHENTICATION_BACKENDS = (
+    'squadster.authenticators.GoogleSessionAuthentication',
     'social.backends.google.GoogleOAuth2',
     #'social_auth.backends.google.GoogleOAuth2Backend',
 
-    'rest_framework_social_oauth2.backends.DjangoOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
+    #'rest_framework_social_oauth2.backends.DjangoOAuth2',
+    #'django.contrib.auth.backends.ModelBackend',
 )
 
 PROPRIETARY_BACKEND_NAME = 'Google'

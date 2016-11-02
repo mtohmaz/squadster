@@ -10,12 +10,12 @@ from django.http import HttpResponseBadRequest
 from django.http import HttpResponseRedirect
 
 from django.contrib.auth import authenticate
-from django.contrib.auth import login as auth_login
+#from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import logout as auth_logout
+#from django.contrib.auth import logout as auth_logout
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.parsers import JSONParser
@@ -52,7 +52,7 @@ CLIENT_SECRETS = os.path.join(os.path.dirname(__file__), 'client_secrets.json')
 CLIENT_ID = '290427034826-un4ldmeetlngevc5ep3jnt0s71284pjf.apps.googleusercontent.com'
 
 #should consider moving these secret files outside of project directory
-credential_dir = os.path.join(os.path.dirname(__file__), 'credentials')
+credential_dir = os.path.join(os.path.dirname(__file__), 'credentials') # <- not used?
 credential_path = os.path.join(credential_dir,'userCredentials.json')
 
 
@@ -69,12 +69,22 @@ def home(request):
     pass
 
 
+def auth(request):
+    if request.method == 'GET':
+        return login(request)
+    elif request.method == 'DELETE':
+        return logout(request)
+
+def logout(request):
+    request.session.flush()
+    return HttpResponseRedirect("/api/auth/")
+
 def login(request):
     if 'google_session_token' in request.session:
         print('google_session_token in session')
         google_token = request.session['google_session_token']
-
-        print ('google token:' + str(google_token))
+        
+        print ('sessionid:' + str(request.session.session_key))
         try:
             idinfo = client.verify_id_token(google_token, CLIENT_ID)
             # If multiple clients access the backend server:
@@ -144,7 +154,6 @@ def auth_return(request):
     print('id_token: ' + str(credentials.id_token))
     id_token = credentials.token_response['id_token']
     
-
     try:
         idinfo = client.verify_id_token(id_token, CLIENT_ID)
         # If multiple clients access the backend server:
@@ -192,8 +201,9 @@ def auth_return(request):
             username=username,
             email=email_address
         )
-        newUser.backend='social.backends.google.GoogleOAuth2'
-
+        #newUser.backend='social.backends.google.GoogleOAuth2'
+        newUser.backend='squadster.authenticators.GoogleSessionAuthentication'
+        
         print('newUser created')
         #create api key for user and save to database
         print('about to create token')
@@ -215,6 +225,23 @@ def auth_return(request):
         
         return response
 
+
+
+def root_view(request):
+    from django.core.exceptions import PermissionDenied
+    import squadster.urls
+    from squadster.authenticators import GoogleSessionAuthentication
+    authenticator = GoogleSessionAuthentication()
+    user = authenticator.authenticate(request)
+    
+    if user is None:
+        raise PermissionDenied()
+    
+    patterns = squadster.urls.urlpatterns
+    import jsonpickle
+    s = jsonpickle.encode(patterns)
+    print(s)
+    return Response("nothing")
 
 """
 def map(request):

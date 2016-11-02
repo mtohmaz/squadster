@@ -61,7 +61,7 @@ class Event(models.Model):
     date = models.DateTimeField()
     max_attendees = models.IntegerField()
     description = models.CharField(max_length=250)
-    coordinates = gismodels.PointField
+    #coordinates = gismodels.PointField()
     def __str__(self):
         return '%s on %s' % (self.title, self.date.isoformat())
 

@@ -52,10 +52,8 @@ class EventAttendeesViewSet(viewsets.ModelViewSet, APIView):
         return Response(serializer.data)
     
     def create(self, request, event_id):
-        #return Response('not implemented yet')
-        #params = request.POST
         d = request.data
-        d['event_id'] = event_id
+        #d['event_id'] = event_id
         # if a specific user was specified in the call, allow it?
         # should one user be able to add other users to an event? probably not
         if 'id' in d and d['id'] == request.user.id:
@@ -70,6 +68,24 @@ class EventAttendeesViewSet(viewsets.ModelViewSet, APIView):
         return HttpResponseRedirect(
                 reverse('event-attendees-list', kwargs={'event_id':event_id}))
     
+    def destroy(self, request, event_id, user_id):
+        d = request.data
+        
+        # TODO maybe host should be able to remove attendees from their event
+        # for now limit so only user can remove them self
+        if user_id != request.user.id:
+            raise PermissionDenied('You are not permitted to remove other attendees')
+        
+        event = Event.objects.get(event_id=event_id)
+        user = User.objects.get(id=user_id)
+        
+        # don't allow host to remove them self from attendee list
+        if user_id == event.host_id:
+            raise PermissionDenied('You cannot remove yourself from this event')
+        
+        event.attendees.remove(user)
+        return 
+    
     def get_queryset(self):
         event_id = self.kwargs['event_id']
         return Event.objects.get(event_id=event_id).attendees
@@ -81,6 +97,10 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
     lookup_field = 'event_id'
     
     def list(self, request, format=None):
+        
+        # TODO Q search
+        
+        
         events = Event.objects.all()
         serializer = EventSerializer(
                 events, 
@@ -160,7 +180,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     
     def create(self, request, event_id):
         user = request.user
-        d = request.POST.dict()
+        d = request.data
         d['parent_event'] = int(event_id)
         d['author'] = user.id
         #print('d: ' + str(d))

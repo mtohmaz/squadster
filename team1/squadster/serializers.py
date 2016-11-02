@@ -12,7 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['email']
+        fields = ['id', 'email']
         # need all read only?
         #read_only_fields = '__all__'
     
