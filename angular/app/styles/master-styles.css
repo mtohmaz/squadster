@@ -1,23 +1,12 @@
 #head {
 }
 
-#nav sidenav{
-  width: 300px;
-  height: 100%;
-  float: left;
-  display: inline;
-  margin: 0;
-  padding: 0;
-  margin-right: 10px;
-  margin-top: 10px;
-}
-
 #body {
   width: 500px;
   float: left;
   margin: 0;
   padding: 0;
-  display: inline;
+  display: inline-block;
 }
 
 .menu {
@@ -40,5 +29,5 @@
   line-height: normal;
   border-right: 1px solid #DDD;
   margin-bottom: 20px;
+  width: 290px;
 }
-
