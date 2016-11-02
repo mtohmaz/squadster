@@ -1,18 +1,29 @@
-import { Component, Input } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute, Params } from '@angular/router';
 import { Event } from './event';
+import { EventService } from './event.service';
 
 @Component({
-  selector: 'my-event-detail',
-  templateUrl: 'app/html/event-details.component.html'
+  selector: 'event-details',
+  templateUrl: 'app/html/event-details.component.html',
+  providers: [EventService]
 })
 
-export class EventDetailComponent {
+export class EventDetailsComponent {
   @Input() event: Event;
 
-  constructor( private router: Router) {}
+  constructor(
+    private router: ActivatedRoute,
+    private eventService: EventService
+  ) {}
 
-  onClick() {
-    this.router.navigate(['app/create-event'], { queryParams: { id: this.event.event_id }});
+  ngOnInit() {
+    this.router.queryParams.forEach((params: Params) => {
+      let id = +params['id'] || 0;
+      if (id != 0) {
+        this.eventService.getEvent(id).then(ret => this.event = ret);
+        console.log(this.event);
+      }
+    });
   }
 }

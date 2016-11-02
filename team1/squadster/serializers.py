@@ -12,9 +12,10 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['id', 'email']
-        # need all read only?
-        #read_only_fields = '__all__'
+        fields = [
+            'user_id',
+            'email']
+        read_only_fields = ['user_id']
     
     def create(self, validated_data):
         return User.objects.create(**validated_data)

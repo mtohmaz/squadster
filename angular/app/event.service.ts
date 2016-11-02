@@ -4,7 +4,6 @@ import { Headers, Http, Response } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 
 import { Event } from './event';
-import { Create } from './create-event.component';
 
 @Injectable()
 export class EventService {
@@ -28,16 +27,22 @@ export class EventService {
                     .catch(this.handleError);
   }
 
-  create(title: string, date: Date, max_attendees: number, description: string): Promise<Event> {
+  create(title: string, date: Date, max_attendees: number, description: string): Promise<string> {
     return this.http
                .post(this.eventsUrl, JSON.stringify({title: title, date: date, max_attendees: max_attendees, description: description}), {headers: this.headers})
                .toPromise()
-               .then(response => response.json().data)
+               .then(response => console.log(response.json()))
                .catch(this.handleError);
   }
 
   private handleError(error: any): Promise<any> {
-    console.error('An error occured', error);
-    return Promise.reject(error.message || error);
+    if (error.status == 400)
+      return Promise.resolve("Bad Request");
+    else if (error.status == 401)
+      return Promise.resolve("Not logged in");
+    else if (error.status == 403)
+      return Promise.resolve("Not authenticated");
+    else
+      return Promise.reject(error.message || error);
   }
 }

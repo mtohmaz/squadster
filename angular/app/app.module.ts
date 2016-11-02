@@ -10,7 +10,7 @@ import { AgmCoreModule } from 'angular2-google-maps/core';
 
 import { AppComponent } from './app.component';
 import { CreateEventComponent } from './create-event.component';
-import { EventDetailComponent } from './event-details.component';
+import { EventDetailsComponent } from './event-details.component';
 import { MyEventsComponent } from './my-events.component';
 import { MyEventDetailComponent } from './my-event-details.component';
 import { ListViewComponent } from './list-view.component';
@@ -39,7 +39,7 @@ import { routing } from './app.routing';
   declarations: [
     AppComponent,
     CreateEventComponent,
-    EventDetailComponent,
+    EventDetailsComponent,
     ListViewComponent,
     MyEventsComponent,
     MyEventDetailComponent,

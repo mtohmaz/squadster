@@ -7,10 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MapComponent implements OnInit{
     title: string = 'Events Nearby';
-    // lat: number = 35.771700;
-    // lng: number = -78.673564;
-    lat: number = 34.771700;
-    lng: number = -77.673564;
+    lat: number = 35.771700;
+    lng: number = -78.673564;
     zoom: number = 17;
 
     ngOnInit(){

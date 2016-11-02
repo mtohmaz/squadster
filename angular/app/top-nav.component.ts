@@ -1,4 +1,4 @@
-import {Component, ViewEncapsulation, OnInit} from "@angular/core";
+import { Component, ViewEncapsulation, OnInit } from "@angular/core";
 //import {Routes} from "./../../config/route.config";
 @Component({
     selector: "topnav",

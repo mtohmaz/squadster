@@ -3,7 +3,8 @@
         Filter by:
     </div>
     <div>
-        <h5>Tags:</h5>
+        <label>Tags:</label>
+        <br>
         <div class="btn-group tags">
             <label class="btn btn-primary" [(ngModel)]="checkModel.food" btnCheckbox>Food</label>
             <label class="btn btn-primary" [(ngModel)]="checkModel.sports" btnCheckbox>Sports</label>
@@ -14,5 +15,9 @@
             <label class="btn btn-primary" [(ngModel)]="checkModel.study" btnCheckbox>Study</label>
             <label class="btn btn-primary" [(ngModel)]="checkModel.gaming" btnCheckbox>Gaming</label>
         </div>
+    </div>
+    <div>
+        <label>Date: </label>
+        <datepicker [(ngModel)]="date" [showWeeks]="false" [minDate]="minDate"></datepicker>
     </div>
 </div>
