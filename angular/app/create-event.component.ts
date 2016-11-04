@@ -23,6 +23,7 @@ export class CreateEventComponent {
     host_id: null,
     title: null,
     date: null,
+    comments: null,
     max_attendees: null,
     description: null
   };

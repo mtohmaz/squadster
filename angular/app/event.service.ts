@@ -27,6 +27,20 @@ export class EventService {
                     .catch(this.handleError);
   }
 
+  getComments(event_id: number): Promise<string[]> {
+    return this.http.get(this.eventsUrl + event_id + "/comments")
+                    .toPromise()
+                    .then(response => response.json() as string[])
+                    .catch(this.handleError);
+  }
+
+  addComment(commentUrl: string, comment: string): Promise<string> {
+    return this.http.post(commentUrl, JSON.stringify({text: comment}), {headers: this.headers})
+                    .toPromise()
+                    .then(response => response.json())
+                    .catch(this.handleError);
+  }
+
   create(title: string, date: Date, max_attendees: number, description: string): Promise<string> {
     return this.http
                .post(this.eventsUrl, JSON.stringify({title: title, date: date, max_attendees: max_attendees, description: description}), {headers: this.headers})
@@ -36,6 +50,7 @@ export class EventService {
   }
 
   private handleError(error: any): Promise<any> {
+    console.log(error);
     if (error.status == 400)
       return Promise.resolve("Bad Request");
     else if (error.status == 401)

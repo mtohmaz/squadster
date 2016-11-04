@@ -10,7 +10,9 @@ import { EventService } from './event.service';
 })
 
 export class EventDetailsComponent {
-  @Input() event: Event;
+  event: Event;
+  comments: string[];
+  inputComment: string;
 
   constructor(
     private router: ActivatedRoute,
@@ -18,12 +20,21 @@ export class EventDetailsComponent {
   ) {}
 
   ngOnInit() {
+    this.getComments();
+  }
+
+  getComments() {
     this.router.queryParams.forEach((params: Params) => {
       let id = +params['id'] || 0;
       if (id != 0) {
         this.eventService.getEvent(id).then(ret => this.event = ret);
-        console.log(this.event);
+        this.eventService.getComments(id).then(com => this.comments = com.slice().reverse());
       }
     });
+  }
+
+  onClick(inputComment: string) {
+    this.eventService.addComment(this.event.comments, inputComment);
+    this.getComments();
   }
 }

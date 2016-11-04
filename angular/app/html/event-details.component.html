@@ -22,9 +22,23 @@
     <label>Time:</label> {{event.startTime}}
   </div>
   <div>
-    <label>Attendees so far:</label> {{event.currentAttendees}}/{{event.maxAttendees}}
+    <label>Attendees so far:</label> {{event.currentAttendees}}/{{event.max_attendees}}
   </div>
   <div>
     <label>Max Attendees:</label> {{event.max_attendees}}
+  </div>
+</div>
+<div *ngIf="comments">
+  <h2>Comments:</h2>
+  <div>
+    <ul class="comments" >
+        <li *ngFor="let comment of comments">
+            <span>{{comment.text}}</span>
+        </li>
+    </ul>
+  </div>
+  <div id="addComments">
+    <input #input>
+    <button (click)="onClick(input.value)">Add Comment</button>
   </div>
 </div>
