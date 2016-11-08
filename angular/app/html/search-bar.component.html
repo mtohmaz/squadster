@@ -39,7 +39,7 @@
                 My Account <span class="caret"></span>
             </button>
             <ul dropdownMenu role="menu" aria-labelledby="single-button" class="move-left">
-                <li role="menuitem"><a class="dropdown-item" routerLink="app/login" routerLinkActive="active">Logout</a></li>
+                <li role="menuitem"><a class="dropdown-item" routerLink="app/login" routerLinkActive="active" (click)="doLogout()">Logout</a></li>
                 <li role="menuitem"><a class="dropdown-item" href="#">Link 2</a></li>
                 <li role="menuitem"><a class="dropdown-item" href="#">Link 3</a></li>
                 <li class="divider dropdown-divider"></li>

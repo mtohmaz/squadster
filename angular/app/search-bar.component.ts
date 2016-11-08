@@ -1,5 +1,6 @@
 import { Component, ViewEncapsulation, OnInit } from "@angular/core";
 import { DropdownModule } from "ng2-bootstrap/ng2-bootstrap";
+import { Headers, Http, Response } from '@angular/http';
 
 @Component({
     selector: 'searchbar',
@@ -9,6 +10,11 @@ import { DropdownModule } from "ng2-bootstrap/ng2-bootstrap";
 })
 
 export class SearchBarComponent {
+    
+    private headers = new Headers({'Content-Type': 'application/json'});
+    
+    constructor(private http: Http) {}
+    
     public status:{isopen:boolean} = {isopen: false};
     //public distances:Array<string> = ['1 mile', '5 miles', '10 miles', '15+ miles'];
     //public locations:Array<string> = ['Current location', 'Raleigh, NC', 'Cary, NC', 'Durham, NC', 'Chapel Hill, NC'];
@@ -27,5 +33,14 @@ export class SearchBarComponent {
         $event.preventDefault();
         $event.stopPropagation();
         this.status.isopen = !this.status.isopen;
+    }
+    
+    public doLogout():void {
+        console.log('made it to doLogout');
+        return this.http
+               .delete('http://localhost/api/auth/', null, {headers: this.headers})
+               .toPromise()
+               .then(response => console.log(response.json()))
+               .catch(this.handleError);
     }
 }

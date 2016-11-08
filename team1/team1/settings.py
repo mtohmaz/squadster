@@ -125,7 +125,8 @@ GOOGLE_OAUTH_EXTRA_SCOPE = ['https://www.googleapis.com/auth/calendar.readonly',
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        #'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'squadsterdb', #your database name
         'USER': 'squadster_admin', #your username, default is 'postgres'
         'PASSWORD': 'mysharedpassword', #your password corresponding to your username

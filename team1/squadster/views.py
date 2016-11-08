@@ -1,6 +1,7 @@
 import os, datetime, logging, httplib2, json
 from urllib.error import HTTPError
 from datetime import datetime, timedelta
+import jsonpickle
 
 from django.utils import timezone
 from django.shortcuts import render
@@ -68,7 +69,7 @@ FLOW = flow_from_clientsecrets(
 def home(request):
     pass
 
-
+@csrf_exempt
 def auth(request):
     if request.method == 'GET':
         return login(request)
@@ -76,8 +77,12 @@ def auth(request):
         return logout(request)
 
 def logout(request):
+    print("logging out")
+    print("REQUEST" + str(jsonpickle.encode(request)))
+    print("SESSION" + str(jsonpickle.encode(request.session)))
+    print("SESSION KEY" + str(request.session.session_key))
     request.session.flush()
-    return HttpResponseRedirect("/api/auth/")
+    return JsonResponse({'success': True})
 
 def login(request):
     if 'google_session_token' in request.session:
@@ -111,7 +116,7 @@ def login(request):
             return HttpResponseRedirect(authorize_url)
         # NOW REDIRECT TO logged-in landing page
         else:
-            response = HttpResponseRedirect("/api/events/")
+            response = HttpResponseRedirect("/")
             #print(credentials)
             #request.session['google_session_token'] = google_token
             #response.set_cookie('google_token', google_token)
@@ -185,8 +190,8 @@ def auth_return(request):
         if 'google_session_token' in request.session:
             id_token = request.session['google_session_token']
 
-        response = HttpResponseRedirect("/api/events/")
-        #response.set_cookie('google_token', id_token)
+        response = HttpResponseRedirect("/")
+        
         request.session['google_session_timeout'] = expires_seconds
         request.session['google_session_last_auth'] = timezone.now().strftime(settings.dateformat)
         request.session['google_session_token'] = id_token
@@ -238,7 +243,7 @@ def root_view(request):
         raise PermissionDenied()
     
     patterns = squadster.urls.urlpatterns
-    import jsonpickle
+    
     s = jsonpickle.encode(patterns)
     print(s)
     return Response("nothing")

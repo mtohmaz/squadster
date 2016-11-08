@@ -11,6 +11,9 @@ from django.core.exceptions import PermissionDenied
 from django.forms.models import model_to_dict
 from django.http import HttpResponseRedirect
 
+from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.measure import Distance
+
 from squadster.serializers import *
 from squadster.models import *
 from squadster.authenticators import GoogleSessionAuthentication
@@ -90,10 +93,11 @@ class EventAttendeesViewSet(viewsets.ModelViewSet, APIView):
         event_id = self.kwargs['event_id']
         return Event.objects.get(event_id=event_id).attendees
 
+
 class EventViewSet(viewsets.ModelViewSet, APIView):
-    authentication_classes = (GoogleSessionAuthentication, BasicAuthentication,)
+    authentication_classes = (GoogleSessionAuthentication, )
     permission_classes = (IsAuthenticated,)
-    serializer_class = EventSerializer
+    serializer_class = EventCreateSerializer
     lookup_field = 'event_id'
     
     def list(self, request, format=None):
@@ -113,11 +117,14 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
         d = request.data
         d['host'] = int(request.user.id)
         
-        serializer = EventSerializer(data=d, context={'request':request})
+        serializer = EventCreateSerializer(data=d, context={'request':request})
         if serializer.is_valid():
             event = serializer.save()
-            print(model_to_dict(event))
-            return Response(serializer.data)
+            event = Event.objects.get(event_id=event.event_id)
+            
+            viewserializer = EventSerializer(event, context={'request': request})
+            #print(model_to_dict(event))
+            return Response(viewserializer.data)
         else:
             return Response(serializer.errors, 
                 status=status.HTTP_400_BAD_REQUEST)
