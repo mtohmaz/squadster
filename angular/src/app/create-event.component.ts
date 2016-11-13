@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import * as moment from 'moment';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Observable } from 'rxjs/Rx';
+import { MapsAPILoader } from 'angular2-google-maps/core';
 
 import { Event } from './event';
 import { EventService } from './event.service';
@@ -34,7 +35,8 @@ export class CreateEventComponent {
 
   constructor (
     private eventService: EventService,
-    private route: ActivatedRoute )
+    private route: ActivatedRoute,
+    private _loader: MapsAPILoader )
   {
     (this.minDate = new Date()).setDate(this.minDate.getDate());
   }
@@ -48,17 +50,16 @@ export class CreateEventComponent {
       });
   }
 
-  getSuggestions() {
-    console.log(this.inputValue);
-    var input : any = document.getElementById('google_places_ac');
-    var autocomplete = new google.maps.places.Autocomplete(input, {});
-
-    
-  }
-
   onFocus() {
-    let timer = Observable.timer(0, 3000);
-    timer.subscribe(t => this.getSuggestions());
+    //let timer = Observable.timer(0, 3000);
+    //timer.subscribe(t => this.getSuggestions());
+    this._loader.load().then(() => {
+      let autocomplete = new google.maps.places.Autocomplete(document.getElementById("google_places_ac"), {});
+      google.maps.event.addListener(autocomplete, 'place_changed', () => {
+        let place = autocomplete.getPlace();
+        console.log(place);
+      });
+    });
   }
 
    add(event: Event): void {

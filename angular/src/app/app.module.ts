@@ -33,7 +33,8 @@ import { routing } from './app.routing';
     HttpModule,
     SidebarModule,
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyCQB9nQSw16-SkmsJQS-Jk7mskFKhU2U0Y'
+      apiKey: 'AIzaSyCQB9nQSw16-SkmsJQS-Jk7mskFKhU2U0Y',
+      libraries: ['places']
     })
   ],
   declarations: [

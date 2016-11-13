@@ -1,6 +1,7 @@
-import { Component, OnInit, NgModule } from '@angular/core';
-import { AgmCoreModule } from 'angular2-google-maps/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { Component, OnInit } from '@angular/core';
+import { MouseEvent } from 'angular2-google-maps/core';
+
+declare var google:any;
 
 @Component({
     selector: 'map',
@@ -12,59 +13,113 @@ export class MapComponent implements OnInit{
     title: string = 'Events Nearby';
     lat: number = 50;
     lng: number = -50;
-    zoom: number = 17;
+    zoom: number = 14;
+    radius: number = 1609.34;
+    circleColor: string = '#5DFC0A';
+
+    //1 mile = 1609.34 meters
+    mile = 1609.34;
+    //radius: number = 20;
     location = {};
+    distances = ['1 mile', '5 miles', '10 miles', '15 miles'];
+    distanceSelected = this.distances[0];
+    d_int = null;
 
     markers: marker[] = [
         {
             lat: 35.771673,
             lng: -78.673835,
             label: 'Coffee Hangout',
-            draggable: false,
-            iconUrl: 'http://i.imgur.com/4HFujqP.png'
+            iconUrl: 'assets/images/miniSLogo.png'
         },
         {
             lat: 35.779600,
             lng: -78.675779,
             label: 'Watch Doctor Strange',
-            draggable: false,
-            iconUrl: 'http://i.imgur.com/4HFujqP.png'
+            iconUrl: 'assets/images/miniSLogo.png'
         },
         {
             lat: 35.771238,
             lng: -78.674408,
             label: 'Pickup Frisby',
-            draggable: false,
-            iconUrl: 'http://i.imgur.com/4HFujqP.png'
+            iconUrl: 'assets/images/miniSLogo.png'
         }
     ]
 
     setPosition(position){
         this.location = position.coords;
         console.log(position.coords);
-        this.lat = position.coords.latitude;
-        this.lng = position.coords.longitude;
+        this.updateCurrentLatLng(position.coords.latitude, position.coords.longitude);
+    }
+
+    updateCurrentLatLng(latitude, longitude){
+        this.lat = latitude;
+        this.lng = longitude;
     }
 
     ngOnInit(){
         if(navigator.geolocation){
-            console.log('made it inside geolocation');
-
             navigator.geolocation.getCurrentPosition(this.setPosition.bind(this));
         }
-        console.log('this.latitude is: ' + this.lat + '\nthis.longittude is: ' + this.lng);
     }
 
     printLocation(){
         console.log('this.latitude is: ' + this.lat + '\nthis.longittude is: ' + this.lng);
+        this.getAddress(this.lat, this.lng);
+        console.log('distanceSelected selected: ' + this.distanceSelected);
     }
 
     mapClicked($event: MouseEvent) {
-        // this.markers.push({
-          //   lat: $event.,
-            // lng: $event.coords.lng
-         //});
-        console.log($event);
+        this.markers.push({
+            lat: $event.coords.lat,
+            lng: $event.coords.lng,
+            iconUrl: 'assets/images/miniSLogo.png',
+            label: ('Create location at: ' + $event.coords.lat + ', ' + $event.coords.lng)
+        });
+        this.getAddress($event.coords.lat, $event.coords.lng);
+    }
+
+    onChange(){
+        this.d_int = parseInt(this.distanceSelected);
+        this.radius = this.d_int * this.mile;
+        if(this.d_int == 5){
+            this.zoom = 12;
+        }
+        else if(this.d_int == 10){
+            this.zoom = 11;
+        }
+        else if(this.d_int == 15){
+            this.zoom = 10;
+        }
+        else{
+            this.zoom = 14;
+        }
+    }
+
+    getAddress(lat, lng){
+        var geocoder = new google.maps.Geocoder();
+        var latlng = new google.maps.LatLng(lat, lng);
+        geocoder.geocode({ 'latLng': latlng }, function (results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                if (results[1]) {
+                    console.log(results[1].formatted_address);
+                } else {
+                    console.log('Location not found');
+                }
+            } else {
+                console.log('Geocoder failed due to: ' + status);
+            }
+        });
+    }
+
+    static clickedMarker(label: string, index: number) {
+        console.log(`clicked the marker: ${label || index}`);
+    }
+
+    dragEnd($event: MouseEvent){
+        this.updateCurrentLatLng($event.coords.lat, $event.coords.lng);
+        console.log('new position is: ' + $event.coords.lat + ', ' + $event.coords.lng);
+        this.getAddress($event.coords.lat, $event.coords.lng);
     }
 }
 
@@ -73,6 +128,5 @@ interface marker {
     lat: number;
     lng: number;
     label?: string;
-    draggable: boolean;
     iconUrl: string;
 }

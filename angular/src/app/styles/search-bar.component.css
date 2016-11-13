@@ -78,3 +78,7 @@
 #searchbar .in-line{
     display: inline-block;
 }
+
+#searchbar .btn-primary{
+    width: 150px;
+}

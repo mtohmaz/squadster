@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-declare var google: any;
 //import {CreateComponent} from './create.component';
 
 @Component({
@@ -16,13 +15,6 @@ export class AppComponent {
 
     constructor(public router: Router) { }
 
-    ngOnInit() {
-      var map = {
-        center: new google.maps.LatLng(51, -.12),
-        zoom: 5,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-      };
-    }
     isEdited() {
       if (this.router.url == "/app/list-view" || this.router.url == "/app/map-view")
         return true;
