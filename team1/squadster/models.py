@@ -21,6 +21,11 @@ class FlowModel(models.Model):
 
 
 # User handling
+from oauth2client.contrib.django_util.models import CredentialsField
+
+class Credentials(models.Model):
+    id = models.ForeignKey(User, on_delete=models.CASCADE, primary_key=True, related_name='credential')
+    credential = CredentialsField()
 
 class SquadsterUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name = 'profile')
@@ -61,7 +66,8 @@ class Event(models.Model):
     date = models.DateTimeField()
     max_attendees = models.IntegerField()
     description = models.CharField(max_length=250)
-    coordinates = gismodels.PointField
+    location = models.CharField(max_length=250)
+    coordinates = gismodels.PointField(srid=4326, geography=True)
     def __str__(self):
         return '%s on %s' % (self.title, self.date.isoformat())
 

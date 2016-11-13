@@ -1,4 +1,4 @@
--- This file should be run inside the squadsterdb database with user postgres or squadster_admin
+-- This file should be run inside the squadsterdb database with user postgres
 
 CREATE EXTENSION postgis;
 

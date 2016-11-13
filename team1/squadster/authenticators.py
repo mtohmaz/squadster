@@ -48,8 +48,7 @@ class GoogleSessionAuthentication(authentication.BaseAuthentication):
             current_time = datetime.now(utctz) #timezone.now()
             
             if (current_time - last_auth) > timeout:
-                request.session.clear()
-                request.session.delete()
+                request.session.flush()
                 
                 print("Timeout for user: " + str(user.user.username))
                 return None

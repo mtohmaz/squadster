@@ -9,7 +9,11 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied
 from django.forms.models import model_to_dict
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseBadRequest
+
+from django.contrib.gis.geos import GEOSGeometry
+#from django.contrib.gis.measure import Distance
+from django.contrib.gis.measure import *
 
 from squadster.serializers import *
 from squadster.models import *
@@ -52,10 +56,8 @@ class EventAttendeesViewSet(viewsets.ModelViewSet, APIView):
         return Response(serializer.data)
 
     def create(self, request, event_id):
-        #return Response('not implemented yet')
-        #params = request.POST
         d = request.data
-        d['event_id'] = event_id
+        #d['event_id'] = event_id
         # if a specific user was specified in the call, allow it?
         # should one user be able to add other users to an event? probably not
         if 'id' in d and d['id'] == request.user.id:
@@ -70,34 +72,76 @@ class EventAttendeesViewSet(viewsets.ModelViewSet, APIView):
         return HttpResponseRedirect(
                 reverse('event-attendees-list', kwargs={'event_id':event_id}))
 
+    
+    def destroy(self, request, event_id, user_id):
+        d = request.data
+        
+        # TODO maybe host should be able to remove attendees from their event
+        # for now limit so only user can remove them self
+        if user_id != request.user.id:
+            raise PermissionDenied('You are not permitted to remove other attendees')
+        
+        event = Event.objects.get(event_id=event_id)
+        user = User.objects.get(id=user_id)
+        
+        # don't allow host to remove them self from attendee list
+        if user_id == event.host_id:
+            raise PermissionDenied('You cannot remove yourself from this event')
+        
+        event.attendees.remove(user)
+        return 
+    
     def get_queryset(self):
         event_id = self.kwargs['event_id']
         return Event.objects.get(event_id=event_id).attendees
 
-class EventViewSet(viewsets.ModelViewSet, APIView):
-    authentication_classes = (GoogleSessionAuthentication, BasicAuthentication,)
-    permission_classes = (IsAuthenticated,)
-    serializer_class = EventSerializer
-    lookup_field = 'event_id'
 
+class EventViewSet(viewsets.ModelViewSet, APIView):
+    authentication_classes = (GoogleSessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    serializer_class = EventCreateSerializer
+    lookup_field = 'event_id'
+    
     def list(self, request, format=None):
-        events = Event.objects.all()
+        d = request.data
+        d = request.GET
+        if 'lat' in d and 'lon' in d and 'radius' in d:
+            lat = int(d['lat'])
+            lon = int(d['lon'])
+            radius = int(d['radius'])
+        else:
+            return HttpResponseBadRequest("Please provide lat, lon, radius.")
+            
+        
+        
+        search_location = GEOSGeometry('POINT('+str(lon)+' '+str(lat)+')', srid=4326)
+        
+        events = Event.objects.filter(
+            coordinates__dwithin=(search_location, Distance(mi=radius))
+        )
+        
+        #events = Event.objects.all()
+        
         serializer = EventSerializer(
                 events,
                 many=True,
                 context={'request': request, 'format':format})
-
+        
         return Response(serializer.data)
 
     def create(self, request):
         d = request.data
         d['host'] = int(request.user.id)
-
-        serializer = EventSerializer(data=d, context={'request':request})
+        
+        serializer = EventCreateSerializer(data=d, context={'request':request})
+        
         if serializer.is_valid():
             event = serializer.save()
-            print(model_to_dict(event))
-            return Response(serializer.data)
+            event = Event.objects.get(event_id=event.event_id)
+            
+            viewserializer = EventSerializer(event, context={'request': request})
+            #print(model_to_dict(event))
+            return Response(viewserializer.data)
         else:
             return Response(serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST)
@@ -122,7 +166,7 @@ class UserEventViewSet(viewsets.ViewSet, APIView):
 
         queryset = (user.hostedevents.all() | user.joinedevents.all()).order_by('date')
         #queryset = (user.hostedevents | user.joinedevents)
-
+        
         serializer = EventSerializer(queryset, many=True)
         return Response(serializer.data)
 
