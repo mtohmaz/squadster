@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied
 from django.forms.models import model_to_dict
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseBadRequest
 
 from django.contrib.gis.geos import GEOSGeometry
 #from django.contrib.gis.measure import Distance
@@ -104,9 +104,15 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
 
     def list(self, request, format=None):
         d = request.data
-        lat = int(d['lat'])
-        lon = int(d['lon'])
-        radius = d['radius']
+        d = request.GET
+        if 'lat' in d and 'lon' in d and 'radius' in d:
+            lat = int(d['lat'])
+            lon = int(d['lon'])
+            radius = int(d['radius'])
+        else:
+            pass
+            
+        
         
         search_location = GEOSGeometry('POINT('+str(lon)+' '+str(lat)+')', srid=4326)
         

@@ -59,6 +59,7 @@ class EventSerializer(serializers.ModelSerializer):
     
     def get_coordinates(self, event):
         pnt = event.coordinates
+        # PostGIS uses [lon, lat] instead of [lat, lon]
         s = '[{}, {}]'.format(pnt.x, pnt.y)
         return s
         
