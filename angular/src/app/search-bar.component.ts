@@ -32,7 +32,7 @@ export class SearchBarComponent {
         this.searchString = search;
         this.testPrint();
     }
-    
+    /*
     public doLogout():void {
         console.log('made it to doLogout');
         return this.http
@@ -41,7 +41,7 @@ export class SearchBarComponent {
                .then(response => console.log(response.json()))
                .catch(this.handleError);
     }
-
+    */
     updateTag( tag ){
         this.tagSelected = tag;
         this.testPrint();

@@ -101,7 +101,7 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = EventCreateSerializer
     lookup_field = 'event_id'
-
+    
     def list(self, request, format=None):
         d = request.data
         d = request.GET
@@ -110,7 +110,7 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
             lon = int(d['lon'])
             radius = int(d['radius'])
         else:
-            pass
+            return HttpResponseBadRequest("Please provide lat, lon, radius.")
             
         
         
