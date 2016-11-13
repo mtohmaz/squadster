@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
 import * as moment from 'moment';
 import { ActivatedRoute, Params } from '@angular/router';
+import { Observable } from 'rxjs/Rx';
 
 import { Event } from './event';
 import { EventService } from './event.service';
+
+declare var google:any;
 
 @Component({ //tells angular that this file is a component.
   selector: 'create-event',
@@ -17,6 +20,7 @@ export class CreateEventComponent {
   events: Event[];
   public minDate: Date = void 0;
   title = "Create Event";
+  inputValue: string;
 
   create: Event = {
     event_id: null,
@@ -42,6 +46,19 @@ export class CreateEventComponent {
           this.eventService.getEvent(id).then(ret => this.create = ret);
         }
       });
+  }
+
+  getSuggestions() {
+    console.log(this.inputValue);
+    var input : any = document.getElementById('google_places_ac');
+    var autocomplete = new google.maps.places.Autocomplete(input, {});
+
+    
+  }
+
+  onFocus() {
+    let timer = Observable.timer(0, 3000);
+    timer.subscribe(t => this.getSuggestions());
   }
 
    add(event: Event): void {
