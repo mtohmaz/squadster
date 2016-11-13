@@ -60,11 +60,11 @@ export class MapComponent implements OnInit{
     }
 
     mapClicked($event: MouseEvent) {
-        // this.markers.push({
-          //   lat: $event.,
-            // lng: $event.coords.lng
-         //});
-        console.log($event);
+      //this.markers.push({
+        //lat: $event.coords.lat,
+        //lng: $event.coords.lng
+      //});
+        console.log('mapClicked event');
     }
 }
 
