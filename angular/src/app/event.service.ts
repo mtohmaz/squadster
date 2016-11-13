@@ -45,7 +45,7 @@ export class EventService {
     return this.http
                .post(this.eventsUrl, JSON.stringify({title: title, date: date, max_attendees: max_attendees, description: description}), {headers: this.headers})
                .toPromise()
-               .then(response => console.log(response.json()))
+               .then(response => response.json())
                .catch(this.handleError);
   }
 
