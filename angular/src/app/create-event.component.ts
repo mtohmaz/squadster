@@ -39,7 +39,7 @@ export class CreateEventComponent {
     (this.minDate = new Date()).setDate(this.minDate.getDate());
   }
 
-  ngOnInit() {
+/*  ngOnInit() {
       this.route.queryParams.forEach((params: Params) => {
         let id = +params['id'] || 0;
         if (id != 0) {
@@ -65,5 +65,5 @@ export class CreateEventComponent {
      if (!event) { return; }
      this.eventService.create(this.create.title, this.create.date, this.create.max_attendees, this.create.description)
                       .then(response => this.status = response);
-   }
+   }*/
 }

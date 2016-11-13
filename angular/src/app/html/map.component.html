@@ -7,26 +7,42 @@
     <button type="button" class="btn btn-warning btn-lg" (click)="printLocation()">Print location</button>
 </div>
 
+<div class="in-line">
+    <select class="form-control" id="distance" [(ngModel)]="distanceSelected" (ngModelChange)="onChange()" name="distance">
+        <option *ngFor="let d of distances" [value]="d" (change)="updateMap()">{{d}}</option>
+    </select>
+</div>
+
 <sebm-google-map [latitude]="lat" [longitude]="lng" [zoom]="zoom" (mapClick)="mapClicked($event)">
-    <sebm-google-map-marker [latitude]="lat" [longitude]="lng" [visible]="false">
+
+    <sebm-google-map-marker
+            [latitude]="lat"
+            [longitude]="lng"
+            [draggable]="true"
+            [markerDraggable]="true"
+            (dragEnd) = "dragEnd($event)">
         <sebm-google-map-info-window [isOpen]="true">
             <strong>My Current Location</strong>
         </sebm-google-map-info-window>
     </sebm-google-map-marker>
+
+    <sebm-google-map-circle
+            [latitude]="lat" [longitude]="lng"
+            [radius]="radius"
+            [fillColor]="circleColor"
+            [circleDraggable]="false"
+            [editable]="false">
+    </sebm-google-map-circle>
+
     <sebm-google-map-marker
             *ngFor="let m of markers; let i = index"
             (markerClick)="clickedMarker(m.label, i)"
             [latitude]="m.lat"
             [longitude]="m.lng"
-            [markerDraggable]="m.draggable"
-            (dragEnd)="markerDragEnd(m, $event)"
-            [title]="m.label"
             [iconUrl]="m.iconUrl">
-
         <sebm-google-map-info-window>
             <strong>Event Here</strong>
         </sebm-google-map-info-window>
-
     </sebm-google-map-marker>
 
 </sebm-google-map>
