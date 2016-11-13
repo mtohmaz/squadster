@@ -1,0 +1,32 @@
+<h1>{{ title }}</h1>
+
+<!-- this creates a google map on the page with the given lat/lng from -->
+<!-- the component as the initial center of the map: -->
+
+<div>
+    <button type="button" class="btn btn-warning btn-lg" (click)="printLocation()">Print location</button>
+</div>
+
+<sebm-google-map [latitude]="lat" [longitude]="lng" [zoom]="zoom" (mapClick)="mapClicked($event)">
+    <sebm-google-map-marker [latitude]="lat" [longitude]="lng" [visible]="false">
+        <sebm-google-map-info-window [isOpen]="true">
+            <strong>My Current Location</strong>
+        </sebm-google-map-info-window>
+    </sebm-google-map-marker>
+    <sebm-google-map-marker
+            *ngFor="let m of markers; let i = index"
+            (markerClick)="clickedMarker(m.label, i)"
+            [latitude]="m.lat"
+            [longitude]="m.lng"
+            [markerDraggable]="m.draggable"
+            (dragEnd)="markerDragEnd(m, $event)"
+            [title]="m.label"
+            [iconUrl]="m.iconUrl">
+
+        <sebm-google-map-info-window>
+            <strong>Event Here</strong>
+        </sebm-google-map-info-window>
+
+    </sebm-google-map-marker>
+
+</sebm-google-map>

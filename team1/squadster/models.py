@@ -21,6 +21,11 @@ class FlowModel(models.Model):
 
 
 # User handling
+from oauth2client.contrib.django_util.models import CredentialsField
+
+class Credentials(models.Model):
+    id = models.ForeignKey(User, on_delete=models.CASCADE, primary_key=True, related_name='credential')
+    credential = CredentialsField()
 
 class SquadsterUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name = 'profile')

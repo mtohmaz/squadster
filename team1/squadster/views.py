@@ -33,7 +33,7 @@ from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 from googleapiclient.discovery import build
 
-from squadster.models import SquadsterUser
+from squadster.models import SquadsterUser, Credentials
 from squadster.serializers import datetime_serializer
 from team1 import settings
 
@@ -81,7 +81,14 @@ def logout(request):
     print("REQUEST" + str(jsonpickle.encode(request)))
     print("SESSION" + str(jsonpickle.encode(request.session)))
     print("SESSION KEY" + str(request.session.session_key))
+    # wipe session from db
     request.session.flush()
+    
+    # revoke google credentials and clear from db
+    credentials = Credentials.objects.get(id=request.user.id)
+    credentials.credential.revoke(httplib2.Http())
+    credentials.delete()
+    
     return JsonResponse({'success': True})
 
 def login(request):
@@ -206,6 +213,11 @@ def auth_return(request):
             username=username,
             email=email_address
         )
+        Credentials.objects.create(
+            id=newUser.id,
+            credential=credentials
+        )
+        
         #newUser.backend='social.backends.google.GoogleOAuth2'
         newUser.backend='squadster.authenticators.GoogleSessionAuthentication'
         
