@@ -1,6 +1,6 @@
 import json
 import jsonpickle
-
+import copy
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.views import APIView
@@ -59,7 +59,7 @@ class EventAttendeesViewSet(viewsets.ModelViewSet, APIView):
         return Response(serializer.data)
 
     def create(self, request, event_id):
-        d = request.data
+        d = copy.copy(request.data)
         #d['event_id'] = event_id
         # if a specific user was specified in the call, allow it?
         # should one user be able to add other users to an event? probably not
@@ -174,7 +174,7 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
         return Response(serializer.data)
     
     def create(self, request):
-        d = request.data
+        d = copy.copy(request.data)
         d['host'] = int(request.user.id)
         
         serializer = EventCreateSerializer(data=d, context={'request':request})
@@ -248,7 +248,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def create(self, request, event_id):
         user = request.user
-        d = request.data
+        d = copy.copy(request.data)
         d['parent_event'] = int(event_id)
         d['author'] = user.id
         #print('d: ' + str(d))
