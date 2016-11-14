@@ -183,15 +183,15 @@ def auth_return(request):
     access_token = access_token_info.access_token
     expires_seconds = access_token_info.expires_in
     username = email_address.split('@')[0]
-
+    
     try:
         print('checking if email exists')
         user = User.objects.get(email=email_address)
         print('email exists... Proceed to logged in view')
-
+        
         #user = authenticate(email=email_address)
         #auth_login(request, user)
-
+        
         # if already has a session,
         # set the session token to that instead of the new one
         if 'google_session_token' in request.session:
@@ -214,7 +214,7 @@ def auth_return(request):
             email=email_address
         )
         Credentials.objects.create(
-            id=newUser.id,
+            id=newUser,
             credential=credentials
         )
         
@@ -225,7 +225,7 @@ def auth_return(request):
         #create api key for user and save to database
         print('about to create token')
         token = Token.objects.create(user=newUser)
-
+        
         print('api key obtained')
         newUser.save()
         newUser.profile.save()
@@ -235,7 +235,7 @@ def auth_return(request):
         request.session['google_session_last_auth'] = timezone.now().strftime(settings.dateformat)
         request.session['google_session_token'] = id_token
         request.session['user_id'] = newUser.id
-
+        
         response = HttpResponseRedirect("/api/events/")
         
         #auth_login(request, user)

@@ -86,7 +86,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'team1.wsgi.application'
 
-#added
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
@@ -190,4 +189,4 @@ STATICFILES_DIRS = (
 #)
 
 
-dateformat = "%Y-%m-%dT%H:%M:%S.%fZ"
+dateformat = "%Y-%m-%d_%H:%M:%S%z"
