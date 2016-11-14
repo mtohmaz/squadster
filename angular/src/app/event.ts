@@ -3,7 +3,9 @@ export class Event {
   host_id: number;
   title: string;
   //hostName: string;
-  //location: string;
+  location: string;
+  lat: number;
+  lng: number;
   date: Date;
   comments: string;
   //startTime: string;
