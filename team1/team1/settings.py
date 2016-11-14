@@ -189,4 +189,4 @@ STATICFILES_DIRS = (
 #)
 
 
-dateformat = "%Y-%m-%d_%H:%M:%S%z"
+dateformat = "%Y-%m-%dT%H:%M:%S%z"
