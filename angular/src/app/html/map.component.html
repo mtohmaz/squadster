@@ -43,7 +43,7 @@
             [longitude]="m.lng"
             [iconUrl]="m.iconUrl">
         <sebm-google-map-info-window>
-            <a (click)="eventDetails(m.lat, m.lng)">Go to event here</a>
+            <a (click)="eventDetails(m.event_id)">Go to event here</a>
         </sebm-google-map-info-window>
     </sebm-google-map-marker>
 

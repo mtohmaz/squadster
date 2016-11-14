@@ -19,13 +19,13 @@
     <div class="col-xs-4 distance">
         Within
         <div class="in-line">
-            <select class="form-control" id="distance" [(ngModel)]="distanceSelected" (ngModelChange)="testPrint()" name="distance">
-                <option *ngFor="let d of distances" [value]="d" (click)="testPrint()">{{d}}</option>
+            <select class="form-control" id="distance" [(ngModel)]="distanceSelected" (ngModelChange)="updateSearch(box.value)" name="distance">
+                <option *ngFor="let d of distances" [value]="d">{{d}} miles</option>
             </select>
         </div>
         of
         <div class="in-line">
-            <select class="form-control" id="location" [(ngModel)]="locationSelected" (ngModelChange)="testPrint()" name="location">
+            <select class="form-control" id="location" [(ngModel)]="locationSelected" (ngModelChange)="updateSearch(box.value)" name="location">
                 <option *ngFor="let loc of locations" [value]="loc">{{loc}}</option>
             </select>
         </div>

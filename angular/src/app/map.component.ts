@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MouseEvent } from 'angular2-google-maps/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute, Params } from '@angular/router';
+
+import { Event } from './event';
+import { EventService } from './event.service';
 
 declare var google:any;
 
@@ -19,6 +22,7 @@ export class MapComponent implements OnInit{
     circleColor: string = '#5DFC0A';
     newPinLat: number = null;
     newPinLng: number = null;
+    events: Event[];
 
     //1 mile = 1609.34 meters
     mile = 1609.34;
@@ -31,7 +35,7 @@ export class MapComponent implements OnInit{
     //TODO: take pre-populated events out and use events from the API
     //this should be replaced by events received from the API
     markers: marker[] = [
-        {
+      /*  {
             lat: 35.771673,
             lng: -78.673835,
             label: 'Coffee Hangout',
@@ -48,15 +52,40 @@ export class MapComponent implements OnInit{
             lng: -78.674408,
             label: 'Pickup Frisby',
             iconUrl: 'assets/images/miniSLogo.png'
-        }
+        }*/
     ];
 
     //when users click on the map, a new pin will be shown and added to this array to keep track of the info
     newPins: marker[] = [];
 
     constructor(
-        private router: Router
+        private router: Router,
+        private route: ActivatedRoute,
+        private eventService: EventService
     ) { }
+
+    getEvents() {
+      this.route.queryParams.forEach((params: Params) => {
+        let lat = +params['lat'] || this.lat;
+        let lon = +params['lon'] || this.lng;
+        let range = +params['radius'] || 1;
+        let s = params['s'] || '';
+        this.eventService.getEvents(lat, lon, range, s).then(events => {
+          for (let i of events) {
+            i.coordinates = i.coordinates.replace('[', '');
+            i.coordinates = i.coordinates.replace(']', '');
+            let ar = i.coordinates.replace(',','').split(" ");
+            this.markers.push({
+              event_id: i.event_id,
+              lat: parseFloat(ar[0]),
+              lng: parseFloat(ar[1]),
+              iconUrl: 'assets/images/miniSLogo.png'
+            });
+            console.log(this.newPins);
+          }
+        });
+      });
+    }
 
     setPosition(position){
         this.location = position.coords;
@@ -67,6 +96,7 @@ export class MapComponent implements OnInit{
     updateCurrentLatLng(latitude, longitude){
         this.lat = latitude;
         this.lng = longitude;
+        this.getEvents();
     }
 
     ngOnInit(){
@@ -83,10 +113,11 @@ export class MapComponent implements OnInit{
 
     mapClicked($event: MouseEvent) {
         this.newPins.push({
-            lat: $event.coords.lat,
-            lng: $event.coords.lng,
-            iconUrl: 'assets/images/miniSLogo.png',
-            label: ('Create event at: ' + $event.coords.lat + ', ' + $event.coords.lng)
+          event_id: null,
+          lat: $event.coords.lat,
+          lng: $event.coords.lng,
+          iconUrl: 'assets/images/miniSLogo.png',
+          label: ('Create event at: ' + $event.coords.lat + ', ' + $event.coords.lng)
         });
         this.getAddress($event.coords.lat, $event.coords.lng);
         this.newPinLat = $event.coords.lat;
@@ -138,21 +169,20 @@ export class MapComponent implements OnInit{
     }
 
     host(lat: number, lng: number){
-        console.log('marker lat: ' + lat + ' marker lng: ' + lng);
         this.router.navigate(['../app/create-event'], { queryParams: { lat: lat, lng: lng }});
     }
 
     //TODO: update query params with proper event ID's from the API
-    eventDetails(lat: number, lng: number){
-        console.log('marker lat: ' + lat + ' marker lng: ' + lng);
-        this.router.navigate(['../app/event-details'], { queryParams: { lat: lat, lng: lng }});
+    eventDetails(event_id: number){
+        this.router.navigate(['../app/event-details'], { queryParams: { id: event_id }});
     }
 }
 
 // just an interface for type safety.
 interface marker {
-    lat: number;
-    lng: number;
-    label?: string;
-    iconUrl: string;
+  event_id: number;
+  lat: number;
+  lng: number;
+  label?: string;
+  iconUrl: string;
 }

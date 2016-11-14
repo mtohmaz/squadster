@@ -22,8 +22,8 @@ export class CreateEventComponent {
   public minDate: Date = void 0;
   title = "Create Event";
   inputValue: string;
-  lat: null;
-  lng: null;
+  lat: number;
+  lng: number;
 
   create: Event = {
     event_id: null,
@@ -31,6 +31,7 @@ export class CreateEventComponent {
     title: null,
     date: null,
     comments: null,
+    coordinates: null,
     max_attendees: null,
     description: null,
     location: null,
@@ -49,8 +50,10 @@ export class CreateEventComponent {
   ngOnInit() {
       this.route.queryParams.forEach((params: Params) => {
         let id = +params['id'] || 0;
-        let lat = +params['lat'] || 0;
-        let lng = +params['lng'] || 0;
+        if (params['lat']) {
+          this.lat = +params['lat'];
+          this.lng = +params['lng'];
+        }
         if (id != 0) {
           this.eventService.getEvent(id).then(ret => this.create = ret);
         }

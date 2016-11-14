@@ -8,6 +8,7 @@ export class Event {
   lng: number;
   date: Date;
   comments: string;
+  coordinates: string;
   //startTime: string;
   //currentAttendees: number;
   max_attendees: number;
