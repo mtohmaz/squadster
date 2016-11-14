@@ -214,7 +214,7 @@ def auth_return(request):
             email=email_address
         )
         Credentials.objects.create(
-            id=newUser.id,
+            id=newUser,
             credential=credentials
         )
         

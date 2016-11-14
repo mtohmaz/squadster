@@ -37,8 +37,10 @@ class GoogleSessionAuthentication(authentication.BaseAuthentication):
             # then Redirect to /api again
             last_auth_str = request.session['google_session_last_auth']
             last_auth = datetime.strptime(last_auth_str, dateformat)
+            
             utctz = pytz.timezone('UTC')
-            last_auth = utctz.localize(last_auth)
+            #last_auth = utctz.localize(last_auth)
+            
             timeout_seconds = request.session['google_session_timeout']
             timeout = timedelta(seconds=timeout_seconds)
             current_time = datetime.now(utctz) #timezone.now()

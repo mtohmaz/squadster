@@ -24,7 +24,8 @@ class FlowModel(models.Model):
 from oauth2client.contrib.django_util.models import CredentialsField
 
 class Credentials(models.Model):
-    id = models.ForeignKey(User, on_delete=models.CASCADE, primary_key=True, related_name='credential')
+    #id = models.ForeignKey(User, on_delete=models.CASCADE, primary_key=True, related_name='credential')
+    id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='credential')
     credential = CredentialsField()
 
 class SquadsterUser(models.Model):
@@ -84,7 +85,6 @@ class Comment(models.Model):
     
     def __str__(self):
         return '%s: %s' % (self.author.email, self.text)
-
 
 # Report handling
 class ReportedUsers(models.Model):

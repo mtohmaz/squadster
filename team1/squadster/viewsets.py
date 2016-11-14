@@ -110,13 +110,22 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
         d = request.GET
         
         # location and radius is required
-        if 'lat' in d and 'lon' in d and 'radius' in d:
+        if d.get('lat') and d.get('lon') and d.get('radius'):
             lat = float(d['lat'])
             lon = float(d['lon'])
             radius = int(d['radius'])
-            search_location = GEOSGeometry('POINT('+str(lon)+' '+str(lat)+')', srid=4326)
+            print('Filtering events at ({},{}), radius: {}'.format(lat, lon, radius))
+            # error check bounds
+            if lat > 90 or lat < -90:
+                return Response('lat must be in range [-90, 90]')
+            elif lon > 180 or lon < -180:
+                return Response('lon must be in range [-180, 180]')
+            elif radius < 1 or radius > 25:
+                return Response('radius must be in range [1, 25]')
+            else:
+                search_location = GEOSGeometry('POINT('+str(lon)+' '+str(lat)+')', srid=4326)
         else:
-            return HttpResponseBadRequest('Please provide lat, lon, radius.')
+            return Response('Please provide lat, lon, radius.', status=400)
             
         # check for keywords
         if 's' in d:
@@ -135,8 +144,6 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
             enddate = functions.str_to_time(d['enddate'])
         else:
             enddate = None
-        
-        
         
         events = Event.objects.filter(
             coordinates__dwithin=(search_location, Distance(mi=radius))
