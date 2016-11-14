@@ -49,9 +49,9 @@ export class EventService {
                     .catch(this.handleError);
   }
 
-  create(title: string, date: Date, max_attendees: number, description: string, lat: number, lng: number): Promise<string> {
+  create(title: string, date: Date, max_attendees: number, description: string, location: string, lat: number, lng: number): Promise<string> {
     return this.http
-               .post(this.eventsUrl, JSON.stringify({title: title, date: date, max_attendees: max_attendees, description: description, lat: lat, lng: lng}), {headers: this.headers})
+               .post(this.eventsUrl, JSON.stringify({title: title, date: date, max_attendees: max_attendees, description: description, location: location, lat: lat, lon: lng}), {headers: this.headers})
                .toPromise()
                .then(response => response.json())
                .catch(this.handleError);
