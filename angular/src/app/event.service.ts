@@ -34,6 +34,14 @@ export class EventService {
                     .catch(this.handleError);
   }
 
+  getEvents(lat: number, lon: number, radius: number, s: string): Promise<Event[]> {
+    console.log(this.eventsUrl + "?s=" + s +"&radius=" + radius + "&lat=" + lat + "&lon=" + lon);
+    return this.http.get(this.eventsUrl + "?s=" + s +"&radius=" + radius + "&lat=" + lat + "&lon=" + lon)
+                    .toPromise()
+                    .then(response => response.json())
+                    .catch(this.handleError);
+  }
+
   addComment(commentUrl: string, comment: string): Promise<string> {
     return this.http.post(commentUrl, JSON.stringify({text: comment}), {headers: this.headers})
                     .toPromise()
@@ -41,9 +49,9 @@ export class EventService {
                     .catch(this.handleError);
   }
 
-  create(title: string, date: Date, max_attendees: number, description: string): Promise<string> {
+  create(title: string, date: Date, max_attendees: number, description: string, lat: number, lng: number): Promise<string> {
     return this.http
-               .post(this.eventsUrl, JSON.stringify({title: title, date: date, max_attendees: max_attendees, description: description}), {headers: this.headers})
+               .post(this.eventsUrl, JSON.stringify({title: title, date: date, max_attendees: max_attendees, description: description, lat: lat, lng: lng}), {headers: this.headers})
                .toPromise()
                .then(response => response.json())
                .catch(this.handleError);

@@ -31,17 +31,31 @@
             [radius]="radius"
             [fillColor]="circleColor"
             [circleDraggable]="false"
-            [editable]="false">
+            [editable]="false"
+            [clickable]="false">
     </sebm-google-map-circle>
 
+    <!--This will handle poppulating events from API-->
     <sebm-google-map-marker
             *ngFor="let m of markers; let i = index"
-            (markerClick)="clickedMarker(m.label, i)"
+            (markerClick)="clickedMarker(m, i)"
             [latitude]="m.lat"
             [longitude]="m.lng"
             [iconUrl]="m.iconUrl">
         <sebm-google-map-info-window>
-            <strong>Event Here</strong>
+            <a (click)="eventDetails(m.event_id)">Go to event here</a>
+        </sebm-google-map-info-window>
+    </sebm-google-map-marker>
+
+    <!--This will handle new pins added by the user-->
+    <sebm-google-map-marker
+            *ngFor="let m of newPins; let i = index"
+            (markerClick)="clickedMarker(m, i)"
+            [latitude]="m.lat"
+            [longitude]="m.lng"
+            [iconUrl]="m.iconUrl">
+        <sebm-google-map-info-window>
+            <a (click)="host(m.lat, m.lng)">Host a New Event</a>
         </sebm-google-map-info-window>
     </sebm-google-map-marker>
 

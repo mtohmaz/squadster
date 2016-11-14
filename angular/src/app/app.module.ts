@@ -2,7 +2,6 @@ import { NgModule }      from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule }   from '@angular/forms';
 import { HttpModule } from '@angular/http';
-import { SidebarModule } from 'ng2-sidebar';
 
 import { Ng2BootstrapModule } from 'ng2-bootstrap/ng2-bootstrap';
 import { AUTH_PROVIDERS } from 'angular2-jwt';
@@ -15,7 +14,6 @@ import { MyEventsComponent } from './my-events.component';
 import { MyEventDetailComponent } from './my-event-details.component';
 import { ListViewComponent } from './list-view.component';
 import { TopNavComponent } from './top-nav.component';
-import { SideNavComponent } from './side-nav.component';
 import { SearchBarComponent } from './search-bar.component';
 import { LoginComponent } from './login.component';
 import { MapComponent } from './map.component';
@@ -31,7 +29,6 @@ import { routing } from './app.routing';
     Ng2BootstrapModule,
     routing,
     HttpModule,
-    SidebarModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyCQB9nQSw16-SkmsJQS-Jk7mskFKhU2U0Y',
       libraries: ['places']
@@ -45,7 +42,6 @@ import { routing } from './app.routing';
     MyEventsComponent,
     MyEventDetailComponent,
     TopNavComponent,
-    SideNavComponent,
     SearchBarComponent,
     LoginComponent,
     MapComponent,

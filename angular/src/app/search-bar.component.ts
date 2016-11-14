@@ -1,4 +1,5 @@
 import { Component, ViewEncapsulation, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
 import { DropdownModule } from "ng2-bootstrap/ng2-bootstrap";
 import { Headers, Http, Response } from '@angular/http';
 
@@ -10,13 +11,12 @@ import { Headers, Http, Response } from '@angular/http';
 })
 
 export class SearchBarComponent {
-    
-    private headers = new Headers({'Content-Type': 'application/json'});
-    
-    constructor(private http: Http) {}
-    
+
     public status:{isopen:boolean} = {isopen: false};
-    distances = ['1 mile', '5 miles', '10 miles', '15 miles'];
+    lat: number;
+    lng: number;
+    location = {};
+    distances = [1, 5, 10, 15, 25];
     tags = ['Food', 'Gaming', 'Hangout', 'Movie', 'Sports', 'Study'];
     locations = ['Current Location', 'Raleigh, NC', 'Cary, NC', 'Durham, NC', 'Chapel Hill, NC'];
     distanceSelected = this.distances[0];
@@ -24,13 +24,44 @@ export class SearchBarComponent {
     locationSelected = this.locations[0];
     searchString = '';
 
-    testPrint(){
-        console.log('Now searching for: \n search string: ' + this.searchString + ' tag selected: ' + this.tagSelected + ', distance: ' + this.distanceSelected + ', location selected: ' + this.locationSelected);
+    constructor(
+      private router: Router
+    ) { }
+
+    ngOnInit(){
+        if(navigator.geolocation){
+            navigator.geolocation.getCurrentPosition(this.setPosition.bind(this));
+        }
     }
 
-    updateSearch( search: string ){
-        this.searchString = search;
-        this.testPrint();
+    setPosition(position){
+        this.location = position.coords;
+        console.log(position.coords);
+        this.updateCurrentLatLng(position.coords.latitude, position.coords.longitude);
+    }
+
+    updateCurrentLatLng(latitude, longitude){
+        this.lat = latitude;
+        this.lng = longitude;
+    }
+
+    updateSearch( search: string ) {
+      if (this.router.url.indexOf("app/map-view") !== -1) {
+        if (search) {
+          this.router.navigate(['app/map-view'], { queryParams: { s: search, radius: this.distanceSelected, lat: this.lat, lon: this.lng}});
+        }
+        else {
+          this.router.navigate(['app/map-view'], { queryParams: { radius: this.distanceSelected, lat: this.lat, lon: this.lng}});
+        }
+      }
+      else {
+        if (search) {
+          this.router.navigate(['app/list-view'], { queryParams: { s: search, radius: this.distanceSelected, lat: this.lat, lon: this.lng}});
+        }
+        else {
+          this.router.navigate(['app/list-view'], { queryParams: { radius: this.distanceSelected, lat: this.lat, lon: this.lng}});
+        }
+      }
     }
     /*
     public doLogout():void {
@@ -44,6 +75,5 @@ export class SearchBarComponent {
     */
     updateTag( tag ){
         this.tagSelected = tag;
-        this.testPrint();
     }
 }

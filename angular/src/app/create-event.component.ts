@@ -22,6 +22,8 @@ export class CreateEventComponent {
   public minDate: Date = void 0;
   title = "Create Event";
   inputValue: string;
+  lat: number;
+  lng: number;
 
   create: Event = {
     event_id: null,
@@ -29,8 +31,12 @@ export class CreateEventComponent {
     title: null,
     date: null,
     comments: null,
+    coordinates: null,
     max_attendees: null,
-    description: null
+    description: null,
+    location: null,
+    lat: null,
+    lng: null
   };
 
   constructor (
@@ -44,10 +50,18 @@ export class CreateEventComponent {
   ngOnInit() {
       this.route.queryParams.forEach((params: Params) => {
         let id = +params['id'] || 0;
+        if (params['lat']) {
+          this.lat = +params['lat'];
+          this.lng = +params['lng'];
+        }
         if (id != 0) {
           this.eventService.getEvent(id).then(ret => this.create = ret);
         }
       });
+  }
+
+  printLL(){
+    console.log('lat is: ' + this.lat + ' lng is: ' + this.lng);
   }
 
   onFocus() {
@@ -57,14 +71,17 @@ export class CreateEventComponent {
       let autocomplete = new google.maps.places.Autocomplete(document.getElementById("google_places_ac"), {});
       google.maps.event.addListener(autocomplete, 'place_changed', () => {
         let place = autocomplete.getPlace();
-        console.log(place);
+        this.lat = place.geometry.location.lat();
+        this.lng = place.geometry.location.lng();
+        console.log('place is: ' + JSON.stringify(place.name) + ' lat/lng is: ' + this.lat + '/' + this.lng);
       });
     });
   }
 
    add(event: Event): void {
      if (!event) { return; }
-     this.eventService.create(this.create.title, this.create.date, this.create.max_attendees, this.create.description)
+     this.eventService.create(this.create.title, this.create.date, this.create.max_attendees, this.create.description, this.lat, this.lng)
                       .then(response => this.status = response);
    }
+
 }

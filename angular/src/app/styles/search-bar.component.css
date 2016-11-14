@@ -15,7 +15,6 @@
     float: left;
     margin-left: 40px;
     margin-top: 7px;
-    margin-bottom: 7px;
 }
 
 #searchbar .searchbox {
@@ -36,14 +35,12 @@
 
 #searchbar .btn-warning {
     margin-top: 7px;
-    margin-bottom: 7px;
     margin-left: 20px;
     width: 90%;
 }
 
 #searchbar .btn-success{
     margin-top: 12px;
-    margin-bottom: -2px;
     width: 100%;
 }
 
@@ -54,7 +51,6 @@
 #searchbar .distance{
     color: white;
     margin-top: 14px;
-    margin-bottom: 14px;
     display: inline-block;
 }
 

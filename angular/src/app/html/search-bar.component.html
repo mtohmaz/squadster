@@ -19,13 +19,13 @@
     <div class="col-xs-4 distance">
         Within
         <div class="in-line">
-            <select class="form-control" id="distance" [(ngModel)]="distanceSelected" (ngModelChange)="testPrint()" name="distance">
-                <option *ngFor="let d of distances" [value]="d" (click)="testPrint()">{{d}}</option>
+            <select class="form-control" id="distance" [(ngModel)]="distanceSelected" (ngModelChange)="updateSearch(box.value)" name="distance">
+                <option *ngFor="let d of distances" [value]="d">{{d}} miles</option>
             </select>
         </div>
         of
         <div class="in-line">
-            <select class="form-control" id="location" [(ngModel)]="locationSelected" (ngModelChange)="testPrint()" name="location">
+            <select class="form-control" id="location" [(ngModel)]="locationSelected" (ngModelChange)="updateSearch(box.value)" name="location">
                 <option *ngFor="let loc of locations" [value]="loc">{{loc}}</option>
             </select>
         </div>
@@ -36,7 +36,7 @@
     <div class="col-xs-2 in-line">
         <!--<button type="button" class="btn btn-success icon ion-person" routerLink="app/login" routerLinkActive="active"> My Account</button>-->
         <div class="btn-group" dropdown [(isOpen)]="status.isopen">
-            <button id="single-button" type="button" class="btn btn-success icon ion-person move-left" dropdownToggle [disabled]="disabled">
+            <button id="single-button" type="button" class="btn btn-success icon ion-person" dropdownToggle [disabled]="disabled">
                 My Account <span class="caret"></span>
             </button>
             <ul dropdownMenu role="menu" aria-labelledby="single-button" class="move-left">

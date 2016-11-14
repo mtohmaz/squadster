@@ -3,9 +3,12 @@ export class Event {
   host_id: number;
   title: string;
   //hostName: string;
-  //location: string;
+  location: string;
+  lat: number;
+  lng: number;
   date: Date;
   comments: string;
+  coordinates: string;
   //startTime: string;
   //currentAttendees: number;
   max_attendees: number;

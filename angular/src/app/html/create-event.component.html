@@ -5,8 +5,15 @@
   <br><br>
 
   <label>Event Location: </label>
-  <input [(ngModel)]="create.location" (focus)="onFocus()" id="google_places_ac" name="google_places_ac"  type="text" class="input-block-level">
+  <input [(ngModel)]="create.location" (focus)="onFocus()" id="google_places_ac" name="google_places_ac"  type="text" class="input-block-level"
+  (blur)="printLL()">
   <br><br>
+
+  <div>
+    <label>Latitude, Longitude: </label>
+    {{lat}}, {{lng}}
+    <br><br>
+  </div>
 
   <label>Date: </label>
   <datepicker [(ngModel)]="create.date" [showWeeks]="false" [minDate]="minDate"></datepicker>
