@@ -1,4 +1,6 @@
 import json
+import jsonpickle
+
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.views import APIView
@@ -15,6 +17,7 @@ from django.contrib.gis.geos import GEOSGeometry
 #from django.contrib.gis.measure import Distance
 from django.contrib.gis.measure import *
 
+from squadster import functions
 from squadster.serializers import *
 from squadster.models import *
 from squadster.authenticators import GoogleSessionAuthentication
@@ -103,24 +106,52 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
     lookup_field = 'event_id'
     
     def list(self, request, format=None):
-        d = request.data
+        #d = request.data
         d = request.GET
+        
+        # location and radius is required
         if 'lat' in d and 'lon' in d and 'radius' in d:
-            lat = int(d['lat'])
-            lon = int(d['lon'])
+            lat = float(d['lat'])
+            lon = float(d['lon'])
             radius = int(d['radius'])
+            search_location = GEOSGeometry('POINT('+str(lon)+' '+str(lat)+')', srid=4326)
         else:
-            return HttpResponseBadRequest("Please provide lat, lon, radius.")
+            return HttpResponseBadRequest('Please provide lat, lon, radius.')
             
+        # check for keywords
+        if 's' in d:
+            # '+' characters are converted automatically to spaces
+            words = d['s'].split(' ') 
+        else:
+            words = None
+        
+        # check for dates
+        if 'startdate' in d:
+            startdate = functions.str_to_time(d['startdate'])
+        else:
+            startdate = None
+        
+        if 'enddate' in d:
+            enddate = functions.str_to_time(d['enddate'])
+        else:
+            enddate = None
         
         
-        search_location = GEOSGeometry('POINT('+str(lon)+' '+str(lat)+')', srid=4326)
         
         events = Event.objects.filter(
             coordinates__dwithin=(search_location, Distance(mi=radius))
         )
+        if words is not None:
+            print('filter words: ' + str(words))
+            for word in words:
+                events = events.filter(Q(title__contains=word) | Q(description__contains=word))
         
-        #events = Event.objects.all()
+        if startdate is not None:
+            events = events.filter(Q(date__gte=startdate))
+        if enddate is not None:
+            events = events.filter(Q(date__lte=enddate))
+        
+        
         
         serializer = EventSerializer(
                 events,
@@ -128,7 +159,13 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
                 context={'request': request, 'format':format})
         
         return Response(serializer.data)
-
+    
+    def retrieve(self, request, event_id):
+        
+        event = Event.objects.get(event_id=event_id)
+        serializer = EventSerializer(event, context={'request':request})
+        return Response(serializer.data)
+    
     def create(self, request):
         d = request.data
         d['host'] = int(request.user.id)

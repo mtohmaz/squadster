@@ -17,10 +17,6 @@ import pytz
 
 class GoogleSessionAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
-        #print('request: ' + str(request.data.dict()))
-        #print('keys: ' + str(request.session.keys()))
-        #print('sessionid: ' + request.session.session_key)
-        #print('items: ' + str(request.session.items()))
         
         if 'google_session_token' not in request.session \
                 or 'google_session_last_auth' not in request.session \

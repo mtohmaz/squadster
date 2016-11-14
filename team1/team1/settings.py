@@ -86,7 +86,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'team1.wsgi.application'
 
-#added
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
