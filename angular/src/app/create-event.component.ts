@@ -60,10 +60,6 @@ export class CreateEventComponent {
       });
   }
 
-  printLL(){
-    console.log('lat is: ' + this.lat + ' lng is: ' + this.lng);
-  }
-
   onFocus() {
     //let timer = Observable.timer(0, 3000);
     //timer.subscribe(t => this.getSuggestions());
@@ -71,9 +67,8 @@ export class CreateEventComponent {
       let autocomplete = new google.maps.places.Autocomplete(document.getElementById("google_places_ac"), {});
       google.maps.event.addListener(autocomplete, 'place_changed', () => {
         let place = autocomplete.getPlace();
-        this.lat = place.geometry.location.lat();
-        this.lng = place.geometry.location.lng();
-        console.log('place is: ' + JSON.stringify(place.name) + ' lat/lng is: ' + this.lat + '/' + this.lng);
+        //this.lat = place.geometry.location.lat();
+        //this.lng = place.geometry.location.lng();
       });
     });
   }
