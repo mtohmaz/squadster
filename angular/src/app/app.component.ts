@@ -9,35 +9,40 @@ import { Router } from '@angular/router';
     //state which components are used in the template.
     //directives: [CreateComponent]
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
     private _open: boolean = false;
     isChecked = false;
 
     constructor(public router: Router) { }
 
+    ngOnInit() {
+      console.log("here");
+      this.check();
+    }
+
     isEdited() {
-      if (this.router.url == "/app/list-view" || this.router.url == "/app/map-view")
+      if (this.router.url.search("/app/list-view") == 0 || this.router.url.search("/app/map-view") == 0)
         return true;
       return false;
     }
 
     check() {
-        if (this.router.url == "/app/list-view") {
+        if (this.router.url.search("/app/list-view") == 0) {
           this.isChecked = false;
         }
-        else if (this.router.url == "app/map-view") {
+        else if (this.router.url.search("app/map-view") == 0) {
           this.isChecked = true;
         }
         return this.isChecked;
     }
 
     toggle() {
-        if (this.router.url == "/app/list-view") {
-          this.router.navigate(["app/map-view"]);
-        }
-        else {
-          this.router.navigate(["app/list-view"]);
-        }
+      if (this.router.url.search("/app/list-view") == 0) {
+        this.router.navigate(["app/map-view"]);
+      }
+      else {
+        this.router.navigate(["app/list-view"]);
+      }
     }
 
     private _toggleSidebar() {

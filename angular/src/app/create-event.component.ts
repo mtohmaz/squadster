@@ -80,7 +80,7 @@ export class CreateEventComponent {
 
    add(event: Event): void {
      if (!event) { return; }
-     this.eventService.create(this.create.title, this.create.date, this.create.max_attendees, this.create.description, this.create.location, parseInt(this.lat.toFixed(7)), parseInt(this.lng.toFixed(7)))
+     this.eventService.create(this.create.title, this.create.date, this.create.max_attendees, this.create.description, this.create.location, parseFloat(this.lat.toFixed(7)), parseFloat(this.lng.toFixed(7)))
                       .then(response => this.status = response);
    }
 
