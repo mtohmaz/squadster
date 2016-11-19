@@ -14,7 +14,7 @@ export class SearchBarComponent {
 
     public status:{isopen:boolean} = {isopen: false};
     lat: number;
-    lng: number;
+    lon: number;
     location = {};
     distances = [1, 5, 10, 15, 25];
     tags = ['Food', 'Gaming', 'Hangout', 'Movie', 'Sports', 'Study'];
@@ -37,29 +37,29 @@ export class SearchBarComponent {
     setPosition(position){
         this.location = position.coords;
         console.log(position.coords);
-        this.updateCurrentLatLng(position.coords.latitude, position.coords.longitude);
+        this.updateCurrentLatlon(position.coords.latitude, position.coords.longitude);
     }
 
-    updateCurrentLatLng(latitude, longitude){
+    updateCurrentLatlon(latitude, longitude){
         this.lat = latitude;
-        this.lng = longitude;
+        this.lon = longitude;
     }
 
     updateSearch( search: string ) {
       if (this.router.url.indexOf("app/map-view") !== -1) {
         if (search) {
-          this.router.navigate(['app/map-view'], { queryParams: { s: search, radius: this.distanceSelected, lat: this.lat, lon: this.lng}});
+          this.router.navigate(['app/map-view'], { queryParams: { s: search, radius: this.distanceSelected, lat: this.lat, lon: this.lon}});
         }
         else {
-          this.router.navigate(['app/map-view'], { queryParams: { radius: this.distanceSelected, lat: this.lat, lon: this.lng}});
+          this.router.navigate(['app/map-view'], { queryParams: { radius: this.distanceSelected, lat: this.lat, lon: this.lon}});
         }
       }
       else {
         if (search) {
-          this.router.navigate(['app/list-view'], { queryParams: { s: search, radius: this.distanceSelected, lat: this.lat, lon: this.lng}});
+          this.router.navigate(['app/list-view'], { queryParams: { s: search, radius: this.distanceSelected, lat: this.lat, lon: this.lon}});
         }
         else {
-          this.router.navigate(['app/list-view'], { queryParams: { radius: this.distanceSelected, lat: this.lat, lon: this.lng}});
+          this.router.navigate(['app/list-view'], { queryParams: { radius: this.distanceSelected, lat: this.lat, lon: this.lon}});
         }
       }
     }
