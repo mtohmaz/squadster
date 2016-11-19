@@ -16,8 +16,10 @@ urlpatterns = [
             'post':'create'}),
         name='event-list'),
     url(r'^events/(?P<event_id>[0-9]+)$', viewsets.EventViewSet.as_view({
-            'get':'retrieve'}),
+            'get':'retrieve',
+            'patch':'partial_update'}),
         name='event-detail'),
+    
     
     # EVENT COMMENTS
     url(r'^events/(?P<event_id>[0-9]+)/comments/$', viewsets.CommentViewSet.as_view({
@@ -45,13 +47,13 @@ urlpatterns = [
     # USERS
     url(r'^users/$', viewsets.UserViewSet.as_view({
             'get':'list',
-            #'post':'create'
-            })),
-    url(r'^users/(?P<user_id>[0-9]+)/events/', viewsets.UserEventViewSet.as_view({
-        'get':'list',
-        'post':'create'
     })),
-    
+    url(r'^users/(?P<user_id>[0-9]+)/hostedevents/', viewsets.UserHostedEventViewSet.as_view({
+        'get':'list'
+    })),
+    url(r'^users/(?P<user_id>[0-9]+)/attendedevents/', viewsets.UserAttendedEventViewSet.as_view({
+        'get':'list'
+    })),
 
     # TEMPORARY, REMOVE
     #url(r'^api/users/[0-9]+/apikeys/$', views.create_api_key),
