@@ -23,7 +23,7 @@ export class CreateEventComponent {
   title = "Create Event";
   inputValue: string;
   lat: number;
-  lng: number;
+  lon: number;
 
   create: Event = {
     event_id: null,
@@ -36,32 +36,32 @@ export class CreateEventComponent {
     description: null,
     location: null,
     lat: null,
-    lng: null
+    lon: null
   };
 
   constructor (
-    private eventService: EventService,
-    private route: ActivatedRoute,
-    private _loader: MapsAPILoader )
+      private eventService: EventService,
+      private route: ActivatedRoute,
+      private _loader: MapsAPILoader )
   {
     (this.minDate = new Date()).setDate(this.minDate.getDate());
   }
 
   ngOnInit() {
-      this.route.queryParams.forEach((params: Params) => {
-        let id = +params['id'] || 0;
-        if (params['lat']) {
-          this.lat = +params['lat'];
-          this.lng = +params['lng'];
-        }
-        if (id != 0) {
-          this.eventService.getEvent(id).then(ret => this.create = ret);
-        }
-      });
+    this.route.queryParams.forEach((params: Params) => {
+      let id = +params['id'] || 0;
+      if (params['lat']) {
+        this.lat = +params['lat'];
+        this.lon = +params['lon'];
+      }
+      if (id != 0) {
+        this.eventService.getEvent(id).then(ret => this.create = ret);
+      }
+    });
   }
 
   printLL(){
-    console.log('lat is: ' + this.lat + ' lng is: ' + this.lng);
+    console.log('lat is: ' + this.lat + ' lon is: ' + this.lon);
   }
 
   onFocus() {
@@ -72,16 +72,15 @@ export class CreateEventComponent {
       google.maps.event.addListener(autocomplete, 'place_changed', () => {
         let place = autocomplete.getPlace();
         this.lat = place.geometry.location.lat();
-        this.lng = place.geometry.location.lng();
-        console.log('place is: ' + JSON.stringify(place.name) + ' lat/lng is: ' + this.lat + '/' + this.lng);
+        this.lon = place.geometry.location.lon();
+        console.log('place is: ' + JSON.stringify(place.name) + ' lat/lon is: ' + this.lat + '/' + this.lon);
       });
     });
   }
 
    add(event: Event): void {
      if (!event) { return; }
-     this.eventService.create(this.create.title, this.create.date, this.create.max_attendees, this.create.description, this.create.location, parseFloat(this.lat.toFixed(7)), parseFloat(this.lng.toFixed(7)))
+     this.eventService.create(this.create.title, this.create.date, this.create.max_attendees, this.create.description, this.create.location, parseFloat(this.lat.toFixed(7)), parseFloat(this.lon.toFixed(7)))
                       .then(response => this.status = response);
    }
-
 }

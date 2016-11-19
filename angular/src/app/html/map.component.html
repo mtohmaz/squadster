@@ -1,6 +1,6 @@
 <h1>{{ title }}</h1>
 
-<!-- this creates a google map on the page with the given lat/lng from -->
+<!-- this creates a google map on the page with the given lat/lon from -->
 <!-- the component as the initial center of the map: -->
 
 <div>
@@ -13,11 +13,11 @@
     </select>
 </div>
 
-<sebm-google-map [latitude]="lat" [longitude]="lng" [zoom]="zoom" (mapClick)="mapClicked($event)">
+<sebm-google-map [latitude]="lat" [longitude]="lon" [zoom]="zoom" (mapClick)="mapClicked($event)">
 
     <sebm-google-map-marker
             [latitude]="lat"
-            [longitude]="lng"
+            [longitude]="lon"
             [draggable]="true"
             [markerDraggable]="true"
             (dragEnd) = "dragEnd($event)">
@@ -27,7 +27,7 @@
     </sebm-google-map-marker>
 
     <sebm-google-map-circle
-            [latitude]="lat" [longitude]="lng"
+            [latitude]="lat" [longitude]="lon"
             [radius]="radius"
             [fillColor]="circleColor"
             [circleDraggable]="false"
@@ -35,15 +35,15 @@
             [clickable]="false">
     </sebm-google-map-circle>
 
-    <!--This will handle poppulating events from API-->
+    <!--This will handle populating events from API-->
     <sebm-google-map-marker
             *ngFor="let m of markers; let i = index"
             (markerClick)="clickedMarker(m, i)"
             [latitude]="m.lat"
-            [longitude]="m.lng"
+            [longitude]="m.lon"
             [iconUrl]="m.iconUrl">
         <sebm-google-map-info-window>
-            <a (click)="eventDetails(m.event_id)">Go to event here</a>
+            <a (click)="eventDetails(m.event_id)">{{m.label}}</a>
         </sebm-google-map-info-window>
     </sebm-google-map-marker>
 
@@ -52,10 +52,10 @@
             *ngFor="let m of newPins; let i = index"
             (markerClick)="clickedMarker(m, i)"
             [latitude]="m.lat"
-            [longitude]="m.lng"
+            [longitude]="m.lon"
             [iconUrl]="m.iconUrl">
         <sebm-google-map-info-window>
-            <a (click)="host(m.lat, m.lng)">Host a New Event</a>
+            <a (click)="host(m.lat, m.lon)">Host a New Event</a>
         </sebm-google-map-info-window>
     </sebm-google-map-marker>
 
