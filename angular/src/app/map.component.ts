@@ -20,8 +20,6 @@ export class MapComponent implements OnInit{
     zoom: number = 14;
     radius: number = 1609.34;
     circleColor: string = '#5DFC0A';
-    newPinLat: number = null;
-    newPinlon: number = null;
     events: Event[];
 
     //1 mile = 1609.34 meters
@@ -36,29 +34,29 @@ export class MapComponent implements OnInit{
     //this should be replaced by events received from the API
     markers: marker[] = [
         {
-         event_id: 5,
-         lat: 35.771673,
-         lon: -78.673835,
-         label: 'Coffee Hangout',
-         iconUrl: 'assets/images/miniSLogo.png',
-         date: null
-         },
-         {
-         event_id: 2,
-         lat: 35.779600,
-         lon: -78.675779,
-         label: 'Watch Doctor Strange',
-         iconUrl: 'assets/images/miniSLogo.png',
-         date: null
-         },
-         {
-         event_id: 3,
-         lat: 35.771238,
-         lon: -78.674408,
-         label: 'Pickup Frisby',
-         iconUrl: 'assets/images/miniSLogo.png',
-         date: null
-         }
+            event_id: 5,
+            lat: 35.771673,
+            lon: -78.673835,
+            title: 'Coffee Hangout',
+            iconUrl: 'assets/images/miniSLogo.png',
+            date: new Date().toLocaleString()
+        },
+        {
+            event_id: 2,
+            lat: 35.779600,
+            lon: -78.675779,
+            title: 'Watch Doctor Strange',
+            iconUrl: 'assets/images/miniSLogo.png',
+            date: new Date().toLocaleString()
+        },
+        {
+            event_id: 3,
+            lat: 35.771238,
+            lon: -78.674408,
+            title: 'Pickup Frisby',
+            iconUrl: 'assets/images/miniSLogo.png',
+            date: null
+        }
     ];
 
     //when users click on the map, a new pin will be shown and added to this array to keep track of the info
@@ -86,7 +84,8 @@ export class MapComponent implements OnInit{
                         lat: parseFloat(ar[0]),
                         lon: parseFloat(ar[1]),
                         iconUrl: 'assets/images/miniSLogo.png',
-                        date: null
+                        date: i.date.toLocaleString(),
+                        title: i.title
                     });
                     console.log(this.newPins);
                 }
@@ -125,13 +124,10 @@ export class MapComponent implements OnInit{
             lat: $event.coords.lat,
             lon: $event.coords.lng,
             iconUrl: 'assets/images/miniSLogo.png',
-            label: ('Create event at: ' + $event.coords.lat + ', ' + $event.coords.lng),
+            title: ('Create event at: ' + $event.coords.lat + ', ' + $event.coords.lng),
             date: null
         });
         this.getAddress($event.coords.lat, $event.coords.lng);
-        this.newPinLat = $event.coords.lat;
-        this.newPinlon = $event.coords.lng;
-        console.log("map clicked");
     }
 
     onChange(){
@@ -169,7 +165,7 @@ export class MapComponent implements OnInit{
 
     clickedMarker(marker: marker, index: number) {
         console.log(marker);
-        console.log(`clicked the marker: ${marker.label || index}`);
+        console.log(`clicked the marker: ${marker.title || index}`);
     }
 
     dragEnd($event: MouseEvent){
@@ -193,7 +189,7 @@ interface marker {
     event_id: number;
     lat: number;
     lon: number;
-    label?: string;
+    title?: string;
     iconUrl: string;
-    date: Date;
+    date: string;
 }

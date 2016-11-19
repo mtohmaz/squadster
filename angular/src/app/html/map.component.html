@@ -43,7 +43,9 @@
             [longitude]="m.lon"
             [iconUrl]="m.iconUrl">
         <sebm-google-map-info-window>
-            <a (click)="eventDetails(m.event_id)">{{m.label}}</a>
+            <a (click)="eventDetails(m.event_id)">{{m.title}}</a>
+            <br>
+            {{m.date}}
         </sebm-google-map-info-window>
     </sebm-google-map-marker>
 
