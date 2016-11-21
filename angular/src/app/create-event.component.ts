@@ -58,15 +58,12 @@ export class CreateEventComponent {
   }
 
   onFocus() {
-    //let timer = Observable.timer(0, 3000);
-    //timer.subscribe(t => this.getSuggestions());
     this._loader.load().then(() => {
       let autocomplete = new google.maps.places.Autocomplete(document.getElementById("google_places_ac"), {});
       google.maps.event.addListener(autocomplete, 'place_changed', () => {
         let place = autocomplete.getPlace();
         this.create.lat = parseFloat(place.geometry.location.lat().toFixed(7));
         this.create.lon = parseFloat(place.geometry.location.lng().toFixed(7));
-        console.log('place is: ' + JSON.stringify(place.name) + ' lat, lon is: ' + this.create.lat + ', ' + this.create.lon);
       });
     });
   }

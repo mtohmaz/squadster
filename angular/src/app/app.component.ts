@@ -16,7 +16,6 @@ export class AppComponent implements OnInit{
     constructor(public router: Router) { }
 
     ngOnInit() {
-      console.log("here");
       this.check();
     }
 
