@@ -122,6 +122,12 @@ export class MapComponent implements OnInit {
 
     dragEnd($event: MouseEvent) {
         this.updateCurrentLatLon($event.coords.lat, $event.coords.lng);
+        if (this.s) {
+          this.router.navigate(['app/map-view'], { queryParams: { s: this.s, radius: this.d_int, lat: this.lat, lon: this.lon}});
+        }
+        else {
+          this.router.navigate(['app/map-view'], { queryParams: { radius: this.d_int, lat: this.lat, lon: this.lon}});
+        }
     }
 
     host(lat: number, lon: number) {
