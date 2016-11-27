@@ -5,7 +5,7 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Event } from './event';
 import { EventService } from './event.service';
 
-declare var google:any;
+declare var google: any;
 
 @Component({
     selector: 'map',
@@ -13,7 +13,7 @@ declare var google:any;
     styleUrls: ['styles/map.component.css'],
 })
 
-export class MapComponent implements OnInit{
+export class MapComponent implements OnInit {
     title: string = 'Events Nearby';
     lat: number = 50;
     lon: number = -50;
@@ -21,6 +21,7 @@ export class MapComponent implements OnInit{
     radius: number = 1609.34;
     circleColor: string = '#5DFC0A';
     events: Event[];
+    s: string;
 
     //1 mile = 1609.34 meters
     mile = 1609.34;
@@ -69,52 +70,52 @@ export class MapComponent implements OnInit{
     ) { }
 
     getEvents() {
-        this.route.queryParams.forEach((params: Params) => {
-            let lat = +params['lat'] || this.lat;
-            let lon = +params['lon'] || this.lon;
-            let range = +params['radius'] || 1;
-            let s = params['s'] || '';
-            this.eventService.getEvents(lat, lon, range, s).then(events => {
-                for (let i of events) {
-                    i.coordinates = i.coordinates.replace('[', '');
-                    i.coordinates = i.coordinates.replace(']', '');
-                    let ar = i.coordinates.replace(',','').split(" ");
-                    this.markers.push({
-                        event_id: i.event_id,
-                        lat: parseFloat(ar[0]),
-                        lon: parseFloat(ar[1]),
-                        iconUrl: 'assets/images/miniSLogo.png',
-                        date: i.date.toLocaleString(),
-                        title: i.title
-                    });
-                    console.log(this.newPins);
-                }
-            });
+        this.markers = [];
+        this.eventService.getEvents(this.lat, this.lon, this.d_int, this.s).then(events => {
+            for (let i of events) {
+                i.coordinates = i.coordinates.replace('[', '');
+                i.coordinates = i.coordinates.replace(']', '');
+                let ar = i.coordinates.replace(',', '').split(" ");
+                this.markers.push({
+                    event_id: i.event_id,
+                    lat: parseFloat(ar[0]),
+                    lon: parseFloat(ar[1]),
+                    iconUrl: 'assets/images/miniSLogo.png',
+                    date: i.date.toLocaleString(),
+                    title: i.title
+                });
+            }
         });
     }
 
-    setPosition(position){
+    setPosition(position) {
         this.location = position.coords;
-        console.log(position.coords);
         this.updateCurrentLatLon(position.coords.latitude, position.coords.longitude);
     }
 
-    updateCurrentLatLon(latitude, longitude){
+    updateCurrentLatLon(latitude, longitude) {
         this.lat = latitude;
         this.lon = longitude;
         this.getEvents();
     }
 
-    ngOnInit(){
-        if(navigator.geolocation){
-            navigator.geolocation.getCurrentPosition(this.setPosition.bind(this));
-        }
-    }
-
-    printLocation(){
-        console.log('this.latitude is: ' + this.lat + '\nthis.longittude is: ' + this.lon);
-        this.getAddress(this.lat, this.lon);
-        console.log('distanceSelected selected: ' + this.distanceSelected);
+    ngOnInit() {
+        this.route.queryParams.forEach((params: Params) => {
+            this.s = params['s'] || '';
+            if (!+params['lat'] || !+params['lon'] || !+params['radius']) {
+                this.d_int = 1;
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(this.setPosition.bind(this));
+                }
+            }
+            else {
+                this.lat = +params['lat'];
+                this.lon = +params['lon'];
+                this.d_int = +params['radius'];
+                this.getEvents();
+            }
+            this.changeZoom();
+        });
     }
 
     mapClicked($event: MouseEvent) {
@@ -127,60 +128,35 @@ export class MapComponent implements OnInit{
             title: ('Create event at: ' + $event.coords.lat + ', ' + $event.coords.lng),
             date: null
         });
-        this.getAddress($event.coords.lat, $event.coords.lng);
     }
 
-    onChange(){
-        this.d_int = parseInt(this.distanceSelected);
+    changeZoom() {
         this.radius = this.d_int * this.mile;
-        if(this.d_int == 5){
+        if (this.d_int == 5) {
             this.zoom = 12;
         }
-        else if(this.d_int == 10){
+        else if (this.d_int == 10) {
             this.zoom = 11;
         }
-        else if(this.d_int == 15){
+        else if (this.d_int == 15 || this.d_int == 25) {
             this.zoom = 10;
         }
-        else{
+        else {
             this.zoom = 14;
         }
     }
 
-    getAddress(lat, lon){
-        var geocoder = new google.maps.Geocoder();
-        var latlon = new google.maps.LatLng(lat, lon);
-        geocoder.geocode({ 'latLng': latlon }, function (results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-                if (results[1]) {
-                    console.log(results[1].formatted_address);
-                } else {
-                    console.log('Location not found');
-                }
-            } else {
-                console.log('Geocoder failed due to: ' + status);
-            }
-        });
-    }
-
-    clickedMarker(marker: marker, index: number) {
-        console.log(marker);
-        console.log(`clicked the marker: ${marker.title || index}`);
-    }
-
-    dragEnd($event: MouseEvent){
+    dragEnd($event: MouseEvent) {
         this.updateCurrentLatLon($event.coords.lat, $event.coords.lng);
-        console.log('new position is: ' + $event.coords.lat + ', ' + $event.coords.lng);
-        this.getAddress($event.coords.lat, $event.coords.lng);
     }
 
-    host(lat: number, lon: number){
-        this.router.navigate(['../app/create-event'], { queryParams: { lat: lat, lon: lon }});
+    host(lat: number, lon: number) {
+        this.router.navigate(['../app/create-event'], { queryParams: { lat: lat, lon: lon } });
     }
 
     //TODO: update query params with proper event ID's from the API
-    eventDetails(event_id: number){
-        this.router.navigate(['../app/event-details'], { queryParams: { id: event_id }});
+    eventDetails(event_id: number) {
+        this.router.navigate(['../app/event-details'], { queryParams: { id: event_id } });
     }
 }
 

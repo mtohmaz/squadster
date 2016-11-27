@@ -3,26 +3,16 @@
 <!-- this creates a google map on the page with the given lat/lon from -->
 <!-- the component as the initial center of the map: -->
 
-<div>
-    <button type="button" class="btn btn-warning btn-lg" (click)="printLocation()">Print location</button>
-</div>
-
-<div class="in-line">
-    <select class="form-control" id="distance" [(ngModel)]="distanceSelected" (ngModelChange)="onChange()" name="distance">
-        <option *ngFor="let d of distances" [value]="d" (change)="updateMap()">{{d}}</option>
-    </select>
-</div>
-
 <sebm-google-map [latitude]="lat" [longitude]="lon" [zoom]="zoom" (mapClick)="mapClicked($event)">
 
-    <sebm-google-map-marker
+    <sebm-google-map-marker title="Drag to change location"
             [latitude]="lat"
             [longitude]="lon"
             [draggable]="true"
             [markerDraggable]="true"
             (dragEnd) = "dragEnd($event)">
         <sebm-google-map-info-window [isOpen]="true">
-            <strong>My Current Location</strong>
+            <strong>Current Search Location</strong>
         </sebm-google-map-info-window>
     </sebm-google-map-marker>
 
@@ -38,7 +28,6 @@
     <!--This will handle populating events from API-->
     <sebm-google-map-marker
             *ngFor="let m of markers; let i = index"
-            (markerClick)="clickedMarker(m, i)"
             [latitude]="m.lat"
             [longitude]="m.lon"
             [iconUrl]="m.iconUrl">
@@ -52,7 +41,6 @@
     <!--This will handle new pins added by the user-->
     <sebm-google-map-marker
             *ngFor="let m of newPins; let i = index"
-            (markerClick)="clickedMarker(m, i)"
             [latitude]="m.lat"
             [longitude]="m.lon"
             [iconUrl]="m.iconUrl">
