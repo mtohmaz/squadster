@@ -11,7 +11,7 @@
             <ul class="dropdown-menu" role="menu" aria-labelledby="btn-append-to-body">
                 <li><a>Tags:</a></li>
                 <li *ngFor="let tag of tags">
-                    <a class="dropdown-item" class="icon ion-navigate active" (click)="updateTag(tag)">{{tag}}</a>
+                    <a class="dropdown-item" (click)="updateTag(tag)">{{tag}}</a>
                 </li>
             </ul>
         </div>

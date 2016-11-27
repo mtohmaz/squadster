@@ -33,35 +33,10 @@ export class MapComponent implements OnInit {
 
     //TODO: take pre-populated events out and use events from the API
     //this should be replaced by events received from the API
-    markers: marker[] = [
-        {
-            event_id: 5,
-            lat: 35.771673,
-            lon: -78.673835,
-            title: 'Coffee Hangout',
-            iconUrl: 'assets/images/miniSLogo.png',
-            date: new Date().toLocaleString()
-        },
-        {
-            event_id: 2,
-            lat: 35.779600,
-            lon: -78.675779,
-            title: 'Watch Doctor Strange',
-            iconUrl: 'assets/images/miniSLogo.png',
-            date: new Date().toLocaleString()
-        },
-        {
-            event_id: 3,
-            lat: 35.771238,
-            lon: -78.674408,
-            title: 'Pickup Frisby',
-            iconUrl: 'assets/images/miniSLogo.png',
-            date: null
-        }
-    ];
+    markers: marker[] = [];
 
     //when users click on the map, a new pin will be shown and added to this array to keep track of the info
-    newPins: marker[] = [];
+    newPin: marker;
 
     constructor(
         private router: Router,
@@ -119,15 +94,14 @@ export class MapComponent implements OnInit {
     }
 
     mapClicked($event: MouseEvent) {
-        this.newPins.pop();
-        this.newPins.push({
+        this.newPin = {
             event_id: null,
             lat: $event.coords.lat,
             lon: $event.coords.lng,
             iconUrl: 'assets/images/miniSLogo.png',
             title: ('Create event at: ' + $event.coords.lat + ', ' + $event.coords.lng),
             date: null
-        });
+        };
     }
 
     changeZoom() {

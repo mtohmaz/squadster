@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 //import {CreateComponent} from './create.component';
 
 @Component({
@@ -13,7 +13,10 @@ export class AppComponent implements OnInit{
     private _open: boolean = false;
     isChecked = false;
 
-    constructor(public router: Router) { }
+    constructor(
+      private router: Router,
+      private route: ActivatedRoute
+    ) { }
 
     ngOnInit() {
       this.check();
@@ -36,12 +39,14 @@ export class AppComponent implements OnInit{
     }
 
     toggle() {
-      if (this.router.url.search("/app/list-view") == 0) {
-        this.router.navigate(["app/map-view"]);
-      }
-      else {
-        this.router.navigate(["app/list-view"]);
-      }
+      this.route.queryParams.forEach((params: Params) => {
+        if (this.router.url.search("/app/list-view") == 0) {
+          this.router.navigate(["app/map-view"], {queryParams: params});
+        }
+        else {
+          this.router.navigate(["app/list-view"], {queryParams: params});
+        }
+      });
     }
 
     private _toggleSidebar() {
