@@ -35,10 +35,9 @@ export class EventService {
   }
 
   getEvents(lat: number, lon: number, radius: number, s: string): Promise<Event[]> {
-    console.log(this.eventsUrl + "?s=" + s +"&radius=" + radius + "&lat=" + lat + "&lon=" + lon);
     return this.http.get(this.eventsUrl + "?s=" + s +"&radius=" + radius + "&lat=" + lat + "&lon=" + lon)
         .toPromise()
-        .then(response => response.json())
+        .then(response => response.json() as Event[])
         .catch(this.handleError);
   }
 

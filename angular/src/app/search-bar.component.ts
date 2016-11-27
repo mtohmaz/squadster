@@ -48,13 +48,33 @@ export class SearchBarComponent {
       private _service: NotificationsService
     ) { }
 
-    ngOnInit(){
+    ngOnInit() {
         if(navigator.geolocation){
             navigator.geolocation.getCurrentPosition(this.setPosition.bind(this));
         }
     }
 
+    checkToggle() {
+      if (this.locationSelected != "Current Location") {
+        (<HTMLAnchorElement>document.getElementById("createicon")).className = "icon ion-navigate";
+      }
+      else {
+        (<HTMLAnchorElement>document.getElementById("createicon")).className = "icon ion-navigate active";
+        if(navigator.geolocation){
+            navigator.geolocation.getCurrentPosition(this.setPosition.bind(this));
+        }
+      }
+    }
+
+    clickNav() {
+      this.locationSelected = "Current Location";
+      this.checkToggle();
+      let input = (<HTMLInputElement>document.getElementById("box")).value;
+      this.updateSearch(input)
+    }
+
     findLocation() {
+      this.checkToggle();
       this._loader.load().then(() => {
         let autocomplete = new google.maps.places.Autocomplete(document.getElementById("location"), {});
         google.maps.event.addListener(autocomplete, 'place_changed', () => {
@@ -73,13 +93,14 @@ export class SearchBarComponent {
 
     setPosition(position){
         this.location = position.coords;
-        console.log(position.coords);
         this.updateCurrentLatlon(position.coords.latitude, position.coords.longitude);
     }
 
     updateCurrentLatlon(latitude, longitude){
         this.lat = latitude;
         this.lon = longitude;
+        let input = (<HTMLInputElement>document.getElementById("box")).value;
+        this.updateSearch(input);
     }
 
     updateSearch( search: string ) {

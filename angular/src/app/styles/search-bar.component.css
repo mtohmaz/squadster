@@ -48,6 +48,19 @@
     transition: border-color ease-in-out .15s;
 }
 
+#createicon {
+  cursor: pointer;
+}
+
+i.active {
+  color: #4F8EF7;
+  cursor: default !important;
+}
+
+i:hover {
+  color: #4F8EF7;
+}
+
 #searchbar .btn-warning {
     margin-top: 7px;
     margin-left: 20px;
