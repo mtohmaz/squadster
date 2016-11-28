@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import * as moment from 'moment';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Observable } from 'rxjs/Rx';
@@ -39,7 +39,8 @@ export class CreateEventComponent {
   constructor (
       private eventService: EventService,
       private route: ActivatedRoute,
-      private _loader: MapsAPILoader )
+      private _loader: MapsAPILoader,
+      private ref: ChangeDetectorRef )
   {
     (this.minDate = new Date()).setDate(this.minDate.getDate());
   }
@@ -64,6 +65,7 @@ export class CreateEventComponent {
         let place = autocomplete.getPlace();
         this.create.lat = parseFloat(place.geometry.location.lat().toFixed(7));
         this.create.lon = parseFloat(place.geometry.location.lng().toFixed(7));
+        this.ref.detectChanges();
       });
     });
   }
