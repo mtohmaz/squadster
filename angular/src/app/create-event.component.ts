@@ -22,6 +22,8 @@ export class CreateEventComponent {
   public minDate: Date = void 0;
   title = "Create a New Event";
 
+  check: boolean;
+
   create: Event = {
     event_id: null,
     host_id: null,
@@ -46,6 +48,8 @@ export class CreateEventComponent {
   }
 
   ngOnInit() {
+    this.check = false;
+
     this.route.queryParams.forEach((params: Params) => {
       let id = +params['id'] || 0;
       if (params['lat']) {
@@ -71,9 +75,13 @@ export class CreateEventComponent {
   }
 
    add(event: Event): void {
-     if (!event) { return; }
-
-     this.eventService.create(this.create.title, this.create.date, this.create.max_attendees, this.create.description, this.create.location, this.create.lat, this.create.lon)
-                      .then(response => this.status = response);
+     this.check = true;
+     if (event.title && event.date && event.max_attendees && event.location && event.description) {
+       this.eventService.create(event.title, event.date, event.max_attendees, event.description, event.location, event.lat, event.lon)
+                        .then(response => {
+                          this.status = response;
+                          this.check = false;
+                      });
+     }
    }
 }

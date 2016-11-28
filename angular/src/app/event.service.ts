@@ -57,7 +57,6 @@ export class EventService {
   }
 
   private handleError(error: any): Promise<any> {
-    console.log(error);
     if (error.status == 400)
       return Promise.resolve("Bad Request");
     else if (error.status == 401)
