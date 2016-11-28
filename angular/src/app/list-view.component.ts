@@ -31,18 +31,38 @@ export class ListViewComponent implements OnInit {
     this.eventService.getAllEvents().then(events => this.events = events);
   }
 
+  getEvents(range: number, s: string): void {
+    this.eventService.getEvents(this.lat, this.lon, range, s).then(events => {
+      this.events = events;
+      this.ref.detectChanges();
+    });
+  }
+
   ngOnInit(): void {
     this.route.queryParams.forEach((params: Params) => {
       //TO-DO need to check if lat and lon are passed.
-      let lat = +params['lat'] || this.lat;
-      let lon = +params['lon'] || this.lon;
-      let range = +params['radius'] || 1;
-      let s = params['s'] || '';
-      this.eventService.getEvents(lat, lon, range, s).then(events => {
-        this.events = events;
-        this.ref.detectChanges();
-      });
+      if (+params['lat'] && +params['lon']) {
+        this.lat = +params['lat'];
+        this.lon = +params['lon'];
+        let range = +params['radius'] || 1;
+        let s = params['s'] || '';
+        this.getEvents(range, s);
+      }
+      else if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(this.setPosition.bind(this));
+      }
     });
+  }
+
+  setPosition(position){
+      this.location = position.coords;
+      this.updateCurrentLatlon(position.coords.latitude, position.coords.longitude);
+  }
+
+  updateCurrentLatlon(latitude, longitude){
+      this.lat = latitude;
+      this.lon = longitude;
+      this.getEvents(1, '');
   }
 
   onSelect(event: Event): void {

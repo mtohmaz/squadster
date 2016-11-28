@@ -49,7 +49,7 @@ export class SearchBarComponent {
     ) { }
 
     ngOnInit() {
-        if(navigator.geolocation){
+        if(navigator.geolocation && !this.lat && !this.lon){
             navigator.geolocation.getCurrentPosition(this.setPosition.bind(this));
         }
     }
