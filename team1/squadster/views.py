@@ -236,7 +236,7 @@ def auth_return(request):
         request.session['google_session_token'] = id_token
         request.session['user_id'] = newUser.id
         
-        response = HttpResponseRedirect("/api/events/")
+        response = HttpResponseRedirect("/")
         
         #auth_login(request, user)
         

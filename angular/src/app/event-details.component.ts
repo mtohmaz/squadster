@@ -28,6 +28,7 @@ export class EventDetailsComponent {
       let id = +params['id'] || 0;
       if (id != 0) {
         this.eventService.getEvent(id).then(ret => this.event = ret);
+        //this.eventService.getComments(id).then(com => console.log(com));
         this.eventService.getComments(id).then(com => this.comments = com.slice().reverse());
       }
     });

@@ -5,7 +5,7 @@ export class Event {
   //hostName: string;
   location: string;
   lat: number;
-  lng: number;
+  lon: number;
   date: Date;
   comments: string;
   coordinates: string;

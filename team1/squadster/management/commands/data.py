@@ -8,7 +8,7 @@ from django.utils import timezone
 import requests
 from rest_framework.test import APIRequestFactory
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
+#from dateutil.relativedelta import relativedelta
 from django.contrib.sessions.backends.db import SessionStore
 from django.contrib.sessions.models import Session
 

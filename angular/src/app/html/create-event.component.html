@@ -1,37 +1,37 @@
 <h2>{{ title }}</h2>
-<div class="body">
-  <label>Event Title: </label>
-  <input [(ngModel)]="create.title">
-  <br><br>
+<div id="create">
+  <label>Title: </label>
+  <input type="text" [(ngModel)]="create.title" class="form-control" placeholder="What is the name of your event?" maxlength="64">
+  <br>
 
-  <label>Event Location: </label>
-  <input [(ngModel)]="create.location" (focus)="onFocus()" id="google_places_ac" name="google_places_ac"  type="text" class="input-block-level"
-  (blur)="printLL()">
-  <br><br>
+  <label>Location: </label>
+  <input [(ngModel)]="create.location" (focus)="onFocus()" id="google_places_ac" name="google_places_ac"
+         type="text" class="input-block-level form-control" placeholder="Where will the event be at?">
+  <br>
 
-  <div>
-    <label>Latitude, Longitude: </label>
-    {{lat}}, {{lng}}
-    <br><br>
+  <div *ngIf="create.lat && create.lon">
+    <pre class="alert alert-info info">Latitude and longitude of location selected: {{create.lat}}, {{create.lon}}</pre>
   </div>
 
-  <label>Date: </label>
-  <datepicker [(ngModel)]="create.date" [showWeeks]="false" [minDate]="minDate"></datepicker>
+  <div class="datepick">
+    <label>Date: </label>
+    <datepicker [(ngModel)]="create.date" [showWeeks]="false" [minDate]="minDate"></datepicker>
+  </div>
 
-  <label>&nbsp;Time: </label>
-  <input type="time" [(ngModel)]="create.eventTime">
-  <br><br>
+  <timepicker [(ngModel)]="create.date" [mousewheel]=true [arrowkeys]=true></timepicker>
+  <pre class="alert alert-info info">Event will be created for: {{create.date}}</pre>
 
-  <label>Max Attendees: </label>
-  <input [(ngModel)]="create.max_attendees">
-  <br><br>
+  <label>Max Additional People: </label>
+  <input [(ngModel)]="create.max_attendees" class="form-control" type="number" min="1" placeholder="How many other people can come?">
+  <br>
 
   <label>Description: </label>
-  <input [(ngModel)]="create.description">
-  <br><br>
+    <textarea rows="5" cols="50" class="form-control" [(ngModel)]="create.description" placeholder="Describe your event here." maxlength="250">
+    </textarea>
+  <br>
 
-  <button (click)="add(create)">Add</button>
-  <br><br>
-  
+  <button type="button" class="btn btn-success" (click)="add(create)">Create New Event</button>
+  <br>
+
   <p>{{ status }}</p>
 </div>

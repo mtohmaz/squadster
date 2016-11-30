@@ -1,8 +1,8 @@
 import json
 import jsonpickle
 import copy
-from rest_framework import viewsets
-from rest_framework import status
+from rest_framework import viewsets, status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -21,6 +21,7 @@ from squadster import functions
 from squadster.serializers import *
 from squadster.models import *
 from squadster.authenticators import GoogleSessionAuthentication
+from squadster.permissions import *
 
 class UserViewSet(viewsets.ModelViewSet,APIView):
     authentication_classes = (GoogleSessionAuthentication,)
@@ -189,7 +190,26 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
         else:
             return Response(serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST)
-
+    
+    @permission_classes((IsHost,))
+    def partial_update(self, request, event_id):
+        d = copy.copy(request.data)
+        user = request.user
+        host_id = d['host']
+        # can only edit events you are hosting
+        if (user.id != host_id):
+            raise PermissionDenied('You can\'t edit another user\'s events')
+        event = self.get_queryset.get(event_id=event_id)
+        
+        serializer = EventCreateSerializer(event, data=d, 
+                partial=True, context={'request':request})
+        if serializer.is_valid():
+            newevent = serializer.save()
+            return self.retrieve(request, event_id)
+        else:
+            return Response(serializer.errors,
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
     def get_queryset(self):
         # no filter right now
         # need to filter on the request parameters
@@ -197,7 +217,31 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
         return queryset
 
 
-class UserEventViewSet(viewsets.ViewSet, APIView):
+class UserHostedEventViewSet(viewsets.ViewSet, APIView):
+    authentication_classes = (GoogleSessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def list(self, request, user_id):
+        # check current user is authorized to see these
+        user = request.user
+        print('request user.id: ' + str(user.id) + ' url user_id: ' + str(user_id))
+        if user.id != int(user_id):
+            raise PermissionDenied('You can\'t view another user\'s events')
+        
+        queryset = self.get_queryset()
+        serializer = EventSerializer(queryset, many=True)
+        return Response(serializer.data)
+    """
+    def create(self, request):
+        request['host'] = request.user.id
+        event_viewset = EventViewSet()
+        event_viewset.create(request)
+    """
+    def get_queryset(self):
+        user = self.request.user
+        queryset = user.hostedevents.all().order_by('date')
+
+class UserAttendedEventViewSet(viewsets.ViewSet, APIView):
     authentication_classes = (GoogleSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
 
@@ -207,10 +251,8 @@ class UserEventViewSet(viewsets.ViewSet, APIView):
         print('request user.id: ' + str(user.id) + ' url user_id: ' + str(user_id))
         if user.id != int(user_id):
             raise PermissionDenied('You can\'t view other user\'s events')
-
-        queryset = (user.hostedevents.all() | user.joinedevents.all()).order_by('date')
-        #queryset = (user.hostedevents | user.joinedevents)
         
+        queryset = self.get_queryset()
         serializer = EventSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -219,14 +261,9 @@ class UserEventViewSet(viewsets.ViewSet, APIView):
         event_viewset = EventViewSet()
         event_viewset.create(request)
 
-
-    """
     def get_queryset(self):
         user = self.request.user
-        queryset = Events.objects.filter(
-            Q(host_id=user.id) | Q()
-        )
-    """
+        queryset = user.joinedevents.all().order_by('date')
 
 
 class CommentViewSet(viewsets.ModelViewSet):

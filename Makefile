@@ -21,14 +21,14 @@ ubuntu_packages:
 		postgresql postgresql-contrib postgresql-server-dev-all \
 		npm nodejs \
 		nginx
-	
+
 	# remove pip for python2
 	sudo apt-get remove python-pip
-	
+
 	# PostGIS
-	sudo add-apt-repository ppa:ubuntugis/ppa
+	sudo add-apt-repository -y ppa:ubuntugis/ppa
 	sudo apt-get update
-	sudo apt-get install postgis
+	sudo apt-get install -y postgis
 
 
 # drops the database and completely recreates it
@@ -45,7 +45,7 @@ cleandb:
 	psql squadster_admin squadsterdb -c 'delete from squadster_comment;'
 	psql squadster_admin squadsterdb -c 'delete from squadster_joinedevents;'
 	psql squadster_admin squadsterdb -c 'delete from squadster_event;'
-	
+
 	# user related tables
 	psql squadster_admin squadsterdb -c 'delete from authtoken_token;'
 	psql squadster_admin squadsterdb -c 'delete from authtoken_token;'
@@ -62,11 +62,11 @@ setupdb:
 	# This script is only for commands run as db user 'postgres'
 	# if we need to have other setup commands for the team1 user,
 	# we should put them in a setupteam1.sql script or something
-	
-	# The following two are path dependent based on version of postgresql
-	#sudo cp setup/pg_hba.conf /etc/postgresql/9.3/main/pg_hba.conf
-	#sudo chown root:root /etc/postgresql/9.3/main/pg_hba.conf
-	
+
+	# The following two are path dependent based on the version of postgresql
+	sudo cp setup/pg_hba.conf /etc/postgresql/9.5/main/pg_hba.conf
+	sudo chown root:root /etc/postgresql/9.5/main/pg_hba.conf
+
 	psql --username ${postgresrootuser} -f setup/setup.sql
 	psql -d squadsterdb --username ${postgresrootuser} -c 'CREATE EXTENSION postgis';
 

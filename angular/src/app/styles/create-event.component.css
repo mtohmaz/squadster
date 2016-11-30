@@ -1,0 +1,19 @@
+#create {
+    width: 800px;
+    float: left;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+}
+
+#create .datepick{
+    width: 268px;
+}
+
+#create .info{
+    width: 650px;
+}
+
+#create .form-control{
+    width: 500px;
+}
