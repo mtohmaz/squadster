@@ -15,22 +15,22 @@ resource "google_compute_target_pool" "webservers" {
     region = "us-east1"
 }
 
-resource "google_compute_network" "default" {
-    name = "squadster-private"
-    ipv4_range = "10.0.0.0/16"
-}
+//resource "google_compute_network" "default" {
+//    name = "squadster-private"
+//}
 
 resource "google_compute_firewall" "default" {
     name = "firewall"
-    network = "${google_compute_network.default.name}"
+    //network = "${google_compute_network.default.name}"
+    network = "default"
     allow {
         protocol = "tcp"
-        ports = ["80", "8080", "22"]
     }
     allow {
         protocol = "icmp"
     }
-    source_tags = ["app"]
+    //source_tags = ["app"]
+    target_tags = ["app"]
 }
 
 resource "google_compute_forwarding_rule" "default" {
@@ -41,7 +41,7 @@ resource "google_compute_forwarding_rule" "default" {
 }
 
 resource "google_compute_instance" "app-instance" {
-    count = 3
+    count = 2
     name = "app-instance-${count.index}"
     machine_type = "custom-1-2048"
     zone = "us-east1-b"
@@ -51,21 +51,23 @@ resource "google_compute_instance" "app-instance" {
         size = 10
     }
     network_interface {
-        network = "squadster-private"
+        //network = "squadster-private"
+        network = "default"
     }
 }
 
 resource "google_compute_instance" "db-instance" {
     name = "db-instance"
-    machine_type = "custom-2-3072"
+    machine_type = "custom-2-2048"
     zone = "us-east1-b"
     tags = ["db"]
     disk {
         image = "ubuntu-os-cloud/ubuntu-1604-lts"
-        size = 100
+        size = 50
     }
     network_interface {
-        network = "squadster-private"
+        //network = "squadster-private"
+        network = "default"
     }
 }
 
@@ -79,7 +81,8 @@ resource "google_compute_instance" "dev-instance" {
         size = 10
     }
     network_interface {
-        network = "squadster-private"
+        //network = "squadster-private"
+        network = "default"
         access_config {
             // ephemeral public ip
         }
@@ -90,5 +93,5 @@ resource "google_compute_http_health_check" "default" {
     name = "healthcheck"
     timeout_sec = 5
     check_interval_sec = 5
-    port = "80"
+    port = "22"
 }
