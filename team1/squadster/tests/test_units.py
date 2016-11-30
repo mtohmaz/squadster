@@ -14,6 +14,10 @@ class SetUp(TestCase):
             username='user', email='user@squadster.io', password='user')
 
 class TestEvents(SetUp):
+    #set google_session_token. Google token can be obtained from google playground
+    #set google_session_last_auth. The field follows a date format
+    #set google_session_timeout. The field unit is in sec
+    #set user_id. The user_id is the id of the first user in one of the squadsterdb table.
     
     def test_get_events(self):
         request = self.factory.get(local + '/events')
