@@ -13,7 +13,7 @@
          type="text" class="input-block-level form-control" placeholder="Where will the event be at?">
   <br>
 
-  <div *ngIf="!create.location && check">
+  <div *ngIf="!create.location && !create.lat && !create.lon && check">
     <pre class="alert alert-danger info">Please specify a valid location.</pre>
   </div>
 

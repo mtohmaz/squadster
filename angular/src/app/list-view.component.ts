@@ -13,11 +13,17 @@ import { EventService } from './event.service';
 
 export class ListViewComponent implements OnInit {
 
+  totalItems:number;
+  currentPage:number;
+  maxSize:number = 10;
+
   lat: number;
   lon: number;
   location = {};
+  range: number;
+  s: string;
 
-  title = 'Events Nearby';
+  title = 'Events';
   events: Event[];
 
   constructor(
@@ -29,24 +35,28 @@ export class ListViewComponent implements OnInit {
 
   getAllEvents(): void {
     this.eventService.getAllEvents().then(events => this.events = events);
+    if(this.events){
+      this.totalItems = this.events.length;
+    }
   }
 
   getEvents(range: number, s: string): void {
-    this.eventService.getEvents(this.lat, this.lon, range, s).then(events => {
+    this.eventService.getEvents(this.lat, this.lon, range, s, this.currentPage).then(events => {
       this.events = events;
       this.ref.detectChanges();
+      this.totalItems = this.events.length;
     });
   }
 
   ngOnInit(): void {
     this.route.queryParams.forEach((params: Params) => {
-      //TO-DO need to check if lat and lon are passed.
       if (+params['lat'] && +params['lon']) {
         this.lat = +params['lat'];
         this.lon = +params['lon'];
-        let range = +params['radius'] || 1;
-        let s = params['s'] || '';
-        this.getEvents(range, s);
+        this.range = +params['radius'] || 1;
+        this.currentPage = +params['page'] || 1;
+        this.s = params['s'] || '';
+        this.getEvents(this.range, this.s);
       }
       else if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(this.setPosition.bind(this));
@@ -67,5 +77,16 @@ export class ListViewComponent implements OnInit {
 
   onSelect(event: Event): void {
     this.router.navigate(['app/event-details'], { queryParams: { id: event.event_id }});
+  }
+
+  setPage(pageNo:number):void {
+    this.currentPage = pageNo;
+  }
+
+  pageChanged(event:any):void {
+    console.log('Page changed to: ' + event.page);
+    console.log('Number items per page: ' + event.itemsPerPage);
+    this.currentPage = event.page;
+    this.getEvents(this.range, this.s);
   }
 }

@@ -22,6 +22,7 @@ export class MapComponent implements OnInit {
     circleColor: string = '#5DFC0A';
     events: Event[];
     s: string;
+    currentPage: number = 1;
 
     //1 mile = 1609.34 meters
     mile = 1609.34;
@@ -46,7 +47,7 @@ export class MapComponent implements OnInit {
 
     getEvents() {
         this.markers = [];
-        this.eventService.getEvents(this.lat, this.lon, this.d_int, this.s).then(events => {
+        this.eventService.getEvents(this.lat, this.lon, this.d_int, this.s, this.currentPage).then(events => {
             for (let i of events) {
                 i.coordinates = i.coordinates.replace('[', '');
                 i.coordinates = i.coordinates.replace(']', '');

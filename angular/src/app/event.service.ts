@@ -34,8 +34,8 @@ export class EventService {
         .catch(this.handleError);
   }
 
-  getEvents(lat: number, lon: number, radius: number, s: string): Promise<Event[]> {
-    return this.http.get(this.eventsUrl + "?s=" + s +"&radius=" + radius + "&lat=" + lat + "&lon=" + lon)
+  getEvents(lat: number, lon: number, radius: number, s: string, page: number): Promise<Event[]> {
+    return this.http.get(this.eventsUrl + "?s=" + s +"&radius=" + radius + "&lat=" + lat + "&lon=" + lon +"&page=" + page)
         .toPromise()
         .then(response => response.json() as Event[])
         .catch(this.handleError);

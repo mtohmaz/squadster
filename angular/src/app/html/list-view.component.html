@@ -1,9 +1,34 @@
-<h1>{{title}}</h1>
-<h2>Events</h2>
-<ul class="events">
-    <li *ngFor="let event of events"
-        [class.selected]="event === selectedEvent"
-        (click)="onSelect(event)">
-        <span class="badge">{{event.id}}</span> {{event.title}}
-    </li>
-</ul>
+<div id="eventlist">
+  <h2>{{title}}</h2>
+  <div class="row headers">
+    <div class="col-sm-4">
+      <strong> Title </strong>
+    </div>
+    <div class="col-sm-3">
+      <strong> Location </strong>
+    </div>
+    <div class="col-sm-3">
+      <strong> Date and Time </strong>
+    </div>
+    <div class="col-sm-2">
+      <strong> # of Guests </strong>
+    </div>
+  </div>
+  <div *ngFor="let event of events" [class.selected]="event === selectedEvent" (click)="onSelect(event)"
+    class="events">
+    <div class="col-sm-4">
+      {{event.title}}
+    </div>
+    <div class="col-sm-3">
+      {{event.location}}
+    </div>
+    <div class="col-sm-3">
+      {{event.date}}
+    </div>
+    <div class="col-sm-2">
+      0/{{event.max_attendees}}
+      <button type="button" class="btn btn-success">Join</button>
+    </div>
+  </div>
+  <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" (pageChanged)="pageChanged($event)"></pagination>
+</div>

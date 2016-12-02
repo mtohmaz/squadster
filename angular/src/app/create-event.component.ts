@@ -76,7 +76,7 @@ export class CreateEventComponent {
 
    add(event: Event): void {
      this.check = true;
-     if (event.title && event.date && event.max_attendees && event.location && event.description) {
+     if (event.title && event.date && event.max_attendees && event.lat && event.lon && event.description) {
        this.eventService.create(event.title, event.date, event.max_attendees, event.description, event.location, event.lat, event.lon)
                         .then(response => {
                           this.status = response;
