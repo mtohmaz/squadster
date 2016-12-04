@@ -23,7 +23,7 @@ from squadster.serializers import *
 from squadster.models import *
 from squadster.authenticators import GoogleSessionAuthentication
 from squadster.permissions import *
-from squadster.pagination import SquadsterPagination
+from squadster.paginators import SquadsterPagination
 
 class UserViewSet(viewsets.ModelViewSet,APIView):
     authentication_classes = (GoogleSessionAuthentication,)
