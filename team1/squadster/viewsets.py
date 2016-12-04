@@ -23,6 +23,7 @@ from squadster.serializers import *
 from squadster.models import *
 from squadster.authenticators import GoogleSessionAuthentication
 from squadster.permissions import *
+from squadster.pagination import SquadsterPagination
 
 class UserViewSet(viewsets.ModelViewSet,APIView):
     authentication_classes = (GoogleSessionAuthentication,)
@@ -52,10 +53,10 @@ class EventAttendeesViewSet(viewsets.ModelViewSet, APIView):
     authentication_classes = (GoogleSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = UserSerializer
-    #lookup_field = 'event_id'
 
     def list(self, request, event_id, format=None):
         attendees = Event.objects.get(event_id=event_id).attendees
+        attendees = self.paginate_queryset(attendees)
         serializer = UserSerializer(attendees, many=True, context={'request': request, 'format':format})
 
         return Response(serializer.data)
@@ -161,7 +162,6 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
         if enddate is not None:
             events = events.filter(Q(date__lte=enddate))
 
-
         events = self.paginate_queryset(events)
         serializer = EventSerializer(
                 events,
@@ -231,6 +231,7 @@ class UserHostedEventViewSet(viewsets.ViewSet, APIView):
             raise PermissionDenied('You can\'t view another user\'s events')
 
         queryset = self.get_queryset()
+        queryset = self.paginate_queryset(queryset)
         serializer = EventSerializer(queryset, many=True)
         return Response(serializer.data)
     """
