@@ -68,9 +68,9 @@ setupdb:
 	sudo chown postgres:postgres /etc/postgresql/9.5/main/pg_hba.conf
 	sudo chmod 640 /etc/postgresql/9.5/main/pg_hba.conf
 	sudo systemctl restart postgresql
-	
-	psql -h localhost --username ${postgresrootuser} -f setup/setup.sql
-	psql -d squadsterdb --username ${postgresrootuser} -c 'CREATE EXTENSION postgis';
+
+	sudo -u postgres psql -f setup/setup.sql
+	sudo -u postgres psql -d squadsterdb -c 'CREATE EXTENSION postgis';
 
 setuppython:
 	bash setup/pythonsetup.sh

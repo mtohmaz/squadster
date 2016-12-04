@@ -105,8 +105,8 @@ class EventAttendeesViewSet(viewsets.ModelViewSet, APIView):
 class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
     authentication_classes = (GoogleSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
-    serializer_class = EventCreateSerializer
-    pagination_class = PageNumberPagination
+    #serializer_class = EventCreateSerializer
+    pagination_class = SquadsterPagination
     lookup_field = 'event_id'
 
     def list(self, request, format=None):
