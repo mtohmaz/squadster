@@ -4,10 +4,18 @@
   <input type="text" [(ngModel)]="create.title" class="form-control" placeholder="What is the name of your event?" maxlength="64">
   <br>
 
+  <div *ngIf="!create.title && check">
+    <pre class="alert alert-danger info">Please specify a title.</pre>
+  </div>
+
   <label>Location: </label>
   <input [(ngModel)]="create.location" (focus)="onFocus()" id="google_places_ac" name="google_places_ac"
          type="text" class="input-block-level form-control" placeholder="Where will the event be at?">
   <br>
+
+  <div *ngIf="!create.location && !create.lat && !create.lon && check">
+    <pre class="alert alert-danger info">Please specify a valid location.</pre>
+  </div>
 
   <div *ngIf="create.lat && create.lon">
     <pre class="alert alert-info info">Latitude and longitude of location selected: {{create.lat}}, {{create.lon}}</pre>
@@ -25,10 +33,18 @@
   <input [(ngModel)]="create.max_attendees" class="form-control" type="number" min="1" placeholder="How many other people can come?">
   <br>
 
+  <div *ngIf="!create.max_attendees && check">
+    <pre class="alert alert-info info">Please specify a valid number of max attendees.</pre>
+  </div>
+
   <label>Description: </label>
     <textarea rows="5" cols="50" class="form-control" [(ngModel)]="create.description" placeholder="Describe your event here." maxlength="250">
     </textarea>
   <br>
+
+  <div *ngIf="!create.description && check">
+    <pre class="alert alert-danger info">Please specify a description.</pre>
+  </div>
 
   <button type="button" class="btn btn-success" (click)="add(create)">Create New Event</button>
   <br>

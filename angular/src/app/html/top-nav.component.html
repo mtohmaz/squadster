@@ -9,5 +9,14 @@
         <div class="col-xs-2 margin in-line">
             <button type="button" class="btn btn-info btn-block" routerLink="app/my-events" routerLinkActive="active">My Events</button>
         </div>
+        <div *ngIf="isEdited()" class="col-xs-3 margin">
+            <div class="mapswitch">
+                <input type="checkbox" name="mapswitch" class="mapswitch-checkbox" id="mymapswitch" [checked]="check()" (change)="toggle()">
+                <label class="mapswitch-label" for="mymapswitch">
+                    <span class="mapswitch-inner"></span>
+                    <span class="mapswitch-switch"></span>
+                </label>
+            </div>
+        </div>
     </div>
 </div>

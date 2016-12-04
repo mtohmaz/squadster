@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import * as moment from 'moment';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Observable } from 'rxjs/Rx';
@@ -22,6 +22,8 @@ export class CreateEventComponent {
   public minDate: Date = void 0;
   title = "Create a New Event";
 
+  check: boolean;
+
   create: Event = {
     event_id: null,
     host_id: null,
@@ -39,12 +41,15 @@ export class CreateEventComponent {
   constructor (
       private eventService: EventService,
       private route: ActivatedRoute,
-      private _loader: MapsAPILoader )
+      private _loader: MapsAPILoader,
+      private ref: ChangeDetectorRef )
   {
     (this.minDate = new Date()).setDate(this.minDate.getDate());
   }
 
   ngOnInit() {
+    this.check = false;
+
     this.route.queryParams.forEach((params: Params) => {
       let id = +params['id'] || 0;
       if (params['lat']) {
@@ -58,23 +63,25 @@ export class CreateEventComponent {
   }
 
   onFocus() {
-    //let timer = Observable.timer(0, 3000);
-    //timer.subscribe(t => this.getSuggestions());
     this._loader.load().then(() => {
       let autocomplete = new google.maps.places.Autocomplete(document.getElementById("google_places_ac"), {});
       google.maps.event.addListener(autocomplete, 'place_changed', () => {
         let place = autocomplete.getPlace();
         this.create.lat = parseFloat(place.geometry.location.lat().toFixed(7));
         this.create.lon = parseFloat(place.geometry.location.lng().toFixed(7));
-        console.log('place is: ' + JSON.stringify(place.name) + ' lat, lon is: ' + this.create.lat + ', ' + this.create.lon);
+        this.ref.detectChanges();
       });
     });
   }
 
    add(event: Event): void {
-     if (!event) { return; }
-
-     this.eventService.create(this.create.title, this.create.date, this.create.max_attendees, this.create.description, this.create.location, this.create.lat, this.create.lon)
-                      .then(response => this.status = response);
+     this.check = true;
+     if (event.title && event.date && event.max_attendees && event.lat && event.lon && event.description) {
+       this.eventService.create(event.title, event.date, event.max_attendees, event.description, event.location, event.lat, event.lon)
+                        .then(response => {
+                          this.status = response;
+                          this.check = false;
+                      });
+     }
    }
 }

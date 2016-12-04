@@ -11,5 +11,7 @@ pip3 install django \
     google-api-python-client \
     oauth2_provider \
     django-rest-framework-social-oauth2 \
-    pytz
-
+    pytz \
+    dj_static \
+    jsonpickle \
+    python-dateutil

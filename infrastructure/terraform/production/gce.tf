@@ -51,7 +51,6 @@ resource "google_compute_instance" "app-instance" {
         size = 10
     }
     network_interface {
-        //network = "squadster-private"
         network = "default"
     }
 }
@@ -71,23 +70,7 @@ resource "google_compute_instance" "db-instance" {
     }
 }
 
-resource "google_compute_instance" "dev-instance" {
-    name = "dev-instance"
-    machine_type = "custom-1-2048"
-    zone = "us-east1-b"
-    tags = ["dev"]
-    disk {
-        image = "ubuntu-os-cloud/ubuntu-1604-lts"
-        size = 10
-    }
-    network_interface {
-        //network = "squadster-private"
-        network = "default"
-        access_config {
-            // ephemeral public ip
-        }
-    }
-}
+// took out dev-instance
 
 resource "google_compute_http_health_check" "default" {
     name = "healthcheck"

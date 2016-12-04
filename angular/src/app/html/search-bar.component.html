@@ -6,7 +6,7 @@
     </div>
     <div class="col-xs-2">
         <div class="btn-group" dropdown dropdown-append-to-body>
-            <input #box type="text" class="searchbox" placeholder=" Find an event" dropdownToggle (keyup.enter)="updateSearch(box.value)"
+            <input #box type="text" id="box" class="searchbox" placeholder="Find an event" dropdownToggle (keyup.enter)="updateSearch(box.value)"
                    (blur)="updateSearch(box.value)" value="">
             <ul class="dropdown-menu" role="menu" aria-labelledby="btn-append-to-body">
                 <li><a>Tags:</a></li>
@@ -25,9 +25,10 @@
         </div>
         of
         <div class="in-line">
-            <select class="form-control" id="location" [(ngModel)]="locationSelected" (ngModelChange)="updateSearch(box.value)" name="location">
-                <option *ngFor="let loc of locations" [value]="loc">{{loc}}</option>
-            </select>
+          <input class="autocomplete" [(ngModel)]="locationSelected" (ngModelChange)="findLocation()" id="location" name="location"  type="text">
+        </div>
+        <div class="in-line">
+          <i id="createicon" (click)="clickNav()"></i>
         </div>
     </div>
     <div class="col-xs-2 in-line">
@@ -48,4 +49,5 @@
             </ul>
         </div>
     </div>
+    <simple-notifications [options]="options"></simple-notifications>
 </div>
