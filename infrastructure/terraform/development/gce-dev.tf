@@ -19,4 +19,8 @@ resource "google_compute_instance" "dev-instance" {
             // ephemeral public ip
         }
     }
+    service_account {
+        email = "290427034826-compute@developer.gserviceaccount.com"
+        scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+    }
 }
