@@ -256,6 +256,7 @@ class UserAttendedEventViewSet(viewsets.ViewSet, APIView):
             raise PermissionDenied('You can\'t view other user\'s events')
 
         queryset = self.get_queryset()
+        queryset = self.paginate_queryset(queryset)
         serializer = EventSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -279,7 +280,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         req_event_id = event_id
         req_parent_comment = parent_comment
         comments = Comment.objects.filter(parent_event=req_event_id, parent_comment=req_parent_comment)
-
+        comments = self.paginate_queryset(comments)
         serializer = CommentSerializer(
                 comments,
                 many=True,
