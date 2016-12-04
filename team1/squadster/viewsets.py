@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied
@@ -101,10 +102,11 @@ class EventAttendeesViewSet(viewsets.ModelViewSet, APIView):
         return Event.objects.get(event_id=event_id).attendees
 
 
-class EventViewSet(viewsets.ModelViewSet, APIView):
+class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
     authentication_classes = (GoogleSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = EventCreateSerializer
+    pagination_class = PageNumberPagination
     lookup_field = 'event_id'
 
     def list(self, request, format=None):
@@ -161,7 +163,6 @@ class EventViewSet(viewsets.ModelViewSet, APIView):
             events = events.filter(Q(date__lte=enddate))
 
         events = self.paginate_queryset(events)
-
         serializer = EventSerializer(
                 events,
                 many=True,

@@ -6,6 +6,7 @@ import { HttpModule } from '@angular/http';
 import { Ng2BootstrapModule } from 'ng2-bootstrap/ng2-bootstrap';
 import { AUTH_PROVIDERS } from 'angular2-jwt';
 import { AgmCoreModule } from 'angular2-google-maps/core';
+import { SimpleNotificationsModule } from 'angular2-notifications';
 
 import { AppComponent } from './app.component';
 import { CreateEventComponent } from './create-event.component';
@@ -27,6 +28,7 @@ import { routing } from './app.routing';
     BrowserModule,
     FormsModule,
     Ng2BootstrapModule,
+    SimpleNotificationsModule,
     routing,
     HttpModule,
     AgmCoreModule.forRoot({
