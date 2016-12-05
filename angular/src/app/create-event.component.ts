@@ -7,7 +7,7 @@ import { MapsAPILoader } from 'angular2-google-maps/core';
 import { Event } from './event';
 import { EventService } from './event.service';
 
-declare var google:any;
+declare var google: any;
 
 @Component({ //tells angular that this file is a component.
   selector: 'create-event',
@@ -52,9 +52,10 @@ export class CreateEventComponent {
 
     this.route.queryParams.forEach((params: Params) => {
       let id = +params['id'] || 0;
-      if (params['lat']) {
+      if (+params['lat']) {
         this.create.lat = +params['lat'];
         this.create.lon = +params['lon'];
+        this.create.location = this.getAddress(+params['lat'], +params['lon']);
       }
       if (id != 0) {
         this.eventService.getEvent(id).then(ret => this.create = ret);
@@ -78,10 +79,23 @@ export class CreateEventComponent {
      this.check = true;
      if (event.title && event.date && event.max_attendees && event.lat && event.lon && event.description) {
        this.eventService.create(event.title, event.date, event.max_attendees, event.description, event.location, event.lat, event.lon)
-                        .then(response => {
-                          this.status = response;
-                          this.check = false;
-                      });
+          .then(response => {
+            this.status = response;
+            this.check = false;
+        });
      }
    }
+
+   getAddress(lat, lon){
+     console.log(lat);
+     console.log(lon);
+      var geocoder = new google.maps.Geocoder();
+      var latlon = new google.maps.LatLng(lat, lon);
+      this.ref.detectChanges();
+      return geocoder.geocode({ 'latLng': latlon }, function (results, status) {
+          if (status == google.maps.GeocoderStatus.OK) {
+              return ''+results[1].formatted_address;
+          }
+      });
+  }
 }
