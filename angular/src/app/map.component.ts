@@ -32,8 +32,6 @@ export class MapComponent implements OnInit {
     distanceSelected = this.distances[0];
     d_int = null;
 
-    //TODO: take pre-populated events out and use events from the API
-    //this should be replaced by events received from the API
     markers: marker[] = [];
 
     //when users click on the map, a new pin will be shown and added to this array to keep track of the info
@@ -70,8 +68,8 @@ export class MapComponent implements OnInit {
     }
 
     updateCurrentLatLon(latitude, longitude) {
-        this.lat = latitude;
-        this.lon = longitude;
+        this.lat = parseFloat(latitude.toFixed(7));
+        this.lon = parseFloat(longitude.toFixed(7));
         this.getEvents();
     }
 
@@ -97,8 +95,8 @@ export class MapComponent implements OnInit {
     mapClicked($event: MouseEvent) {
         this.newPin = {
             event_id: null,
-            lat: $event.coords.lat,
-            lon: $event.coords.lng,
+            lat: parseFloat($event.coords.lat.toFixed(7)),
+            lon: parseFloat($event.coords.lng.toFixed(7)),
             iconUrl: 'assets/images/miniSLogo.png',
             title: ('Create event at: ' + $event.coords.lat + ', ' + $event.coords.lng),
             date: null
@@ -132,7 +130,7 @@ export class MapComponent implements OnInit {
     }
 
     host(lat: number, lon: number) {
-        this.router.navigate(['../app/create-event'], { queryParams: { lat: lat, lon: lon } });
+        this.router.navigate(['../app/create-event'], { queryParams: { lat: parseFloat(lat.toFixed(7)), lon: parseFloat(lon.toFixed(7)) } });
     }
 
     //TODO: update query params with proper event ID's from the API
