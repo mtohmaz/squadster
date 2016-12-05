@@ -55,7 +55,7 @@ class EventAttendeesViewSet(viewsets.ModelViewSet, APIView):
     serializer_class = UserSerializer
 
     def list(self, request, event_id, format=None):
-        attendees = Event.objects.get(event_id=event_id).attendees
+        attendees = Event.objects.get(event_id=event_id).attendees.all()
         attendees = self.paginate_queryset(attendees)
         serializer = UserSerializer(attendees, many=True, context={'request': request, 'format':format})
 
