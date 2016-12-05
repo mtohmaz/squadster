@@ -31,7 +31,6 @@ class UserViewSet(viewsets.ModelViewSet,APIView):
     serializer_class = UserSerializer
     lookup_field = 'user_id'
 
-
     def create(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -56,18 +55,17 @@ class EventAttendeesViewSet(viewsets.ModelViewSet, APIView):
 
     def list(self, request, event_id, format=None):
         attendees = Event.objects.get(event_id=event_id).attendees.all()
-        attendees = self.paginate_queryset(attendees)
-        serializer = UserSerializer(attendees, many=True, context={'request': request, 'format':format})
-
-        return Response(serializer.data)
+        page = self.paginate_queryset(attendees)
+        serializer = UserSerializer(page, many=True, context={'request': request, 'format':format})
+        return self.get_paginated_response(serializer.data)
 
     def create(self, request, event_id):
         d = copy.copy(request.data)
         #d['event_id'] = event_id
         # if a specific user was specified in the call, allow it?
         # should one user be able to add other users to an event? probably not
-        if 'id' in d and d['id'] == request.user.id:
-            user_id = d['id']
+        if 'user_id' in d and d['user_id'] == request.user.id:
+            user_id = d['user_id']
         else:
             user_id = request.user.id
 
@@ -106,7 +104,7 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
     authentication_classes = (GoogleSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = EventCreateSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = SquadsterPagination
     lookup_field = 'event_id'
 
     def list(self, request, format=None):
@@ -162,13 +160,13 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
         if enddate is not None:
             events = events.filter(Q(date__lte=enddate))
 
-        events = self.paginate_queryset(events)
+        page = self.paginate_queryset(events)
         serializer = EventSerializer(
-                events,
+                page,
                 many=True,
                 context={'request': request, 'format':format})
+        return self.get_paginated_response(serializer.data)
 
-        return Response(serializer.data)
 
     def retrieve(self, request, event_id):
 
@@ -231,9 +229,9 @@ class UserHostedEventViewSet(viewsets.ViewSet, APIView):
             raise PermissionDenied('You can\'t view another user\'s events')
 
         queryset = self.get_queryset()
-        queryset = self.paginate_queryset(queryset)
-        serializer = EventSerializer(queryset, many=True)
-        return Response(serializer.data)
+        page = self.paginate_queryset(queryset)
+        serializer = EventSerializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
     """
     def create(self, request):
         request['host'] = request.user.id
@@ -256,9 +254,9 @@ class UserAttendedEventViewSet(viewsets.ViewSet, APIView):
             raise PermissionDenied('You can\'t view other user\'s events')
 
         queryset = self.get_queryset()
-        queryset = self.paginate_queryset(queryset)
-        serializer = EventSerializer(queryset, many=True)
-        return Response(serializer.data)
+        page = self.paginate_queryset(queryset)
+        serializer = EventSerializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
 
     def create(self, request):
         request['host'] = request.user.id
@@ -280,12 +278,12 @@ class CommentViewSet(viewsets.ModelViewSet):
         req_event_id = event_id
         req_parent_comment = parent_comment
         comments = Comment.objects.filter(parent_event=req_event_id, parent_comment=req_parent_comment)
-        comments = self.paginate_queryset(comments)
+        page = self.paginate_queryset(comments)
         serializer = CommentSerializer(
-                comments,
+                page,
                 many=True,
                 context={'request': request, 'format':format})
-        return Response(serializer.data)
+        return self.get_paginated_response(serializer.data)
 
     def create(self, request, event_id):
         user = request.user
@@ -310,5 +308,4 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         id = self.kwargs['event_id']
-
         return Comment.objects.filter(parent_event=id)

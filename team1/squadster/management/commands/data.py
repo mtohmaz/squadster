@@ -18,7 +18,7 @@ dateformat = "%Y-%m-%dT%H:%M:%S%z"
 #from django.core.management.base import NoArgsCommand
 from django.core.management.base import BaseCommand, CommandError
 class Command(BaseCommand):
-    
+
     def handle(self, *args, **options):
         conn_string = "host='localhost' dbname='squadsterdb' user='squadster_admin' password='mysharedpassword'"
         conn = psycopg2.connect(conn_string)
@@ -28,16 +28,16 @@ class Command(BaseCommand):
         #    session.delete()
         #except Exception as e:
         #    pass
-        
+
         time = functions.now() + timedelta(hours=2)
         fmt = "%Y-%m-%d %H:%M:%S%z"
 
         time_str = time.strftime(fmt)
-        
-        
+
+
         #payload = {'lat': 35, 'lon': 78, 'radius': 10}
         #req = requests.get('http://localhost/api/events/', cookies=cookie, params=payload)
-        
+
         # do the data
         self.cleardata(conn)
         ids = self.createusers(conn)
@@ -47,11 +47,11 @@ class Command(BaseCommand):
             session = self.create_session(id)
             sessions.append(session)
             cookies.append({'sessionid':session.session_key})
-        
+
         self.insertdata(cookies[0], ids)
-        
+
         session.delete()
-    
+
     def cleardata(self, conn):
         cursor = conn.cursor()
         queries = [
@@ -61,12 +61,12 @@ class Command(BaseCommand):
             "DELETE FROM squadster_squadsteruser",
             "DELETE FROM auth_user",
         ]
-        
+
         for query in queries:
             cursor.execute(query)
             conn.commit()
-        
-        
+
+
     def createusers(self, conn):
         users = [
             {'username':'user1', 'email':'email1@squadster.io'},
@@ -78,12 +78,12 @@ class Command(BaseCommand):
             time = functions.now() + timedelta(hours=2)
             fmt = "%Y-%m-%d %H:%M:%S%z"
             time_str = time.strftime(fmt)
-            
+
             query = "INSERT INTO auth_user(is_superuser, is_staff, is_active, username, password, email, first_name, last_name, date_joined) " \
                 +"VALUES('f', 'f', 't', 'user', '', 'user1@squadster.io', '', '', '"+ time_str +"')"
             cursor.execute(query)
             #conn.commit()
-        
+
         query = "SELECT id FROM auth_user"
         #cursor = conn.cursor()
         cursor.execute(query)
@@ -94,10 +94,10 @@ class Command(BaseCommand):
         print(ids)
         conn.commit()
         return ids
-    
+
     def create_session(self, user_id):
         session = SessionStore()
-        
+
         session['google_session_timeout'] = 5
         session['google_session_last_auth'] = timezone.now().strftime(dateformat)
         session['google_session_token'] = 'test_id_token'
@@ -105,15 +105,15 @@ class Command(BaseCommand):
         session.create()
         sess_key = session.session_key
         self.sess_key = session.session_key
-        
+
         #cookie = {'sessionid': sess_key}
         return session
-    
+
     def insertdata(self, cookie, ids):
         events = [
             {
                 'host_id': ids[0],
-                'title': 'dp dough', 
+                'title': 'dp dough',
                 'description': 'description',
                 'lat': 35.779,
                 'lon': -78.675,
@@ -123,7 +123,7 @@ class Command(BaseCommand):
             },
             {
                 'host_id': ids[0],
-                'title': 'swimming at carmichael', 
+                'title': 'swimming at carmichael',
                 'description': 'description',
                 'lat': 35.783,
                 'lon': -78.674,
@@ -133,7 +133,7 @@ class Command(BaseCommand):
             },
             {
                 'host_id': ids[0],
-                'title': 'biking at umstead', 
+                'title': 'biking at umstead',
                 'description': 'description',
                 'lat': 35.890,
                 'lon': -78.752,
@@ -143,7 +143,7 @@ class Command(BaseCommand):
             },
             {
                 'host_id': ids[0],
-                'title': 'dr strange movie', 
+                'title': 'dr strange movie',
                 'description': 'description',
                 'lat': 35.904,
                 'lon': -78.784,
@@ -153,7 +153,7 @@ class Command(BaseCommand):
             },
             {
                 'host_id': ids[0],
-                'title': 'study group for py208', 
+                'title': 'study group for py208',
                 'description': 'description',
                 'lat': 35.787,
                 'lon': -78.671,
@@ -163,7 +163,7 @@ class Command(BaseCommand):
             },
             {
                 'host_id': ids[0],
-                'title': 'LAN Party for Halo 3', 
+                'title': 'LAN Party for Halo 3',
                 'description': 'description',
                 'lat': 35.769,
                 'lon': -78.678,
@@ -173,7 +173,7 @@ class Command(BaseCommand):
             },
             {
                 'host_id': ids[0],
-                'title': 'Car Meeting', 
+                'title': 'Car Meeting',
                 'description': 'description',
                 'lat': 35.786,
                 'lon': -78.703,
@@ -183,7 +183,7 @@ class Command(BaseCommand):
             },
             {
                 'host_id': ids[0],
-                'title': 'canoeing at lake johnson', 
+                'title': 'canoeing at lake johnson',
                 'description': 'description',
                 'lat': 35.762,
                 'lon': -78.716,
@@ -193,7 +193,7 @@ class Command(BaseCommand):
             },
             {
                 'host_id': ids[0],
-                'title': 'dinner at chipotle', 
+                'title': 'dinner at chipotle',
                 'description': 'description',
                 'lat': 35.787,
                 'lon': -78.669,
@@ -203,7 +203,7 @@ class Command(BaseCommand):
             },
             {
                 'host_id': ids[0],
-                'title': 'fun at dave and busters', 
+                'title': 'fun at dave and busters',
                 'description': 'description',
                 'lat': 35.774,
                 'lon': -78.763,
@@ -212,8 +212,8 @@ class Command(BaseCommand):
                 'location': 'dave and busters in cary'
             },
         ]
-        
+
         for event in events:
-            
+
             req = requests.post('http://localhost/api/events/', cookies=cookie, data=event)
             print(req.text)

@@ -83,19 +83,19 @@ def logout(request):
     print("SESSION KEY" + str(request.session.session_key))
     # wipe session from db
     request.session.flush()
-    
+
     # revoke google credentials and clear from db
     credentials = Credentials.objects.get(id=request.user.id)
     credentials.credential.revoke(httplib2.Http())
     credentials.delete()
-    
+
     return JsonResponse({'success': True})
 
 def login(request):
     if 'google_session_token' in request.session:
         print('google_session_token in session')
         google_token = request.session['google_session_token']
-        
+
         print ('sessionid:' + str(request.session.session_key))
         try:
             idinfo = client.verify_id_token(google_token, CLIENT_ID)
@@ -120,6 +120,7 @@ def login(request):
                 settings.SECRET_KEY, request.user)
 
             authorize_url = FLOW.step1_get_authorize_url()
+            
             return HttpResponseRedirect(authorize_url)
         # NOW REDIRECT TO logged-in landing page
         else:
@@ -165,7 +166,7 @@ def auth_return(request):
     print('user_info: ' + str(user_info))
     print('id_token: ' + str(credentials.id_token))
     id_token = credentials.token_response['id_token']
-    
+
     try:
         idinfo = client.verify_id_token(id_token, CLIENT_ID)
         # If multiple clients access the backend server:
@@ -178,27 +179,27 @@ def auth_return(request):
     except crypt.AppIdentityError as e:
         # Invalid token
         return HttpResponse('ID Token is invalid: ' +  str(e),status= status.HTTP_401_UNAUTHORIZED)
-    
+
     access_token_info = credentials.get_access_token()
     access_token = access_token_info.access_token
     expires_seconds = access_token_info.expires_in
     username = email_address.split('@')[0]
-    
+
     try:
         print('checking if email exists')
         user = User.objects.get(email=email_address)
         print('email exists... Proceed to logged in view')
-        
+
         #user = authenticate(email=email_address)
         #auth_login(request, user)
-        
+
         # if already has a session,
         # set the session token to that instead of the new one
         if 'google_session_token' in request.session:
             id_token = request.session['google_session_token']
 
         response = HttpResponseRedirect("/")
-        
+
         request.session['google_session_timeout'] = expires_seconds
         request.session['google_session_last_auth'] = timezone.now().strftime(settings.dateformat)
         request.session['google_session_token'] = id_token
@@ -207,7 +208,7 @@ def auth_return(request):
     except User.DoesNotExist as e:
         # CREATE A NEW USER RECORD
         print('email not exist')
-        
+
         print('about to create new user')
         newUser = User.objects.create(
             username=username,
@@ -217,29 +218,29 @@ def auth_return(request):
             id=newUser,
             credential=credentials
         )
-        
+
         #newUser.backend='social.backends.google.GoogleOAuth2'
         newUser.backend='squadster.authenticators.GoogleSessionAuthentication'
-        
+
         print('newUser created')
         #create api key for user and save to database
         print('about to create token')
         token = Token.objects.create(user=newUser)
-        
+
         print('api key obtained')
         newUser.save()
         newUser.profile.save()
-        
+
         # save session information
         request.session['google_session_timeout'] = expires_seconds
         request.session['google_session_last_auth'] = timezone.now().strftime(settings.dateformat)
         request.session['google_session_token'] = id_token
         request.session['user_id'] = newUser.id
-        
+
         response = HttpResponseRedirect("/")
-        
+
         #auth_login(request, user)
-        
+
         return response
 
 
@@ -250,12 +251,12 @@ def root_view(request):
     from squadster.authenticators import GoogleSessionAuthentication
     authenticator = GoogleSessionAuthentication()
     user = authenticator.authenticate(request)
-    
+
     if user is None:
         raise PermissionDenied()
-    
+
     patterns = squadster.urls.urlpatterns
-    
+
     s = jsonpickle.encode(patterns)
     print(s)
     return Response("nothing")
@@ -282,4 +283,3 @@ def my_events(request):
         return HttpResponse(json.dumps('Forbidden'), content_type='text/json',
     status=403)
 """
-
