@@ -12,7 +12,7 @@ export ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 default:
 
 
-install_ubuntu: ubuntu_packages setuppython
+install_ubuntu: ubuntu_packages setuppython setupwebserver
 
 ubuntu_packages:
 	sudo apt-get update
@@ -23,7 +23,7 @@ ubuntu_packages:
 		nginx
 
 	# install the angular-cli
-	sudo npm -g angular-cli
+	sudo npm install -g angular-cli
 
 	# remove pip for python2
 	sudo apt-get remove python-pip
@@ -89,9 +89,8 @@ setupwebserver:
 
 
 # NOTE: this allows you to get around the peer authentication
+# by having a local user the same as the db user
 # but not using right now
-# instead connect with:
-#     psql -h 127.0.0.1 squadsterdb squadster_admin
 createuser:
 	if sudo useradd squadster_admin -s /bin/bash > /dev/null 2>&1; \
 		then echo "squadster_admin:mysharedpassword" | sudo chpasswd ; fi
