@@ -24,7 +24,8 @@ ubuntu_packages:
 
 	# install the angular-cli
 	sudo npm install -g angular-cli
-
+	sudo npm install -g typings
+	
 	# remove pip for python2
 	sudo apt-get remove python-pip
 
