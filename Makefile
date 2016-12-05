@@ -19,8 +19,11 @@ ubuntu_packages:
 	sudo apt-get install -y \
 		python3-pip \
 		postgresql postgresql-contrib postgresql-server-dev-all \
-		npm nodejs \
+		npm nodejs nodejs-legacy \
 		nginx
+
+	# install the angular-cli
+	sudo npm -g angular-cli
 
 	# remove pip for python2
 	sudo apt-get remove python-pip
