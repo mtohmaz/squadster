@@ -308,5 +308,4 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         id = self.kwargs['event_id']
-
         return Comment.objects.filter(parent_event=id)

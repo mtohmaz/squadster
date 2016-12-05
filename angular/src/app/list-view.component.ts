@@ -33,6 +33,10 @@ export class ListViewComponent implements OnInit {
     private ref: ChangeDetectorRef
   ) { }
 
+  joinEvent(event: Event): void {
+    this.eventService.joinEvent(event.event_id);
+  }
+
   getEvents(range: number, s: string): void {
     this.eventService.getEvents(this.lat, this.lon, range, s, this.currentPage).then(events => {
       this.events = events;

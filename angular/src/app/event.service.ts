@@ -13,8 +13,8 @@ export class EventService {
 
   constructor(private http: Http) { }
 
-  getAllEvents(): Promise<Event[]> {
-    return this.http.get(this.eventsUrl)
+  joinEvent(event_id: number): Promise<Event[]> {
+    return this.http.post(this.eventsUrl + event_id + "/attendees/", {headers:this.headers})
         .toPromise()
         .then(response => response.json() as Event[])
         .catch(this.handleError);
