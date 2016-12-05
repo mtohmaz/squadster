@@ -66,8 +66,8 @@ class EventAttendeesViewSet(viewsets.ModelViewSet, APIView):
         #d['event_id'] = event_id
         # if a specific user was specified in the call, allow it?
         # should one user be able to add other users to an event? probably not
-        if 'id' in d and d['id'] == request.user.id:
-            user_id = d['id']
+        if 'user_id' in d and d['user_id'] == request.user.id:
+            user_id = d['user_id']
         else:
             user_id = request.user.id
 
@@ -105,7 +105,7 @@ class EventAttendeesViewSet(viewsets.ModelViewSet, APIView):
 class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
     authentication_classes = (GoogleSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
-    #serializer_class = EventCreateSerializer
+    serializer_class = EventCreateSerializer
     pagination_class = SquadsterPagination
     lookup_field = 'event_id'
 

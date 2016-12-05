@@ -10,9 +10,9 @@ postgresrootdb='postgres'
 export ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 default:
+	echo "no default set"
 
-
-install_ubuntu: ubuntu_packages setuppython
+install_ubuntu: ubuntu_packages setuppython setupwebserver
 
 ubuntu_packages:
 	sudo apt-get update
