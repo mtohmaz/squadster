@@ -19,8 +19,11 @@ ubuntu_packages:
 	sudo apt-get install -y \
 		python3-pip \
 		postgresql postgresql-contrib postgresql-server-dev-all \
-		npm nodejs \
+		npm nodejs nodejs-legacy \
 		nginx
+
+	# install the angular-cli
+	sudo npm install -g angular-cli
 
 	# remove pip for python2
 	sudo apt-get remove python-pip
@@ -86,9 +89,8 @@ setupwebserver:
 
 
 # NOTE: this allows you to get around the peer authentication
+# by having a local user the same as the db user
 # but not using right now
-# instead connect with:
-#     psql -h 127.0.0.1 squadsterdb squadster_admin
 createuser:
 	if sudo useradd squadster_admin -s /bin/bash > /dev/null 2>&1; \
 		then echo "squadster_admin:mysharedpassword" | sudo chpasswd ; fi
