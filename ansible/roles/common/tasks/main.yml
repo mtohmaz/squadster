@@ -1,0 +1,12 @@
+---
+- stat: path=~/squadster
+  register: directory_exists
+
+- name: Delete directory
+#  delegate_to: localhost
+  file: path=~/squadster state=absent
+  when: directory_exists.stat.exists == True
+
+- name: Get squadster repo
+#x  delegate_to: localhost
+  git: repo=https://{{ githubuser }}:{{ githubpassword }}@github.ncsu.edu/engr-csc-sdc/2016FallTeam01.git dest=~/squadster

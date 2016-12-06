@@ -1,0 +1,17 @@
+---
+- name: Copy app to hosts
+  synchronize:
+    src: ~/squadster
+    dest: ~/
+
+- name: Replace localhost with db-instance
+  replace:
+    dest: ~/squadster/team1/team1/settings.py
+    regexp: 'localhost'
+    replace: 'db-instance'
+
+- name: Run make install ubuntu
+  make: chdir=/home/squadsterdev/squadster target=install_appserver
+
+- name: Build frontend
+  npm: path=~/squadster/angular

@@ -30,5 +30,5 @@
       <button type="button" (click)="joinEvent(event)" class="btn btn-success">Join</button>
     </div>
   </div>
-  <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" (pageChanged)="pageChanged($event)"></pagination>
+  <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" (pageChanged)="pageChanged($event)" [rotate]="false" [maxSize]="maxSize"></pagination>
 </div>

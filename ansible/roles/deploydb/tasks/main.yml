@@ -1,0 +1,8 @@
+---
+- name: Copy app to nodes
+  synchronize:
+    src: ~/squadster
+    dest: ~/
+
+- name: Run make install dbserver
+  make: chdir=/home/squadsterdev/squadster target=install_dbserver
