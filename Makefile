@@ -1,6 +1,6 @@
 ## NOTE: This is tested for Ubuntu 16.04
 # any target with apt-get commands must be run on Ubuntu
-# the others work on any linux distro
+# the others should on any linux distro
 
 # if postgresql *admin* user is not postgres, set it here
 postgresrootuser='postgres'
@@ -10,30 +10,43 @@ postgresrootdb='postgres'
 export ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 default:
-	echo "no default set"
+	echo "no default set, please see Makefile and select a target"
 
-install_ubuntu: ubuntu_packages setuppython setupwebserver
+# mostly for developers, sets up the app server and db on the same machine
+install_all: install_appserver install_dbserver
 
-ubuntu_packages:
+# installs and sets up everything needed to run the app web server
+install_appserver: ubuntu_app_packages setuppython setupwebserver cleanmigrations
+
+# installs and sets up everything needed for the database server
+install_dbserver: ubuntu_db_packages setupdb
+
+
+ubuntu_app_packages:
 	sudo apt-get update
 	sudo apt-get install -y \
 		python3-pip \
-		postgresql postgresql-contrib postgresql-server-dev-all \
 		npm nodejs nodejs-legacy \
 		nginx
 
 	# install the angular-cli
 	sudo npm install -g angular-cli
 	sudo npm install -g typings
-	
+
 	# remove pip for python2
 	sudo apt-get remove python-pip
+
+ubuntu_db_packages:
+	sudo apt-get update
+	sudo apt-get install -y \
+		postgresql \
+		postgresql-contrib \
+		postgresql-server-dev-all
 
 	# PostGIS
 	sudo add-apt-repository -y ppa:ubuntugis/ppa
 	sudo apt-get update
 	sudo apt-get install -y postgis
-
 
 # drops the database and completely recreates it
 resetdb:
@@ -43,7 +56,7 @@ resetdb:
 	#psql ${postgresrootdb} ${postgresrootuser} -c 'grant all privileges on database squadsterdb to squadster_admin;'
 
 
-# wipes contents of the squasterdb database
+# wipes main contents of the squasterdb database
 cleandb:
 	# contents that contain user keys
 	psql squadster_admin squadsterdb -c 'delete from squadster_comment;'
@@ -52,7 +65,7 @@ cleandb:
 
 	# user related tables
 	psql squadster_admin squadsterdb -c 'delete from authtoken_token;'
-	psql squadster_admin squadsterdb -c 'delete from authtoken_token;'
+	psql squadster_admin squadsterdb -c 'delete from squadster_squadsteruser;'
 	psql squadster_admin squadsterdb -c 'delete from auth_user;'
 
 
@@ -98,7 +111,3 @@ createuser:
 	sudo usermod -a -G sudo squadster_admin
 	# you can now connect to postgresql:
 	#     sudo -u squadster_admin psql -d squadsterdb
-
-compile:
-
-install:

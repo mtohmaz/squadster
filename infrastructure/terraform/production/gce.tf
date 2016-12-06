@@ -52,6 +52,10 @@ resource "google_compute_instance" "app-instance" {
     }
     network_interface {
         network = "default"
+        access_config {
+            // allow public ip for now
+            // not sure how to best to install packages with no internet
+        }
     }
 }
 
@@ -67,6 +71,10 @@ resource "google_compute_instance" "db-instance" {
     network_interface {
         //network = "squadster-private"
         network = "default"
+        access_config {
+            // allow public ip for now
+            // not sure how best to install packages with no internet
+        }
     }
 }
 

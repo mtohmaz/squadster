@@ -1,4 +1,5 @@
 import os, sys, random
+import json
 import psycopg2
 import pprint
 import squadster
@@ -16,9 +17,9 @@ dateformat = "%Y-%m-%dT%H:%M:%S%z"
 
 
 ## CONFIG
-user_count = 10
-events_per_user = 10
-comments_per_event = 10
+user_count = 20
+events_per_user = 20
+comments_per_event = 20
 
 
 #from django.core.management.base import NoArgsCommand
@@ -40,10 +41,6 @@ class Command(BaseCommand):
 
         time_str = time.strftime(fmt)
 
-
-        #payload = {'lat': 35, 'lon': 78, 'radius': 10}
-        #req = requests.get('http://localhost/api/events/', cookies=cookie, params=payload)
-
         # do the data
         self.cleardata(conn)
         ids = self.createusers(conn, user_count)
@@ -55,7 +52,8 @@ class Command(BaseCommand):
             cookies.append({'sessionid':session.session_key})
 
         random.seed(time)
-        self.create_events(cookies, ids)
+        eventids = self.create_events(cookies, ids)
+        commentids = self.create_comments(cookies, eventids, ids)
 
         for session in sessions:
             session.delete()
@@ -107,7 +105,7 @@ class Command(BaseCommand):
 
     def create_session(self, user_id):
         session = SessionStore()
-        session['google_session_timeout'] = 60
+        session['google_session_timeout'] = 60*60*48 # 48 hours
         session['google_session_last_auth'] = timezone.now().strftime(dateformat)
         session['google_session_token'] = 'test_id_token_'+str(user_id)
         session['user_id'] = user_id
@@ -118,6 +116,7 @@ class Command(BaseCommand):
 
 
     def create_events(self, cookies, ids):
+        eventids = []
         for i in range(len(ids)):
             for j in range(events_per_user):
                 eventname = 'event-{}-{}'.format(i, j)
@@ -129,11 +128,31 @@ class Command(BaseCommand):
                     'lon': round(random.uniform(-79,-78), 6),
                     'max_attendees': random.randint(5, 500),
                     'date': timezone.now().strftime(dateformat),
-                    'location': 'location for {}'.format(eventname)
+                    'location': 'location for ' + eventname
                 }
                 resp = requests.post('http://localhost/api/events/', cookies=cookies[i], data=event)
-                print(resp.text)
+                respobj = json.loads(resp.text)
+                eventids.append(respobj['event_id'])
+        return eventids
 
-    def create_comments(self, cookies, ids):
-        pass
-        # TODO
+    def create_comments(self, cookies, eventids, userids):
+        commentids = []
+        for eventid in eventids:
+            for j in range(comments_per_event):
+                commenttext = 'comment-'+str(eventid)+'-'+str(j)
+                useridx = random.randint(0, len(userids)-1)
+                userid = userids[useridx]
+                comment = {
+                    'parent_event': eventid,
+                    'author': userid,
+                    'text': commenttext,
+                    #'parent_comment': ''
+                }
+                resp = requests.post(
+                    'http://localhost/api/events/'+str(eventid)+'/comments/',
+                    cookies = cookies[useridx],
+                    data=comment)
+                #print(resp.text)
+                respobj = json.loads(resp.text)
+                commentids.append(respobj['comment_id'])
+        return commentids

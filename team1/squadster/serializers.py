@@ -104,7 +104,7 @@ class ChildCommentHyperlinkField(serializers.HyperlinkedIdentityField):
             'event_id': obj.parent_event.event_id,
             'parent_comment': obj.comment_id
         }
-        print('url_kwargs: ' + str(url_kwargs))
+        #print('url_kwargs: ' + str(url_kwargs))
         return request.build_absolute_uri(reverse(self.view_name, kwargs=url_kwargs))
 
 
