@@ -29,7 +29,7 @@ ubuntu_app_packages:
 		python3-pip \
 		npm nodejs nodejs-legacy \
 		nginx \
-		python3-psycopg2
+		python3-psycopg2 libpq-dev
 
 	# install the angular-cli
 	sudo npm install -g angular-cli
@@ -37,6 +37,12 @@ ubuntu_app_packages:
 
 	# remove pip for python2
 	sudo apt-get remove python-pip
+
+	# PostGIS
+	sudo add-apt-repository -y ppa:ubuntugis/ppa
+	sudo apt-get update
+	sudo apt-get install -y postgis
+
 
 ubuntu_db_packages:
 	sudo apt-get update

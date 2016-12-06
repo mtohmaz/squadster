@@ -12,33 +12,20 @@ from datetime import datetime, timedelta
 #from dateutil.relativedelta import relativedelta
 from django.contrib.sessions.backends.db import SessionStore
 from django.contrib.sessions.models import Session
+from django.core.management.base import BaseCommand, CommandError
 
 dateformat = "%Y-%m-%dT%H:%M:%S%z"
 
 
-## CONFIG
-user_count = 20
-events_per_user = 50
-comments_per_event = 5
-
-
-#from django.core.management.base import NoArgsCommand
-from django.core.management.base import BaseCommand, CommandError
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
         conn_string = "host='localhost' dbname='squadsterdb' user='squadster_admin' password='mysharedpassword'"
         conn = psycopg2.connect(conn_string)
         sess_key = 'testsesskey'
-        #try:
-        #    session = Session.objects.get(session_key=sess_key)
-        #    session.delete()
-        #except Exception as e:
-        #    pass
 
         time = functions.now() + timedelta(hours=48)
         fmt = "%Y-%m-%d %H:%M:%S%z"
-
         time_str = time.strftime(fmt)
 
         # do the data
@@ -73,6 +60,19 @@ class Command(BaseCommand):
         for query in queries:
             cursor.execute(query)
         conn.commit()
+
+
+    def createadmins(self, conn):
+        x = 'y'
+        while x not in ['n','']:
+            username = input('Enter admin username: ')
+            email = input('Enter admin email address: ')
+            newAdmin = User.objects.create(
+                username=username,
+                email_address=email
+            )
+            print('Admin created.')
+            x = input('Add another? (y/N)').upper()
 
 
     def createusers(self, conn, count):
@@ -120,9 +120,6 @@ class Command(BaseCommand):
         for i in range(len(ids)):
             for j in range(events_per_user):
                 eventname = 'event-{}-{}'.format(i, j)
-                # get a time within the next two weeks (20160 minutes)
-                deltaminutes = random.randint(0, 20160)
-                eventtime = timezone.now() + timedelta(minutes=deltaminutes)
                 event = {
                     'host_id': ids[i],
                     'title': '{}, number {} for userid {}'.format(eventname, j, i),
@@ -130,32 +127,10 @@ class Command(BaseCommand):
                     'lat': round(random.uniform(35,36), 6),
                     'lon': round(random.uniform(-79,-78), 6),
                     'max_attendees': random.randint(5, 500),
-                    'date': eventtime.strftime(dateformat),
+                    'date': timezone.now().strftime(dateformat),
                     'location': 'location for ' + eventname
                 }
                 resp = requests.post('http://localhost/api/events/', cookies=cookies[i], data=event)
                 respobj = json.loads(resp.text)
                 eventids.append(respobj['event_id'])
         return eventids
-
-    def create_comments(self, cookies, eventids, userids):
-        commentids = []
-        for eventid in eventids:
-            for j in range(comments_per_event):
-                commenttext = 'comment-'+str(eventid)+'-'+str(j)
-                useridx = random.randint(0, len(userids)-1)
-                userid = userids[useridx]
-                comment = {
-                    'parent_event': eventid,
-                    'author': userid,
-                    'text': commenttext,
-                    #'parent_comment': ''
-                }
-                resp = requests.post(
-                    'http://localhost/api/events/'+str(eventid)+'/comments/',
-                    cookies = cookies[useridx],
-                    data=comment)
-                #print(resp.text)
-                respobj = json.loads(resp.text)
-                commentids.append(respobj['comment_id'])
-        return commentids
