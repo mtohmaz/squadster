@@ -52,7 +52,7 @@ export class CreateEventComponent {
 
     this.route.queryParams.forEach((params: Params) => {
       let id = +params['id'] || 0;
-      if (+params['lat']) {
+      if (+params['lat'] && +params['lon']) {
         this.create.lat = +params['lat'];
         this.create.lon = +params['lon'];
         this.create.location = this.getAddress(+params['lat'], +params['lon']);
@@ -75,6 +75,12 @@ export class CreateEventComponent {
     });
   }
 
+  getLocationFromParams(){
+    console.log('here');
+    this.create.location = this.getAddress(this.create.lat, this.create.lon);
+    console.log(this.create.location);
+  }
+
    add(event: Event): void {
      this.check = true;
      if (event.title && event.date && event.max_attendees && event.lat && event.lon && event.description) {
@@ -94,7 +100,8 @@ export class CreateEventComponent {
       this.ref.detectChanges();
       return geocoder.geocode({ 'latLng': latlon }, function (results, status) {
           if (status == google.maps.GeocoderStatus.OK) {
-              return ''+results[1].formatted_address;
+              console.log('here2' + results[1].formatted_address);
+              return results[1].formatted_address;
           }
       });
   }
