@@ -114,6 +114,13 @@ setupwebserver:
 	sudo nginx -s reload
 
 
+rungunicorn:
+	bash setup/rungunicorn.sh
+
+ngbuild:
+	cd angular && ng build
+
+
 # NOTE: this allows you to get around the peer authentication
 # by having a local user the same as the db user
 # but not using right now
