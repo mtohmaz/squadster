@@ -11,16 +11,7 @@
   make: chdir=/home/squadsterdev/squadster target=install_appserver
 
 - name: Build frontend
-  command: ng build arg1
-  args:
-    chdir: /home/squadsterdev/squadster/angular
-
-- name: Source to virtualenv
-  command: source team1/bin/activate arg1
-  args:
-    chdir: /home/squadsterdev/squadster/
+  make: chdir=/home/squadsterdev/squadster target=ngbuild
 
 - name: Run gunicorn
-  command: gunicorn -D team1.wsgi arg1
-  args:
-    chdir: /home/squadsterdev/squadster/team1
+  make: chdir=/home/squadsterdev/squadster target=rungunicorn
