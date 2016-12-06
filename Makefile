@@ -91,7 +91,7 @@ setupdb:
 	sudo systemctl restart postgresql
 
 	sudo -u postgres psql -f setup/setup.sql
-	sudo -u postgres psql -d squadsterdb -c 'CREATE EXTENSION postgis';
+	sudo -u postgres psql -d squadsterdb -c 'CREATE EXTENSION IF NOT EXISTS postgis';
 
 
 setuppython:

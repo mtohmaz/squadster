@@ -1,0 +1,34 @@
+---
+- name: Get repo directory
+  hosts: 127.0.0.1
+  roles:
+    - common
+
+  vars_prompt:
+    - name: "githubuser"
+      prompt: "Enter your github username"
+      private: no
+    - name: "githubpassword"
+      prompt: "Enter your github password"
+      private: yes
+
+- name: Install packages
+  hosts: all
+  remote_user: squadsterdev
+  become: yes
+  roles:
+    - install
+
+- name: Deploy to db instances
+  hosts: db*
+  become: yes
+  remote_user: squadsterdev
+  roles:
+    - deploydb
+
+
+- name: Deploy to dev instances
+  hosts: app*
+  remote_user: squadsterdev
+  roles:
+    - deployapp

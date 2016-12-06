@@ -1,0 +1,2 @@
+To run, go into ansible folder and execute
+ansible-playbook -i inventory/ deploy.yml
