@@ -1,7 +1,7 @@
 <h2>{{ title }}</h2>
 <div id="create">
   <label>Title: </label>
-  <input type="text" [(ngModel)]="create.title" class="form-control" placeholder="What is the name of your event?" maxlength="64">
+  <input type="text" [(ngModel)]="create.title" class="form-control" placeholder="What is the name of your event?" maxlength="64" (click)="getLocationFromParams()">
   <br>
 
   <div *ngIf="!create.title && check">

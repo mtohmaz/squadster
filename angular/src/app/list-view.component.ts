@@ -14,7 +14,7 @@ import { EventService } from './event.service';
 export class ListViewComponent implements OnInit {
 
   totalItems:number;
-  currentPage:number;
+  currentPage:number = 1;
   maxSize:number = 10;
 
   lat: number;
@@ -38,10 +38,10 @@ export class ListViewComponent implements OnInit {
   }
 
   getEvents(range: number, s: string): void {
-    this.eventService.getEvents(this.lat, this.lon, range, s, this.currentPage).then(events => {
-      this.events = events;
+    this.eventService.getEvents(this.lat, this.lon, range, s, this.currentPage).subscribe(response => {
+      this.events = response.results;
+      this.totalItems = response.count;
       this.ref.detectChanges();
-      this.totalItems = this.events.length;
     });
   }
 
@@ -81,9 +81,14 @@ export class ListViewComponent implements OnInit {
   }
 
   pageChanged(event:any):void {
-    console.log('Page changed to: ' + event.page);
-    console.log('Number items per page: ' + event.itemsPerPage);
     this.currentPage = event.page;
     this.getEvents(this.range, this.s);
   }
+}
+
+interface responseObj {
+  count: number;
+  next: string;
+  previous: string;
+  results: Event[];
 }

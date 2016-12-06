@@ -4,6 +4,7 @@ import { Headers, Http, Response } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 
 import { Event } from './event';
+import { EventListResponse } from './eventListResponse';
 
 @Injectable()
 export class EventService {
@@ -34,11 +35,9 @@ export class EventService {
         .catch(this.handleError);
   }
 
-  getEvents(lat: number, lon: number, radius: number, s: string, page: number): Promise<Event[]> {
+  getEvents(lat: number, lon: number, radius: number, s: string, page: number){
     return this.http.get(this.eventsUrl + "?s=" + s +"&radius=" + radius + "&lat=" + lat + "&lon=" + lon +"&page=" + page)
-        .toPromise()
-        .then(response => response.json() as Event[])
-        .catch(this.handleError);
+        .map(response => <EventListResponse>response.json());
   }
 
   addComment(commentUrl: string, comment: string): Promise<string> {

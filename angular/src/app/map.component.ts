@@ -45,8 +45,8 @@ export class MapComponent implements OnInit {
 
     getEvents() {
         this.markers = [];
-        this.eventService.getEvents(this.lat, this.lon, this.d_int, this.s, this.currentPage).then(events => {
-            for (let i of events) {
+        this.eventService.getEvents(this.lat, this.lon, this.d_int, this.s, this.currentPage).subscribe(response => {
+            for (let i of response.results) {
                 i.coordinates = i.coordinates.replace('[', '');
                 i.coordinates = i.coordinates.replace(']', '');
                 let ar = i.coordinates.replace(',', '').split(" ");
