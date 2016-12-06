@@ -5,13 +5,22 @@
     dest: ~/
 
 - name: Replace localhost with db-instance
-  replace:
-    dest: ~/squadster/team1/team1/settings.py
-    regexp: 'localhost'
-    replace: 'db-instance'
+  command: sed -i 's/localhost/db-instance/g' /home/squadsterdev/squadster/team1/team1/settings.py
 
 - name: Run make install ubuntu
   make: chdir=/home/squadsterdev/squadster target=install_appserver
 
 - name: Build frontend
-  npm: path=~/squadster/angular
+  command: ng build arg1
+  args:
+    chdir: /home/squadsterdev/squadster/angular
+
+- name: Source to virtualenv
+  command: source team1/bin/activate arg1
+  args:
+    chdir: /home/squadsterdev/squadster/
+
+- name: Run gunicorn
+  command: gunicorn -D team1.wsgi arg1
+  args:
+    chdir: /home/squadsterdev/squadster/team1
