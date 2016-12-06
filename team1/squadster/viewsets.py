@@ -2,6 +2,7 @@ import json
 import jsonpickle
 import copy
 from rest_framework import viewsets, status
+from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -118,19 +119,19 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
                 lon = float(d['lon'])
                 radius = int(d['radius'])
             except ValueError:
-                return Response('lat,lon must be floats, radius must be an integer', status=400)
+                return Response('lat,lon must be floats, radius must be an integer', status=HTTP_400_BAD_REQUEST)
             #print('Filtering events at ({},{}), radius: {}'.format(lat, lon, radius))
             # error check bounds
             if lat > 90 or lat < -90:
-                return Response('lat must be in range [-90, 90]', status=400)
+                return Response('lat must be in range [-90, 90]', status=HTTP_400_BAD_REQUEST)
             elif lon > 180 or lon < -180:
-                return Response('lon must be in range [-180, 180]', status=400)
+                return Response('lon must be in range [-180, 180]', status=HTTP_400_BAD_REQUEST)
             elif radius < 1 or radius > 25:
-                return Response('radius must be in range [1, 25]', status=400)
+                return Response('radius must be in range [1, 25]', status=HTTP_400_BAD_REQUEST)
             else:
                 search_location = GEOSGeometry('POINT('+str(lon)+' '+str(lat)+')', srid=4326)
         else:
-            return Response('Please provide lat, lon, radius.', status=400)
+            return Response('Please provide lat, lon, radius.', status=HTTP_400_BAD_REQUEST)
 
         # check for keywords
         if 's' in d:
@@ -181,9 +182,14 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
         d = copy.copy(request.data)
         d['host'] = int(request.user.id)
 
-        #if 'max_attendees' in d:
-
-
+        if 'max_attendees' in d:
+            try:
+                max_attendees = int(d['max_attendees'])
+                if max_attendees <= 0:
+                    return Response('max_attendees must be greater than 0', status=HTTP_400_BAD_REQUEST)
+            except ValueError:
+                return Response('max_attendees must be an integer', status=HTTP_400_BAD_REQUEST)
+        
         serializer = EventCreateSerializer(data=d, context={'request':request})
 
         if serializer.is_valid():
@@ -195,7 +201,7 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
             return Response(viewserializer.data)
         else:
             return Response(serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST)
+                status=HTTP_400_BAD_REQUEST)
 
     #@permission_classes((IsHost,))
     def partial_update(self, request, event_id):
