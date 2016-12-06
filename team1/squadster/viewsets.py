@@ -116,7 +116,7 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
             lat = float(d['lat'])
             lon = float(d['lon'])
             radius = int(d['radius'])
-            print('Filtering events at ({},{}), radius: {}'.format(lat, lon, radius))
+            #print('Filtering events at ({},{}), radius: {}'.format(lat, lon, radius))
             # error check bounds
             if lat > 90 or lat < -90:
                 return Response('lat must be in range [-90, 90]')
@@ -151,7 +151,7 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
             coordinates__dwithin=(search_location, Distance(mi=radius))
         )
         if words is not None:
-            print('filter words: ' + str(words))
+            #print('filter words: ' + str(words))
             for word in words:
                 events = events.filter(Q(title__contains=word) | Q(description__contains=word))
 
@@ -224,7 +224,7 @@ class UserHostedEventViewSet(viewsets.ViewSet, APIView):
     def list(self, request, user_id):
         # check current user is authorized to see these
         user = request.user
-        print('request user.id: ' + str(user.id) + ' url user_id: ' + str(user_id))
+        #print('request user.id: ' + str(user.id) + ' url user_id: ' + str(user_id))
         if user.id != int(user_id):
             raise PermissionDenied('You can\'t view another user\'s events')
 
@@ -249,7 +249,7 @@ class UserAttendedEventViewSet(viewsets.ViewSet, APIView):
     def list(self, request, user_id):
         # check current user is authorized to see these
         user = request.user
-        print('request user.id: ' + str(user.id) + ' url user_id: ' + str(user_id))
+        #print('request user.id: ' + str(user.id) + ' url user_id: ' + str(user_id))
         if user.id != int(user_id):
             raise PermissionDenied('You can\'t view other user\'s events')
 
@@ -294,12 +294,12 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer = CommentSerializer(data=d, context={'request':request})
         if serializer.is_valid():
             comment = serializer.save()
-            print('saved comment: ' + str(model_to_dict(comment)))
+            #print('saved comment: ' + str(model_to_dict(comment)))
         else:
             return Response(serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST)
 
-        print('new comment: ' + str(comment))
+        #print('new comment: ' + str(comment))
         return Response(serializer.data)
 
     def get_serializer_context(self):

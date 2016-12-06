@@ -52,6 +52,10 @@ resource "google_compute_instance" "app-instance" {
     }
     network_interface {
         network = "default"
+        access_config {
+            // allow public ip for now
+            // not sure how to install packages with no internet
+        }
     }
 }
 
