@@ -16,7 +16,7 @@ default:
 install_all: install_appserver install_dbserver
 
 # installs and sets up everything needed to run the app web server
-install_appserver: ubuntu_app_packages setuppython setupwebserver cleanmigrations
+install_appserver: ubuntu_app_packages setuppython setupwebserver migrations
 
 # installs and sets up everything needed for the database server
 install_dbserver: ubuntu_db_packages setupdb
@@ -29,7 +29,7 @@ ubuntu_app_packages:
 		npm nodejs nodejs-legacy \
 		nginx \
 		python-psycopg2
-	
+
 	# install the angular-cli
 	sudo npm install -g angular-cli
 	sudo npm install -g typings
@@ -71,9 +71,12 @@ cleandb:
 
 
 # NOTE: must have already run setuppython to create the virtualenv for django
-cleanmigrations: resetdb
+migrations:
 	rm -rf team1/squadster/migrations
 	bash setup/makemigrations.sh
+
+
+cleanmigrations: resetdb migrations
 
 
 setupdb:
@@ -89,6 +92,7 @@ setupdb:
 
 	sudo -u postgres psql -f setup/setup.sql
 	sudo -u postgres psql -d squadsterdb -c 'CREATE EXTENSION postgis';
+
 
 setuppython:
 	bash setup/pythonsetup.sh
