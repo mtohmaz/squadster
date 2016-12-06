@@ -76,19 +76,8 @@ export class ListViewComponent implements OnInit {
     this.router.navigate(['app/event-details'], { queryParams: { id: event.event_id }});
   }
 
-  setPage(pageNo:number):void {
-    this.currentPage = pageNo;
-  }
-
   pageChanged(event:any):void {
     this.currentPage = event.page;
     this.getEvents(this.range, this.s);
   }
-}
-
-interface responseObj {
-  count: number;
-  next: string;
-  previous: string;
-  results: Event[];
 }

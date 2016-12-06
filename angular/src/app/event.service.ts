@@ -5,6 +5,8 @@ import 'rxjs/add/operator/toPromise';
 
 import { Event } from './event';
 import { EventListResponse } from './eventListResponse';
+import { Comment } from './comment';
+import { CommentListResponse } from './commentListResponse';
 
 @Injectable()
 export class EventService {
@@ -28,14 +30,12 @@ export class EventService {
         .catch(this.handleError);
   }
 
-  getComments(event_id: number): Promise<string[]> {
-    return this.http.get(this.eventsUrl + event_id + "/comments")
-        .toPromise()
-        .then(response => response.json() as string[])
-        .catch(this.handleError);
+  getComments(event_id: number, page: number) {
+    return this.http.get(this.eventsUrl + event_id + "/comments/?page=" + page)
+        .map(response => <CommentListResponse>response.json());
   }
 
-  getEvents(lat: number, lon: number, radius: number, s: string, page: number){
+  getEvents(lat: number, lon: number, radius: number, s: string, page: number) {
     return this.http.get(this.eventsUrl + "?s=" + s +"&radius=" + radius + "&lat=" + lat + "&lon=" + lon +"&page=" + page)
         .map(response => <EventListResponse>response.json());
   }

@@ -36,6 +36,7 @@
             <span>{{comment.text}}</span>
         </li>
     </ul>
+    <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" (pageChanged)="pageChanged($event)" [rotate]="false" [maxSize]="maxSize"></pagination>
   </div>
   <div id="addComments">
     <input #input>
