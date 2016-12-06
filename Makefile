@@ -28,7 +28,7 @@ ubuntu_app_packages:
 		python3-pip \
 		npm nodejs nodejs-legacy \
 		nginx \
-		python-psycopg2
+		python3-psycopg2
 
 	# install the angular-cli
 	sudo npm install -g angular-cli
