@@ -33,8 +33,9 @@ export class ListViewComponent implements OnInit {
     private ref: ChangeDetectorRef
   ) { }
 
-  joinEvent(event: Event): void {
-    this.eventService.joinEvent(event.event_id);
+  joinEvent($event, e: Event): void {
+    event.stopPropagation();
+    this.eventService.joinEvent(e.event_id);
   }
 
   getEvents(range: number, s: string): void {
