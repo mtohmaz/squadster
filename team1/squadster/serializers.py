@@ -76,7 +76,8 @@ class EventSerializer(serializers.ModelSerializer):
     def get_summary_fields(self, obj):
         return {
             'host_email': User.objects.get(id=obj.host.id).email,
-            'number_of_comments': Comment.objects.filter(parent_event=obj.event_id).count()
+            'number_of_comments': Comment.objects.filter(parent_event=obj.event_id).count(),
+            'number_of_attendees': Event.objects.get(event_id=obj.event_id).attendees.count()
         }
 
     class Meta:
