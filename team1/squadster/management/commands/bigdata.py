@@ -18,8 +18,8 @@ dateformat = "%Y-%m-%dT%H:%M:%S%z"
 
 ## CONFIG
 user_count = 20
-events_per_user = 20
-comments_per_event = 20
+events_per_user = 50
+comments_per_event = 5
 
 
 #from django.core.management.base import NoArgsCommand

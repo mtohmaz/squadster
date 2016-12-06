@@ -27,8 +27,9 @@ ubuntu_app_packages:
 	sudo apt-get install -y \
 		python3-pip \
 		npm nodejs nodejs-legacy \
-		nginx
-
+		nginx \
+		python-psycopg2
+	
 	# install the angular-cli
 	sudo npm install -g angular-cli
 	sudo npm install -g typings

@@ -12,7 +12,6 @@ jsonpickle==0.9.3
 oauth2-provider==0.0
 oauth2client==4.0.0
 oauthlib==1.0.3
-psycopg2==2.6.2
 pyasn1==0.1.9
 pyasn1-modules==0.0.8
 PyJWT==1.4.2

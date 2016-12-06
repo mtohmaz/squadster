@@ -113,17 +113,20 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
 
         # location and radius is required
         if d.get('lat') and d.get('lon') and d.get('radius'):
-            lat = float(d['lat'])
-            lon = float(d['lon'])
-            radius = int(d['radius'])
+            try:
+                lat = float(d['lat'])
+                lon = float(d['lon'])
+                radius = int(d['radius'])
+            except ValueError:
+                return Response('lat,lon must be floats, radius must be an integer', status=400)
             #print('Filtering events at ({},{}), radius: {}'.format(lat, lon, radius))
             # error check bounds
             if lat > 90 or lat < -90:
-                return Response('lat must be in range [-90, 90]')
+                return Response('lat must be in range [-90, 90]', status=400)
             elif lon > 180 or lon < -180:
-                return Response('lon must be in range [-180, 180]')
+                return Response('lon must be in range [-180, 180]', status=400)
             elif radius < 1 or radius > 25:
-                return Response('radius must be in range [1, 25]')
+                return Response('radius must be in range [1, 25]', status=400)
             else:
                 search_location = GEOSGeometry('POINT('+str(lon)+' '+str(lat)+')', srid=4326)
         else:
@@ -177,6 +180,9 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
     def create(self, request):
         d = copy.copy(request.data)
         d['host'] = int(request.user.id)
+
+        #if 'max_attendees' in d:
+
 
         serializer = EventCreateSerializer(data=d, context={'request':request})
 
