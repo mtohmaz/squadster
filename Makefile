@@ -16,6 +16,7 @@ default:
 install_all: install_appserver install_dbserver
 
 # installs and sets up everything needed to run the app web server
+# NOTE: the database must already be set up and running for migrations to run.
 install_appserver: ubuntu_app_packages setuppython setupwebserver migrations
 
 # installs and sets up everything needed for the database server
