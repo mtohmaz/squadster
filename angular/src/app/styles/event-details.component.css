@@ -1,0 +1,36 @@
+#eventdetails {
+  font-size: 16px;
+}
+
+#eventdetails .details{
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: lightskyblue;
+  color: steelblue;
+}
+
+#eventdetails .italics{
+  font-style: italic;
+}
+
+#eventdetails .sebm-google-map-container {
+  height: 500px;
+  width: 80%;
+}
+
+#eventdetails .comments{
+  height: 100px;
+  width: 800px;
+  padding: 10px;
+  margin: 10px;
+  border: 1px solid black;
+  background-color: lightgrey;
+  box-shadow: 5px 5px 2px gray;
+  position: relative;
+}
+
+#eventdetails .footer{
+  bottom: 2px;
+  right: 2px;
+  position: absolute;
+}

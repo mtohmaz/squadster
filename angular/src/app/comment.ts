@@ -5,4 +5,7 @@ export class Comment {
   text: string;
   parent_comment: number;
   children: string;
+  summary_fields: {
+    author_email: string;
+  }
 }

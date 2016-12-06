@@ -35,7 +35,8 @@ export class CreateEventComponent {
     description: null,
     location: null,
     lat: null,
-    lon: null
+    lon: null,
+    summary_fields: null
   };
 
   constructor (
@@ -55,7 +56,7 @@ export class CreateEventComponent {
       if (+params['lat'] && +params['lon']) {
         this.create.lat = +params['lat'];
         this.create.lon = +params['lon'];
-        this.create.location = this.getAddress(+params['lat'], +params['lon']);
+        //this.create.location = this.getAddress(+params['lat'], +params['lon']);
       }
       if (id != 0) {
         this.eventService.getEvent(id).then(ret => this.create = ret);
@@ -70,15 +71,14 @@ export class CreateEventComponent {
         let place = autocomplete.getPlace();
         this.create.lat = parseFloat(place.geometry.location.lat().toFixed(7));
         this.create.lon = parseFloat(place.geometry.location.lng().toFixed(7));
+        this.create.location = JSON.stringify(place.name);
         this.ref.detectChanges();
       });
     });
   }
 
   getLocationFromParams(){
-    console.log('here');
-    this.create.location = this.getAddress(this.create.lat, this.create.lon);
-    console.log(this.create.location);
+    //this.create.location = this.getAddress(this.create.lat, this.create.lon);
   }
 
    add(event: Event): void {
@@ -93,16 +93,14 @@ export class CreateEventComponent {
    }
 
    getAddress(lat, lon){
-     console.log(lat);
-     console.log(lon);
-      var geocoder = new google.maps.Geocoder();
-      var latlon = new google.maps.LatLng(lat, lon);
-      this.ref.detectChanges();
-      return geocoder.geocode({ 'latLng': latlon }, function (results, status) {
-          if (status == google.maps.GeocoderStatus.OK) {
-              console.log('here2' + results[1].formatted_address);
-              return results[1].formatted_address;
-          }
-      });
+      // var geocoder = new google.maps.Geocoder();
+      // var latlon = new google.maps.LatLng(lat, lon);
+      // this.ref.detectChanges();
+      // return geocoder.geocode({ 'latLng': latlon }, function (results, status) {
+      //     if (status == google.maps.GeocoderStatus.OK) {
+      //         console.log('here2' + results[1].formatted_address);
+      //         return results[1].formatted_address;
+      //     }
+      // });
   }
 }

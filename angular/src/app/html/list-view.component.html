@@ -23,7 +23,8 @@
       {{event.location}}
     </div>
     <div class="col-xs-3">
-      {{event.date}}
+      {{event.date | date:'yMMMd'}} at 
+      {{event.date | date:'shortTime'}}
     </div>
     <div class="col-xs-2">
       0/{{event.max_attendees}}

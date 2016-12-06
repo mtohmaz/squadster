@@ -1,45 +1,45 @@
-<div *ngIf="event">
-  <h2>{{event.title}} details:</h2>
-  <div>
-    <label>Event ID:</label> {{event.event_id}}
+<div id="eventdetails" *ngIf="event">
+  <h2>{{event.title}}</h2>
+  <div class="italics">
+    Hosted by
+    <span class="details">{{event.summary_fields.host_email}}</span> at
+    <span class="details">{{event.date | date:'shortTime'}}</span> on
+    <span class="details">{{event.date | date:'yMMMMd'}}</span>
   </div>
   <div>
-    <label>Name of Event:</label> {{event.title}}
+    <label>Attendees so far:</label> {{event.summary_fields.number_of_attendees}}/{{event.max_attendees}}
   </div>
   <div>
-    <label>Host Name:</label> {{event.host_id}}
+    <label>Description:</label>
+    <textarea rows="2" cols="3" class="form-control" [(ngModel)]="event.description" maxlength="250" readonly="readonly">
+    </textarea>
+    <br>
   </div>
+  <sebm-google-map [latitude]="lat" [longitude]="lon" [zoom]="zoom">
+      <sebm-google-map-marker title="Drag to change location"
+              [latitude]="lat"
+              [longitude]="lon"
+              [draggable]="false"
+              [markerDraggable]="true"
+              (dragEnd) = "dragEnd($event)"
+              [iconUrl] = "iconUrl">
+          <sebm-google-map-info-window [isOpen]="true">
+              <strong>Event Location</strong>
+          </sebm-google-map-info-window>
+      </sebm-google-map-marker>
+  </sebm-google-map>
   <div>
-    <label>Location:</label> {{event.location}}
-  </div>
-  <div>
-    <label>Description:</label> {{event.description}}
-  </div>
-  <div>
-    <label>Date:</label> {{event.date}}
-  </div>
-  <div>
-    <label>Time:</label> {{event.startTime}}
-  </div>
-  <div>
-    <label>Attendees so far:</label> {{event.currentAttendees}}/{{event.max_attendees}}
-  </div>
-  <div>
-    <label>Max Attendees:</label> {{event.max_attendees}}
-  </div>
-</div>
-<div>
-  <h2>Comments:</h2>
-  <div>
-    <ul class="comments">
-        <li *ngFor="let comment of comments">
-            <span>{{comment.text}}</span>
-        </li>
-    </ul>
-    <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" (pageChanged)="pageChanged($event)" [rotate]="false" [maxSize]="maxSize"></pagination>
-  </div>
-  <div id="addComments">
-    <input #input>
-    <button (click)="onClick(input.value)">Add Comment</button>
+    <h2>Comments:</h2>
+    <div *ngFor="let comment of comments" class="comments">
+      <span>{{comment.text}}</span>
+      <span class="details italics footer">{{comment.summary_fields.author_email}} Posted at {{comment.date_added | date:'shortTime'}} on {{comment.date_added | date:'yMMMMd'}}</span><br>
+    </div>
+    <a *ngIf="!noMoreComments" (click) = "getMoreComments()">Show more...</a>
+    <div>
+      <br>
+      <textarea rows="5" cols="5" class="form-control" [(ngModel)]="inputComment" placeholder="Add a new comment here..." maxlength="250"></textarea>
+      <br>
+      <button (click)="addComment()">Add Comment</button>
+    </div>
   </div>
 </div>
