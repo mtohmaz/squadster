@@ -121,7 +121,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
     def get_summary_fields(self, obj):
         return {
-            'number_of_children': Comment.objects.filter(parent_comment=obj.comment_id).count()
+            'number_of_children': Comment.objects.filter(parent_comment=obj.comment_id).count(),
+            'author_email': User.objects.get(id=obj.author.id).email
         }
 
     class Meta:
