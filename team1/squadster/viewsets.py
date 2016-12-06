@@ -189,7 +189,7 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
                     return Response('max_attendees must be greater than 0', status=HTTP_400_BAD_REQUEST)
             except ValueError:
                 return Response('max_attendees must be an integer', status=HTTP_400_BAD_REQUEST)
-        
+
         serializer = EventCreateSerializer(data=d, context={'request':request})
 
         if serializer.is_valid():
@@ -289,7 +289,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     def list(self, request, event_id, parent_comment=None, format=None):
         req_event_id = event_id
         req_parent_comment = parent_comment
-        comments = Comment.objects.filter(parent_event=req_event_id, parent_comment=req_parent_comment)
+        comments = Comment.objects.filter(parent_event=req_event_id, parent_comment=req_parent_comment).order_by('date_added')
         page = self.paginate_queryset(comments)
         serializer = CommentSerializer(
                 page,
