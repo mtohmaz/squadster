@@ -7,7 +7,7 @@ import { MapsAPILoader } from 'angular2-google-maps/core';
 import { Event } from './event';
 import { EventService } from './event.service';
 
-declare var google:any;
+declare var google: any;
 
 @Component({ //tells angular that this file is a component.
   selector: 'create-event',
@@ -35,7 +35,8 @@ export class CreateEventComponent {
     description: null,
     location: null,
     lat: null,
-    lon: null
+    lon: null,
+    summary_fields: null
   };
 
   constructor (
@@ -52,9 +53,10 @@ export class CreateEventComponent {
 
     this.route.queryParams.forEach((params: Params) => {
       let id = +params['id'] || 0;
-      if (params['lat']) {
+      if (+params['lat'] && +params['lon']) {
         this.create.lat = +params['lat'];
         this.create.lon = +params['lon'];
+        //this.create.location = this.getAddress(+params['lat'], +params['lon']);
       }
       if (id != 0) {
         this.eventService.getEvent(id).then(ret => this.create = ret);
@@ -69,19 +71,36 @@ export class CreateEventComponent {
         let place = autocomplete.getPlace();
         this.create.lat = parseFloat(place.geometry.location.lat().toFixed(7));
         this.create.lon = parseFloat(place.geometry.location.lng().toFixed(7));
+        this.create.location = JSON.stringify(place.name);
         this.ref.detectChanges();
       });
     });
+  }
+
+  getLocationFromParams(){
+    //this.create.location = this.getAddress(this.create.lat, this.create.lon);
   }
 
    add(event: Event): void {
      this.check = true;
      if (event.title && event.date && event.max_attendees && event.lat && event.lon && event.description) {
        this.eventService.create(event.title, event.date, event.max_attendees, event.description, event.location, event.lat, event.lon)
-                        .then(response => {
-                          this.status = response;
-                          this.check = false;
-                      });
+          .then(response => {
+            this.status = response;
+            this.check = false;
+        });
      }
    }
+
+   getAddress(lat, lon){
+      // var geocoder = new google.maps.Geocoder();
+      // var latlon = new google.maps.LatLng(lat, lon);
+      // this.ref.detectChanges();
+      // return geocoder.geocode({ 'latLng': latlon }, function (results, status) {
+      //     if (status == google.maps.GeocoderStatus.OK) {
+      //         console.log('here2' + results[1].formatted_address);
+      //         return results[1].formatted_address;
+      //     }
+      // });
+  }
 }

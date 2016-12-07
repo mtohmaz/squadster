@@ -14,7 +14,7 @@ import { EventService } from './event.service';
 export class ListViewComponent implements OnInit {
 
   totalItems:number;
-  currentPage:number;
+  currentPage:number = 1;
   maxSize:number = 10;
 
   lat: number;
@@ -33,18 +33,16 @@ export class ListViewComponent implements OnInit {
     private ref: ChangeDetectorRef
   ) { }
 
-  getAllEvents(): void {
-    this.eventService.getAllEvents().then(events => this.events = events);
-    if(this.events){
-      this.totalItems = this.events.length;
-    }
+  joinEvent($event, e: Event): void {
+    event.stopPropagation();
+    this.eventService.joinEvent(e.event_id);
   }
 
   getEvents(range: number, s: string): void {
-    this.eventService.getEvents(this.lat, this.lon, range, s, this.currentPage).then(events => {
-      this.events = events;
+    this.eventService.getEvents(this.lat, this.lon, range, s, this.currentPage).subscribe(response => {
+      this.events = response.results;
+      this.totalItems = response.count;
       this.ref.detectChanges();
-      this.totalItems = this.events.length;
     });
   }
 
@@ -79,13 +77,7 @@ export class ListViewComponent implements OnInit {
     this.router.navigate(['app/event-details'], { queryParams: { id: event.event_id }});
   }
 
-  setPage(pageNo:number):void {
-    this.currentPage = pageNo;
-  }
-
   pageChanged(event:any):void {
-    console.log('Page changed to: ' + event.page);
-    console.log('Number items per page: ' + event.itemsPerPage);
     this.currentPage = event.page;
     this.getEvents(this.range, this.s);
   }

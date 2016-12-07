@@ -10,14 +10,14 @@ def datetime_serializer(obj):
     return obj.isoformat()
 
 class UserSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = User
         fields = [
-            'user_id',
+            'id',
             'email']
-        read_only_fields = ['user_id']
-    
+        read_only_fields = ['id']
+
     def create(self, validated_data):
         return User.objects.create(**validated_data)
 
@@ -40,7 +40,7 @@ class EventCreateSerializer(serializers.ModelSerializer):
             'location'
         ]
         read_only_fields = ['event_id']
-    
+
     def create(self, validated_data):
         lat = validated_data['lat']
         lon = validated_data['lon']
@@ -48,37 +48,38 @@ class EventCreateSerializer(serializers.ModelSerializer):
         validated_data['coordinates'] = coordinates
         validated_data.pop('lat')
         validated_data.pop('lon')
-        return Event.objects.create(**validated_data) 
-        
+        return Event.objects.create(**validated_data)
+
 # FOR READING EVENTS
 class EventSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
     summary_fields = serializers.SerializerMethodField()
     attendees = serializers.SerializerMethodField()
     coordinates = serializers.SerializerMethodField()
-    
+
     def get_coordinates(self, event):
         pnt = event.coordinates
         # PostGIS uses [lon, lat] instead of [lat, lon]
         s = '[{}, {}]'.format(pnt.y, pnt.x)
         return s
-        
+
     def get_comments(self, event):
         request = self.context['request']
         return request.build_absolute_uri(
             reverse('event-comment-list', kwargs={'event_id':event.event_id}))
-    
+
     def get_attendees(self, event):
         request = self.context['request']
         return request.build_absolute_uri(
             reverse('event-attendees-list', kwargs={'event_id':event.event_id}))
-    
+
     def get_summary_fields(self, obj):
         return {
             'host_email': User.objects.get(id=obj.host.id).email,
-            'number_of_comments': Comment.objects.filter(parent_event=obj.event_id).count()
+            'number_of_comments': Comment.objects.filter(parent_event=obj.event_id).count(),
+            'number_of_attendees': Event.objects.get(event_id=obj.event_id).attendees.count()
         }
-    
+
     class Meta:
         model = Event
         fields = [
@@ -95,7 +96,7 @@ class EventSerializer(serializers.ModelSerializer):
             'location'
         ]
         read_only_fields = ['event_id']
-  
+
 
 # TODO if keeping, maybe move this to new custom fields file, or just integrate in CommentSerializer
 class ChildCommentHyperlinkField(serializers.HyperlinkedIdentityField):
@@ -104,26 +105,27 @@ class ChildCommentHyperlinkField(serializers.HyperlinkedIdentityField):
             'event_id': obj.parent_event.event_id,
             'parent_comment': obj.comment_id
         }
-        print('url_kwargs: ' + str(url_kwargs))
+        #print('url_kwargs: ' + str(url_kwargs))
         return request.build_absolute_uri(reverse(self.view_name, kwargs=url_kwargs))
-    
-    
+
+
 class CommentSerializer(serializers.ModelSerializer):
     children = serializers.SerializerMethodField()
     summary_fields = serializers.SerializerMethodField()
-    
+
     def get_children(self, obj):
         request = self.context.get('request')
         fmt = self.context.get('format')
         return ChildCommentHyperlinkField(
-                    read_only=True, 
+                    read_only=True,
                     view_name='event-comment-children-list').get_url(obj, request, fmt)
-    
+
     def get_summary_fields(self, obj):
         return {
-            'number_of_children': Comment.objects.filter(parent_comment=obj.comment_id).count()
+            'number_of_children': Comment.objects.filter(parent_comment=obj.comment_id).count(),
+            'author_email': User.objects.get(id=obj.author.id).email
         }
-    
+
     class Meta:
         model = Comment
         fields = [
@@ -144,4 +146,3 @@ class CommentSerializer(serializers.ModelSerializer):
             #'text', # allow editing the text in future? would also need date_edited
             #'parent_comment'
         ]
-    

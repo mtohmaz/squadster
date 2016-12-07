@@ -1,4 +1,5 @@
 import os, sys, random
+import json
 import psycopg2
 import pprint
 import squadster
@@ -14,10 +15,12 @@ from django.contrib.sessions.models import Session
 
 dateformat = "%Y-%m-%dT%H:%M:%S%z"
 
+
 ## CONFIG
-user_count = 10
-events_per_user = 10
-comments_per_event = 10
+user_count = 20
+events_per_user = 50
+comments_per_event = 5
+
 
 #from django.core.management.base import NoArgsCommand
 from django.core.management.base import BaseCommand, CommandError
@@ -33,14 +36,10 @@ class Command(BaseCommand):
         #except Exception as e:
         #    pass
 
-        time = functions.now() + timedelta(hours=2)
+        time = functions.now() + timedelta(hours=48)
         fmt = "%Y-%m-%d %H:%M:%S%z"
 
         time_str = time.strftime(fmt)
-
-
-        #payload = {'lat': 35, 'lon': 78, 'radius': 10}
-        #req = requests.get('http://localhost/api/events/', cookies=cookie, params=payload)
 
         # do the data
         self.cleardata(conn)
@@ -53,7 +52,8 @@ class Command(BaseCommand):
             cookies.append({'sessionid':session.session_key})
 
         random.seed(time)
-        self.create_events(cookies, ids, events_per_user)
+        eventids = self.create_events(cookies, ids)
+        commentids = self.create_comments(cookies, eventids, ids)
 
         for session in sessions:
             session.delete()
@@ -66,6 +66,7 @@ class Command(BaseCommand):
             "DELETE FROM squadster_event",
             "DELETE FROM authtoken_token",
             "DELETE FROM squadster_credentials",
+            "DELETE FROM django_session",
             "DELETE FROM squadster_squadsteruser",
             "DELETE FROM auth_user",
         ]
@@ -76,7 +77,6 @@ class Command(BaseCommand):
 
     def createusers(self, conn, count):
         users = []
-
         for i in range(count):
             username = 'user'+str(i)
             u = {'username': username, 'email': username+'@squadster.io'}
@@ -89,7 +89,7 @@ class Command(BaseCommand):
             time_str = time.strftime(fmt)
 
             query = "INSERT INTO auth_user(is_superuser, is_staff, is_active, username, password, email, first_name, last_name, date_joined) " \
-                +"VALUES('f', 'f', 't', 'user', '', 'user1@squadster.io', '', '', '"+ time_str +"')"
+                +"VALUES('f', 'f', 't', '"+user['username']+"', '', '"+user['email']+"', '', '', '"+ time_str +"')"
             cursor.execute(query)
 
         query = "SELECT id FROM auth_user"
@@ -98,7 +98,6 @@ class Command(BaseCommand):
         ids = []
         for row in rows:
             ids.append(row[0])
-        #print(ids)
 
         conn.commit()
         return ids
@@ -106,35 +105,57 @@ class Command(BaseCommand):
 
     def create_session(self, user_id):
         session = SessionStore()
-        session['google_session_timeout'] = 5
+        session['google_session_timeout'] = 60*60*48 # 48 hours
         session['google_session_last_auth'] = timezone.now().strftime(dateformat)
         session['google_session_token'] = 'test_id_token_'+str(user_id)
         session['user_id'] = user_id
         session.create()
         sess_key = session.session_key
         self.sess_key = session.session_key
-        #cookie = {'sessionid': sess_key}
         return session
 
 
-    def create_events(self, cookies, ids, events_per_user):
-        events = [
-            {
-                'host_id': ids[0],
-                'title': 'dp dough',
-                'description': 'description',
-                'lat': 35.779,
-                'lon': -78.675,
-                'max_attendees': 5,
-                'date': timezone.now().strftime(dateformat),
-                'location': 'mission valley'
-            },
-        ]
-        for i in range(events_per_user):
-            
+    def create_events(self, cookies, ids):
+        eventids = []
+        for i in range(len(ids)):
+            for j in range(events_per_user):
+                eventname = 'event-{}-{}'.format(i, j)
+                # get a time within the next two weeks (20160 minutes)
+                deltaminutes = random.randint(0, 20160)
+                eventtime = timezone.now() + timedelta(minutes=deltaminutes)
+                event = {
+                    'host_id': ids[i],
+                    'title': '{}, number {} for userid {}'.format(eventname, j, i),
+                    'description': 'description for {}'.format(eventname),
+                    'lat': round(random.uniform(35,36), 6),
+                    'lon': round(random.uniform(-79,-78), 6),
+                    'max_attendees': random.randint(5, 500),
+                    'date': eventtime.strftime(dateformat),
+                    'location': 'location for ' + eventname
+                }
+                resp = requests.post('http://localhost/api/events/', cookies=cookies[i], data=event)
+                respobj = json.loads(resp.text)
+                eventids.append(respobj['event_id'])
+        return eventids
 
-
-        for event in events:
-
-            req = requests.post('http://localhost/api/events/', cookies=cookie, data=event)
-            print(req.text)
+    def create_comments(self, cookies, eventids, userids):
+        commentids = []
+        for eventid in eventids:
+            for j in range(comments_per_event):
+                commenttext = 'comment-'+str(eventid)+'-'+str(j)
+                useridx = random.randint(0, len(userids)-1)
+                userid = userids[useridx]
+                comment = {
+                    'parent_event': eventid,
+                    'author': userid,
+                    'text': commenttext,
+                    #'parent_comment': ''
+                }
+                resp = requests.post(
+                    'http://localhost/api/events/'+str(eventid)+'/comments/',
+                    cookies = cookies[useridx],
+                    data=comment)
+                #print(resp.text)
+                respobj = json.loads(resp.text)
+                commentids.append(respobj['comment_id'])
+        return commentids

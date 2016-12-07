@@ -3,6 +3,7 @@
     background-color: #444;
     font-size: large;
     height: 60px;
+    box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.33);
 }
 
 #searchbar .ion-person{

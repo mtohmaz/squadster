@@ -26,6 +26,7 @@ export class SearchBarComponent {
     tagSelected = null;
     locationSelected = "Current location";
     searchString = '';
+    private headers = new Headers({'Content-Type': 'application/json'});
 
     public options = {
         timeOut: 5000,
@@ -45,7 +46,8 @@ export class SearchBarComponent {
     constructor(
       private router: Router,
       private _loader: MapsAPILoader,
-      private _service: NotificationsService
+      private _service: NotificationsService,
+      private http: Http
     ) { }
 
     ngOnInit() {
@@ -100,7 +102,10 @@ export class SearchBarComponent {
         this.lat = latitude;
         this.lon = longitude;
         let input = (<HTMLInputElement>document.getElementById("box")).value;
-        this.updateSearch(input);
+        if (this.router.url.indexOf("app/map-view") !== -1 ||
+            this.router.url.indexOf("app/list-view") !== -1) {
+              this.updateSearch(input);
+            }
     }
 
     updateSearch( search: string ) {
@@ -121,17 +126,27 @@ export class SearchBarComponent {
         }
       }
     }
-    /*
-    public doLogout():void {
+
+    doLogout(): Promise<any> {
         console.log('made it to doLogout');
-        return this.http
-               .delete('http://localhost/api/auth/', null, {headers: this.headers})
-               .toPromise()
-               .then(response => console.log(response.json()))
-               .catch(this.handleError);
+        return this.http.delete('/api/auth/', {headers: this.headers})
+              .toPromise()
+              .then(response => console.log(response.json()))
+              .catch(this.handleError);
     }
-    */
+
     updateTag( tag ){
         this.tagSelected = tag;
+    }
+
+    private handleError(error: any): Promise<any> {
+      if (error.status == 400)
+        return Promise.resolve("Bad Request");
+      else if (error.status == 401)
+        return Promise.resolve("Not logged in");
+      else if (error.status == 403)
+        return Promise.resolve("Not authenticated");
+      else
+        return Promise.reject(error.message || error);
     }
 }

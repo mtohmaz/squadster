@@ -13,4 +13,8 @@ export class Event {
   //currentAttendees: number;
   max_attendees: number;
   description: string;
+  summary_fields: {
+    host_email: string;
+    number_of_attendees: number;
+  }
 }

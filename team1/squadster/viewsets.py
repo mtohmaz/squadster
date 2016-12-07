@@ -2,6 +2,7 @@ import json
 import jsonpickle
 import copy
 from rest_framework import viewsets, status
+from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -31,7 +32,6 @@ class UserViewSet(viewsets.ModelViewSet,APIView):
     serializer_class = UserSerializer
     lookup_field = 'user_id'
 
-
     def create(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -55,19 +55,18 @@ class EventAttendeesViewSet(viewsets.ModelViewSet, APIView):
     serializer_class = UserSerializer
 
     def list(self, request, event_id, format=None):
-        attendees = Event.objects.get(event_id=event_id).attendees
-        attendees = self.paginate_queryset(attendees)
-        serializer = UserSerializer(attendees, many=True, context={'request': request, 'format':format})
-
-        return Response(serializer.data)
+        attendees = Event.objects.get(event_id=event_id).attendees.all()
+        page = self.paginate_queryset(attendees)
+        serializer = UserSerializer(page, many=True, context={'request': request, 'format':format})
+        return self.get_paginated_response(serializer.data)
 
     def create(self, request, event_id):
         d = copy.copy(request.data)
         #d['event_id'] = event_id
         # if a specific user was specified in the call, allow it?
         # should one user be able to add other users to an event? probably not
-        if 'id' in d and d['id'] == request.user.id:
-            user_id = d['id']
+        if 'user_id' in d and d['user_id'] == request.user.id:
+            user_id = d['user_id']
         else:
             user_id = request.user.id
 
@@ -106,7 +105,7 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
     authentication_classes = (GoogleSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = EventCreateSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = SquadsterPagination
     lookup_field = 'event_id'
 
     def list(self, request, format=None):
@@ -115,21 +114,24 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
 
         # location and radius is required
         if d.get('lat') and d.get('lon') and d.get('radius'):
-            lat = float(d['lat'])
-            lon = float(d['lon'])
-            radius = int(d['radius'])
-            print('Filtering events at ({},{}), radius: {}'.format(lat, lon, radius))
+            try:
+                lat = float(d['lat'])
+                lon = float(d['lon'])
+                radius = int(d['radius'])
+            except ValueError:
+                return Response('lat,lon must be floats, radius must be an integer', status=HTTP_400_BAD_REQUEST)
+            #print('Filtering events at ({},{}), radius: {}'.format(lat, lon, radius))
             # error check bounds
             if lat > 90 or lat < -90:
-                return Response('lat must be in range [-90, 90]')
+                return Response('lat must be in range [-90, 90]', status=HTTP_400_BAD_REQUEST)
             elif lon > 180 or lon < -180:
-                return Response('lon must be in range [-180, 180]')
+                return Response('lon must be in range [-180, 180]', status=HTTP_400_BAD_REQUEST)
             elif radius < 1 or radius > 25:
-                return Response('radius must be in range [1, 25]')
+                return Response('radius must be in range [1, 25]', status=HTTP_400_BAD_REQUEST)
             else:
                 search_location = GEOSGeometry('POINT('+str(lon)+' '+str(lat)+')', srid=4326)
         else:
-            return Response('Please provide lat, lon, radius.', status=400)
+            return Response('Please provide lat, lon, radius.', status=HTTP_400_BAD_REQUEST)
 
         # check for keywords
         if 's' in d:
@@ -153,7 +155,7 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
             coordinates__dwithin=(search_location, Distance(mi=radius))
         )
         if words is not None:
-            print('filter words: ' + str(words))
+            #print('filter words: ' + str(words))
             for word in words:
                 events = events.filter(Q(title__contains=word) | Q(description__contains=word))
 
@@ -162,13 +164,13 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
         if enddate is not None:
             events = events.filter(Q(date__lte=enddate))
 
-        events = self.paginate_queryset(events)
+        page = self.paginate_queryset(events)
         serializer = EventSerializer(
-                events,
+                page,
                 many=True,
                 context={'request': request, 'format':format})
+        return self.get_paginated_response(serializer.data)
 
-        return Response(serializer.data)
 
     def retrieve(self, request, event_id):
 
@@ -179,6 +181,14 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
     def create(self, request):
         d = copy.copy(request.data)
         d['host'] = int(request.user.id)
+
+        if 'max_attendees' in d:
+            try:
+                max_attendees = int(d['max_attendees'])
+                if max_attendees <= 0:
+                    return Response('max_attendees must be greater than 0', status=HTTP_400_BAD_REQUEST)
+            except ValueError:
+                return Response('max_attendees must be an integer', status=HTTP_400_BAD_REQUEST)
 
         serializer = EventCreateSerializer(data=d, context={'request':request})
 
@@ -191,7 +201,7 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
             return Response(viewserializer.data)
         else:
             return Response(serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST)
+                status=HTTP_400_BAD_REQUEST)
 
     #@permission_classes((IsHost,))
     def partial_update(self, request, event_id):
@@ -226,14 +236,14 @@ class UserHostedEventViewSet(viewsets.ViewSet, APIView):
     def list(self, request, user_id):
         # check current user is authorized to see these
         user = request.user
-        print('request user.id: ' + str(user.id) + ' url user_id: ' + str(user_id))
+        #print('request user.id: ' + str(user.id) + ' url user_id: ' + str(user_id))
         if user.id != int(user_id):
             raise PermissionDenied('You can\'t view another user\'s events')
 
         queryset = self.get_queryset()
-        queryset = self.paginate_queryset(queryset)
-        serializer = EventSerializer(queryset, many=True)
-        return Response(serializer.data)
+        page = self.paginate_queryset(queryset)
+        serializer = EventSerializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
     """
     def create(self, request):
         request['host'] = request.user.id
@@ -251,14 +261,14 @@ class UserAttendedEventViewSet(viewsets.ViewSet, APIView):
     def list(self, request, user_id):
         # check current user is authorized to see these
         user = request.user
-        print('request user.id: ' + str(user.id) + ' url user_id: ' + str(user_id))
+        #print('request user.id: ' + str(user.id) + ' url user_id: ' + str(user_id))
         if user.id != int(user_id):
             raise PermissionDenied('You can\'t view other user\'s events')
 
         queryset = self.get_queryset()
-        queryset = self.paginate_queryset(queryset)
-        serializer = EventSerializer(queryset, many=True)
-        return Response(serializer.data)
+        page = self.paginate_queryset(queryset)
+        serializer = EventSerializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
 
     def create(self, request):
         request['host'] = request.user.id
@@ -279,13 +289,13 @@ class CommentViewSet(viewsets.ModelViewSet):
     def list(self, request, event_id, parent_comment=None, format=None):
         req_event_id = event_id
         req_parent_comment = parent_comment
-        comments = Comment.objects.filter(parent_event=req_event_id, parent_comment=req_parent_comment)
-        comments = self.paginate_queryset(comments)
+        comments = Comment.objects.filter(parent_event=req_event_id, parent_comment=req_parent_comment).order_by('date_added')
+        page = self.paginate_queryset(comments)
         serializer = CommentSerializer(
-                comments,
+                page,
                 many=True,
                 context={'request': request, 'format':format})
-        return Response(serializer.data)
+        return self.get_paginated_response(serializer.data)
 
     def create(self, request, event_id):
         user = request.user
@@ -296,12 +306,12 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer = CommentSerializer(data=d, context={'request':request})
         if serializer.is_valid():
             comment = serializer.save()
-            print('saved comment: ' + str(model_to_dict(comment)))
+            #print('saved comment: ' + str(model_to_dict(comment)))
         else:
             return Response(serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST)
 
-        print('new comment: ' + str(comment))
+        #print('new comment: ' + str(comment))
         return Response(serializer.data)
 
     def get_serializer_context(self):
@@ -310,5 +320,4 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         id = self.kwargs['event_id']
-
         return Comment.objects.filter(parent_event=id)

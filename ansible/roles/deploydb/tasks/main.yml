@@ -1,0 +1,16 @@
+---
+- name: Copy app to nodes
+  synchronize:
+    src: ~/squadster
+    dest: ~/
+
+- name: Run make install dbserver
+  make: chdir=/home/squadsterdev/squadster target=install_dbserver
+
+- name: Replace listaddress
+  command: sed -i "s/#listen_addresses.*/listen_addresses = '*'/g" /etc/postgresql/9.5/main/postgresql.conf
+
+- name: Restart postgresql
+  service:
+    name: postgresql
+    state: restarted
