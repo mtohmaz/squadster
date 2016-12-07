@@ -134,8 +134,9 @@ class Command(BaseCommand):
                     'date': eventtime.strftime(dateformat),
                     'location': 'location for ' + eventname
                 }
-                resp = requests.post('http://localhost/api/events/', cookies=cookies[i], data=event)
+                resp = requests.post('https://localhost/api/events/', cookies=cookies[i], data=event, verify=False)
                 respobj = json.loads(resp.text)
+                #print(respobj)
                 eventids.append(respobj['event_id'])
         return eventids
 
@@ -153,9 +154,10 @@ class Command(BaseCommand):
                     #'parent_comment': ''
                 }
                 resp = requests.post(
-                    'http://localhost/api/events/'+str(eventid)+'/comments/',
+                    'https://localhost/api/events/'+str(eventid)+'/comments/',
                     cookies = cookies[useridx],
-                    data=comment)
+                    data=comment,
+                    verify=False)
                 #print(resp.text)
                 respobj = json.loads(resp.text)
                 commentids.append(respobj['comment_id'])
