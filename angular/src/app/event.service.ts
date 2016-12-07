@@ -11,16 +11,28 @@ import { CommentListResponse } from './commentListResponse';
 @Injectable()
 export class EventService {
 
+  private apiSessionUrl = '/api/session/';
+  private usersUrl = '/api/users/';
   private eventsUrl = 'https://localhost:80/api/events/';
   private headers = new Headers({'Content-Type': 'application/json'});
 
   constructor(private http: Http) { }
+
+  getCurrentUserId(){
+    return this.http.get(this.apiSessionUrl)
+        .map(response => response.json());
+  }
 
   joinEvent(event_id: number): Promise<Event[]> {
     return this.http.post(this.eventsUrl + event_id + "/attendees/", {headers:this.headers})
         .toPromise()
         .then(response => response.json() as Event[])
         .catch(this.handleError);
+  }
+
+  leaveEvent(event_id: number, user_id: number) {
+    return this.http.delete(this.eventsUrl + event_id + "/attendees/" + user_id, {headers:this.headers})
+        .map(response => response.json());
   }
 
   getEvent(event_id: number): Promise<Event> {
@@ -37,6 +49,16 @@ export class EventService {
 
   getEvents(lat: number, lon: number, radius: number, s: string, page: number) {
     return this.http.get(this.eventsUrl + "?s=" + s +"&radius=" + radius + "&lat=" + lat + "&lon=" + lon +"&page=" + page)
+        .map(response => <EventListResponse>response.json());
+  }
+
+  getAttendedEvents(userId: number, page: number){
+    return this.http.get(this.usersUrl + userId +'/attendedevents/?page=' + page)
+        .map(response => <EventListResponse>response.json());
+  }
+
+  getHostedEvents(userId: number, page: number){
+    return this.http.get(this.usersUrl + userId +'/hostedevents/?page=' + page)
         .map(response => <EventListResponse>response.json());
   }
 

@@ -14,22 +14,27 @@
       <strong> # of Guests </strong>
     </div>
   </div>
-  <div *ngFor="let event of events" [class.selected]="event === selectedEvent" (click)="onSelect(event)"
-    class="events">
-    <div class="col-xs-4">
-      {{event.title}}
+  <div *ngIf="!noEvents">
+    <div *ngFor="let event of events" [class.selected]="event === selectedEvent" (click)="onSelect(event)"
+      class="events">
+      <div class="col-xs-4">
+        {{event.title}}
+      </div>
+      <div class="col-xs-3">
+        {{event.location}}
+      </div>
+      <div class="col-xs-3">
+        {{event.date | date:'yMMMd'}} at
+        {{event.date | date:'shortTime'}}
+      </div>
+      <div class="col-xs-2">
+        {{event.summary_fields.number_of_attendees}}/{{event.max_attendees}}
+        <button type="button" (click)="joinEvent($event, event)" class="btn btn-success">Join</button>
+      </div>
     </div>
-    <div class="col-xs-3">
-      {{event.location}}
-    </div>
-    <div class="col-xs-3">
-      {{event.date | date:'yMMMd'}} at
-      {{event.date | date:'shortTime'}}
-    </div>
-    <div class="col-xs-2">
-      0/{{event.max_attendees}}
-      <button type="button" (click)="joinEvent($event, event)" class="btn btn-success">Join</button>
-    </div>
+    <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" (pageChanged)="pageChanged($event)" [rotate]="false" [maxSize]="maxSize"></pagination>
   </div>
-  <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" (pageChanged)="pageChanged($event)" [rotate]="false" [maxSize]="maxSize"></pagination>
+  <div *ngIf="noEvents" class="empty-results">
+    No events found, host a new one!
+  </div>
 </div>
