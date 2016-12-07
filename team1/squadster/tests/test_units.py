@@ -16,8 +16,8 @@ local = 'localhost/api'
 class TestEvents(TestCase):
     #set google_session_token. Google token can be obtained from google playground
     #set google_session_last_auth. The field follows a date format
-    #set google_session_timeout. The field unit is in sec
-    #set user_id. The user_id is the id of the first user in one of the squadsterdb table.
+    #set google_session_timeout. Its unit is in sec
+    #set user_id
     def setUp(self):
         # Every test needs access to the request factory.
         self.factory = APIRequestFactory()
@@ -33,10 +33,11 @@ class TestEvents(TestCase):
         
     def test_get_events(self):
         response = self.client.get('http://localhost/api/events/', {'lat': 90, 'lon': '180', 'radius': 1})
-        print(response.data)
+        print("Resonse:" + str(response.data))
         # Test list() as if it were deployed at /events
         #response = EventViewSet.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(0, len(response.data['results']))
 """
     def test_create_event(self):
         request = self.client.post(local + '/events', {'host': self.user.profile.user_id, 'title': 'test event', 'date':'12/12/12 12:12 PM', 
