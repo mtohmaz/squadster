@@ -1,13 +1,13 @@
 <div class="row in-line" id="searchbar">
     <div class="col-xs-2">
-        <div id="logo">
-            <img src="../assets/images/SquadsterLogo.png" />
-        </div>
+        <a id="logo" routerLink="app/login" routerLinkActive="active">
+          <img src="../assets/images/SquadsterLogo.png" />
+        </a>
     </div>
     <div class="col-xs-2">
         <div class="btn-group" dropdown dropdown-append-to-body>
             <input #box type="text" id="box" class="searchbox" placeholder="Find an event" dropdownToggle (keyup.enter)="updateSearch(box.value)"
-                   (blur)="updateSearch(box.value)" value="">
+                   (blur)="updateSearch(box.value)" value="" [(ngModel)]="tagSelected">
             <ul class="dropdown-menu" role="menu" aria-labelledby="btn-append-to-body">
                 <li><a>Tags:</a></li>
                 <li *ngFor="let tag of tags">
