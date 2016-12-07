@@ -1,4 +1,5 @@
 import os, datetime, logging, httplib2, json
+import traceback
 from urllib.error import HTTPError
 from datetime import datetime, timedelta
 import jsonpickle
@@ -24,6 +25,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
+from django.contrib.sessions.models import Session
 
 import oauth2client
 from oauth2client.client import flow_from_clientsecrets
@@ -32,11 +34,14 @@ from oauth2client.contrib import xsrfutil
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 from googleapiclient.discovery import build
+#from oauth2client.contrib.django_orm import Storage
+from oauth2client.contrib.django_util.models import CredentialsField
+#from oauth2client.contrib.django_util.models import Storage
 
-from squadster.models import SquadsterUser, Credentials
+from squadster.models import SquadsterUser, Credentials, SquadsterSession
+from squadster.authenticators import GoogleSessionAuthentication
 from squadster.serializers import datetime_serializer
 from team1 import settings
-
 
 
 try:
@@ -55,8 +60,6 @@ CLIENT_ID = '290427034826-un4ldmeetlngevc5ep3jnt0s71284pjf.apps.googleuserconten
 #should consider moving these secret files outside of project directory
 credential_dir = os.path.join(os.path.dirname(__file__), 'credentials') # <- not used?
 credential_path = os.path.join(credential_dir,'userCredentials.json')
-
-
 
 FLOW = flow_from_clientsecrets(
     CLIENT_SECRETS,
@@ -77,19 +80,54 @@ def auth(request):
         return logout(request)
 
 def logout(request):
+    authenticator = GoogleSessionAuthentication()
+    authret = authenticator.authenticate(request)
+    if authret is None:
+        return HttpResponseRedirect('/app/login')
+    user = authret[0]
+    #print(str(user))
     print("logging out")
     print("REQUEST" + str(jsonpickle.encode(request)))
     print("SESSION" + str(jsonpickle.encode(request.session)))
     print("SESSION KEY" + str(request.session.session_key))
     # wipe session from db
-    request.session.flush()
 
     # revoke google credentials and clear from db
-    credentials = Credentials.objects.get(id=request.user.id)
-    credentials.credential.revoke(httplib2.Http())
-    credentials.delete()
+    #credentials = Credentials.objects.get(id=request.user.id)
+    #credentials.credential.revoke(httplib2.Http())
+    #credentials.delete()
+    revoke_credential(user.id, request.session.get('google_session_token'))
+    print('starting to clear sessions for userid: ' + str(user.id))
+    squadster_sessions = SquadsterSession.objects.filter(user=user.id)
+    for sqs in squadster_sessions:
+        djs = sqs.session
+        print('deleting session with key: ' + djs.session_key)
+        sqs.delete()
+        djs.delete()
+    #request.session.clear()
+    response = HttpResponseRedirect('/app/login')
+    response.delete_cookie('sessionid')
+    return response
 
-    return JsonResponse({'success': True})
+
+def revoke_credential(user_id, id_token):
+    try:
+        #credentials = User.objects.get(id=user_id).credential
+        Credentials.objects.filter(id=user_id).delete()
+
+        #cred.credential.revoke(httplib2.Http())
+        if id_token is not None:
+            print('revoking token: ' + id_token)
+            import requests
+            #token = credentials.token_response['id_token']
+            r = requests.get("https://accounts.google.com/o/oauth2/revoke?token="+id_token)
+        #Credentials.objects.filter(id=user_id).delete()
+
+    except Exception as e:
+        traceback.print_exc()
+        print("Exception " + str(e))
+        print("credentials for user {} not found".format(user_id))
+        pass # no credential exists for that user, okay
 
 def login(request):
     if 'google_session_token' in request.session:
@@ -121,10 +159,14 @@ def login(request):
 
             authorize_url = FLOW.step1_get_authorize_url()
 
-            return HttpResponseRedirect(authorize_url)
+            request.session.clear()
+            response = HttpResponseRedirect(authorize_url)
+            return response
         # NOW REDIRECT TO logged-in landing page
         else:
+
             response = HttpResponseRedirect("/")
+            # get updated credential information
             #print(credentials)
             #request.session['google_session_token'] = google_token
             #response.set_cookie('google_token', google_token)
@@ -138,6 +180,18 @@ def login(request):
         authorize_url = FLOW.step1_get_authorize_url()
         print('about to be redirected to google oauth2')
         return HttpResponseRedirect(authorize_url)
+
+def update_session_from_credentials(session, credentials):
+    #session = {}
+    id_token = credentials.token_response['id_token']
+    access_token_info = credentials.get_access_token()
+    access_token = access_token_info.access_token
+    expires_seconds = access_token_info.expires_in
+
+    session['google_session_timeout'] = expires_seconds
+    session['google_session_last_auth'] = timezone.now().strftime(settings.dateformat)
+    session['google_session_token'] = id_token
+    #session['user_id'] = newUser.id
 
 
 def get_user_info(credentials):
@@ -162,7 +216,7 @@ def auth_return(request):
     user_id = user_info.get('id')
 
     # CHECK IF IN DATABASE YET, IF NOT, CREATE ENTRY
-    print('credentials: ' + str(credentials))
+    #print('credentials: ' + str(credentials))
     print('user_info: ' + str(user_info))
     print('id_token: ' + str(credentials.id_token))
     id_token = credentials.token_response['id_token']
@@ -195,9 +249,12 @@ def auth_return(request):
 
         # if already has a session,
         # set the session token to that instead of the new one
-        if 'google_session_token' in request.session:
-            id_token = request.session['google_session_token']
+        # JK USE THE NEW ONE
+        #if 'google_session_token' in request.session:
+        #    id_token = request.session['google_session_token']
 
+        # revoke previous credential if exists
+        revoke_credential(user.id, id_token)
         # store new credential
         Credentials.objects.create(
             id=user,
@@ -205,10 +262,20 @@ def auth_return(request):
         )
         response = HttpResponseRedirect("/")
 
-        request.session['google_session_timeout'] = expires_seconds
-        request.session['google_session_last_auth'] = timezone.now().strftime(settings.dateformat)
-        request.session['google_session_token'] = id_token
         request.session['user_id'] = user.id
+
+        update_session_from_credentials(request.session, credentials)
+
+        request.session.save()
+        SquadsterSession.objects.create(
+            user=user,
+            session=Session.objects.get(session_key=request.session.session_key)
+        )
+
+        #request.session['google_session_timeout'] = expires_seconds
+        #request.session['google_session_last_auth'] = timezone.now().strftime(settings.dateformat)
+        #request.session['google_session_token'] = id_token
+
         return response
     except User.DoesNotExist as e:
         # CREATE A NEW USER RECORD
@@ -224,6 +291,7 @@ def auth_return(request):
             credential=credentials
         )
 
+
         #newUser.backend='social.backends.google.GoogleOAuth2'
         newUser.backend='squadster.authenticators.GoogleSessionAuthentication'
 
@@ -237,17 +305,20 @@ def auth_return(request):
         newUser.profile.save()
 
         # save session information
-        request.session['google_session_timeout'] = expires_seconds
-        request.session['google_session_last_auth'] = timezone.now().strftime(settings.dateformat)
-        request.session['google_session_token'] = id_token
+        #request.session['google_session_timeout'] = expires_seconds
+        #request.session['google_session_last_auth'] = timezone.now().strftime(settings.dateformat)
+        #request.session['google_session_token'] = id_token
         request.session['user_id'] = newUser.id
+        update_session_from_credentials(request.session, credentials)
+        request.session.create()
+        SquadsterSession.objects.create(
+            user=newUser,
+            session=Session.objects.get(session_key=request.session.session_key)
+        )
 
         response = HttpResponseRedirect("/")
 
-        #auth_login(request, user)
-
         return response
-
 
 
 def root_view(request):

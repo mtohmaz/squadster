@@ -7,6 +7,7 @@ from squadster import views
 from squadster import viewsets
 
 urlpatterns = [
+    #url(r'^login/', views.verify_login), # basically a ping target to check if logged in
     url(r'^auth/', views.auth),
     url(r'^oauth2return', views.auth_return, name='oauth2return'),
 
@@ -19,8 +20,8 @@ urlpatterns = [
             'get':'retrieve',
             'patch':'partial_update'}),
         name='event-detail'),
-    
-    
+
+
     # EVENT COMMENTS
     url(r'^events/(?P<event_id>[0-9]+)/comments/$', viewsets.CommentViewSet.as_view({
             'get':'list',
@@ -32,7 +33,7 @@ urlpatterns = [
     url(r'^events/(?P<event_id>[0-9]+)/comments/(?P<comment_id>[0-9]+)$', viewsets.CommentViewSet.as_view({
             'get':'retrieve'}),
         name='event-comment-detail'),
-    
+
     # EVENT ATTENDANCE
     url(r'^events/(?P<event_id>[0-9]+)/attendees/$', viewsets.EventAttendeesViewSet.as_view({
             'get':'list',
@@ -42,8 +43,8 @@ urlpatterns = [
     url(r'^events/(?P<event_id>[0-9]+)/attendees/(?P<user_id>[0-9]+)$', viewsets.EventAttendeesViewSet.as_view({
             'delete':'destroy'
     }), name='event-attendees-detail'),
-    
-    
+
+
     # USERS
     url(r'^users/$', viewsets.UserViewSet.as_view({
             'get':'list',
