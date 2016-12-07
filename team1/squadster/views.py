@@ -120,7 +120,7 @@ def login(request):
                 settings.SECRET_KEY, request.user)
 
             authorize_url = FLOW.step1_get_authorize_url()
-            
+
             return HttpResponseRedirect(authorize_url)
         # NOW REDIRECT TO logged-in landing page
         else:
@@ -198,6 +198,11 @@ def auth_return(request):
         if 'google_session_token' in request.session:
             id_token = request.session['google_session_token']
 
+        # store new credential
+        Credentials.objects.create(
+            id=user,
+            credential=credentials
+        )
         response = HttpResponseRedirect("/")
 
         request.session['google_session_timeout'] = expires_seconds
