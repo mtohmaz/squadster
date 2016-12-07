@@ -13,7 +13,7 @@ export class EventService {
 
   private apiSessionUrl = '/api/session/';
   private usersUrl = '/api/users/';
-  private eventsUrl = 'https://localhost:80/api/events/';
+  private eventsUrl = '/api/events/';
   private headers = new Headers({'Content-Type': 'application/json'});
 
   constructor(private http: Http) { }
