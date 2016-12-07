@@ -60,7 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
+    'squadster.middleware.SquadsterAuthMiddleware',
 ]
 
 ROOT_URLCONF = 'team1.urls'

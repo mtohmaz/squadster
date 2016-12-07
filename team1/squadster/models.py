@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from django.contrib.gis.db import models as gismodels
+from django.contrib.sessions.models import Session
 
 """
 from oauth2client.contrib.django_orm import FlowField
@@ -23,10 +24,15 @@ class FlowModel(models.Model):
 # User handling
 from oauth2client.contrib.django_util.models import CredentialsField
 
+class SquadsterSession(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    session = models.ForeignKey(Session)
+
 class Credentials(models.Model):
     #id = models.ForeignKey(User, on_delete=models.CASCADE, primary_key=True, related_name='credential')
     id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='credential')
     credential = CredentialsField()
+    #token = models.CharField(max_length=1024)
 
 class SquadsterUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name = 'profile')
@@ -38,7 +44,7 @@ class SquadsterUser(models.Model):
     def create_user(sender, instance, created, **kwargs):
         if created:
             SquadsterUser.objects.create(user=instance)
-    
+
     @receiver(post_save, sender=User)
     def save_user(sender, instance, **kwargs):
         instance.profile.save()
@@ -46,13 +52,13 @@ class SquadsterUser(models.Model):
 
 class Moderator(models.Model):
     user_id = models.OneToOneField(User, on_delete=models.DO_NOTHING, primary_key=True)
-    
+
     #automatically add the timestamp
     date_added = models.DateTimeField(auto_now_add=True)
 
 class Admin(models.Model):
     user_id = models.OneToOneField(User, on_delete=models.DO_NOTHING, primary_key=True)
-    
+
     #automatically add the timestamp
     date_added = models.DateTimeField(auto_now_add=True)
 
@@ -80,9 +86,9 @@ class Comment(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     text = models.CharField(max_length=250)
     moderated = models.BooleanField(default=False)
-    parent_comment = models.ForeignKey('Comment', on_delete=models.CASCADE, 
+    parent_comment = models.ForeignKey('Comment', on_delete=models.CASCADE,
             default=None, blank=True, null=True, related_name='children')
-    
+
     def __str__(self):
         return '%s: %s' % (self.author.email, self.text)
 
@@ -122,5 +128,3 @@ class Tags(models.Model):
 class EventTags(models.Model):
     event_id = models.ForeignKey('Event', on_delete=models.CASCADE)
     tag_id = models.ForeignKey('Tags', on_delete=models.CASCADE)
-    
-    
