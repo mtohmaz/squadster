@@ -201,6 +201,7 @@ def auth_return(request):
         
         request.session['google_session_timeout'] = expires_seconds
         request.session['google_session_last_auth'] = timezone.now().strftime(settings.dateformat)
+        print("GOOGLE_SESSSION_LAST_AUTH: " + timezone.now().strftime(settings.dateformat))
         request.session['google_session_token'] = id_token
         request.session['user_id'] = user.id
         return response
