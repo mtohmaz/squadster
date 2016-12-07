@@ -118,7 +118,7 @@ rungunicorn:
 	bash setup/rungunicorn.sh
 
 ngbuild:
-	cd angular && ng build
+	cd angular && npm install && ng build
 
 
 # NOTE: this allows you to get around the peer authentication

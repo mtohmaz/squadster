@@ -8,6 +8,7 @@ resource "google_compute_target_pool" "webservers" {
     name = "squadster-webserver-pool"
     instances = [
         "${google_compute_instance.app-instance.*.self_link}"
+        //"${google_compute_instance.app-instance.*.private_ip_address}"
     ]
     health_checks = [
         "${google_compute_http_health_check.default.name}"
@@ -35,8 +36,10 @@ resource "google_compute_firewall" "default" {
 
 resource "google_compute_forwarding_rule" "default" {
     name = "fwd-rule"
+    ip_address = "35.185.12.220"
+    ip_protocol = "TCP"
     target = "${google_compute_target_pool.webservers.self_link}"
-    port_range = 80
+    port_range = "80-80"
     region = "us-east1"
 }
 
@@ -84,5 +87,5 @@ resource "google_compute_http_health_check" "default" {
     name = "healthcheck"
     timeout_sec = 5
     check_interval_sec = 5
-    port = "22"
+    port = "80"
 }
