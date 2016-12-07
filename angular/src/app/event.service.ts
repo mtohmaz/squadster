@@ -11,7 +11,7 @@ import { CommentListResponse } from './commentListResponse';
 @Injectable()
 export class EventService {
 
-  private eventsUrl = 'http://localhost:80/api/events/';
+  private eventsUrl = 'https://localhost:80/api/events/';
   private headers = new Headers({'Content-Type': 'application/json'});
 
   constructor(private http: Http) { }
