@@ -7,7 +7,7 @@ from squadster import views
 from squadster import viewsets
 
 urlpatterns = [
-    #url(r'^login/', views.verify_login), # basically a ping target to check if logged in
+    url(r'^session/', views.getuser), # basically a ping target to check if logged in
     url(r'^auth/', views.auth),
     url(r'^oauth2return', views.auth_return, name='oauth2return'),
 

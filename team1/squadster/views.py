@@ -1,4 +1,4 @@
-import os, datetime, logging, httplib2, json
+import os, datetime, logging, httplib2, json, requests
 import traceback
 from urllib.error import HTTPError
 from datetime import datetime, timedelta
@@ -41,6 +41,7 @@ from oauth2client.contrib.django_util.models import CredentialsField
 from squadster.models import SquadsterUser, Credentials, SquadsterSession
 from squadster.authenticators import GoogleSessionAuthentication
 from squadster.serializers import datetime_serializer
+from squadster.serializers import UserSerializer
 from team1 import settings
 
 
@@ -58,8 +59,8 @@ CLIENT_SECRETS = os.path.join(os.path.dirname(__file__), 'client_secrets.json')
 CLIENT_ID = '290427034826-un4ldmeetlngevc5ep3jnt0s71284pjf.apps.googleusercontent.com'
 
 #should consider moving these secret files outside of project directory
-credential_dir = os.path.join(os.path.dirname(__file__), 'credentials') # <- not used?
-credential_path = os.path.join(credential_dir,'userCredentials.json')
+#credential_dir = os.path.join(os.path.dirname(__file__), 'credentials') # <- not used?
+#credential_path = os.path.join(credential_dir,'userCredentials.json')
 
 FLOW = flow_from_clientsecrets(
     CLIENT_SECRETS,
@@ -71,6 +72,14 @@ FLOW = flow_from_clientsecrets(
 
 def home(request):
     pass
+
+@csrf_exempt
+def getuser(request):
+    if request.method == 'GET':
+        authret = GoogleSessionAuthentication().authenticate(request)
+        if authret is not None:
+            user = authret[0]
+            return JsonResponse(UserSerializer(user).data)
 
 @csrf_exempt
 def auth(request):
@@ -96,7 +105,7 @@ def logout(request):
     #credentials = Credentials.objects.get(id=request.user.id)
     #credentials.credential.revoke(httplib2.Http())
     #credentials.delete()
-    revoke_credential(user.id, request.session.get('google_session_token'))
+    revoke_credential(user.id, request.session.get('google_access_token'))
     print('starting to clear sessions for userid: ' + str(user.id))
     squadster_sessions = SquadsterSession.objects.filter(user=user.id)
     for sqs in squadster_sessions:
@@ -109,25 +118,20 @@ def logout(request):
     response.delete_cookie('sessionid')
     return response
 
-
-def revoke_credential(user_id, id_token):
+def revoke_credential(user_id, access_token):
     try:
         #credentials = User.objects.get(id=user_id).credential
         Credentials.objects.filter(id=user_id).delete()
 
         #cred.credential.revoke(httplib2.Http())
-        if id_token is not None:
-            print('revoking token: ' + id_token)
-            import requests
+        if access_token is not None:
+            print('revoking token: ' + access_token)
             #token = credentials.token_response['id_token']
-            r = requests.get("https://accounts.google.com/o/oauth2/revoke?token="+id_token)
-        #Credentials.objects.filter(id=user_id).delete()
-
+            r = requests.get("https://accounts.google.com/o/oauth2/revoke?token="+access_token)
     except Exception as e:
         traceback.print_exc()
         print("Exception " + str(e))
         print("credentials for user {} not found".format(user_id))
-        pass # no credential exists for that user, okay
 
 def login(request):
     if 'google_session_token' in request.session:
@@ -164,7 +168,6 @@ def login(request):
             return response
         # NOW REDIRECT TO logged-in landing page
         else:
-
             response = HttpResponseRedirect("/")
             # get updated credential information
             #print(credentials)
@@ -174,6 +177,7 @@ def login(request):
 
     else:
         print('no google token in request')
+        logout(request)
         # NO TOKEN GIVEN IN REQUEST, REDIRECT TO AUTHORIZE_URL
         FLOW.params['state'] = xsrfutil.generate_token(settings.SECRET_KEY,
                                                    request.user)
@@ -186,11 +190,13 @@ def update_session_from_credentials(session, credentials):
     id_token = credentials.token_response['id_token']
     access_token_info = credentials.get_access_token()
     access_token = access_token_info.access_token
+    print('access_token: ' + access_token)
     expires_seconds = access_token_info.expires_in
 
     session['google_session_timeout'] = expires_seconds
     session['google_session_last_auth'] = timezone.now().strftime(settings.dateformat)
     session['google_session_token'] = id_token
+    session['google_access_token'] = access_token
     #session['user_id'] = newUser.id
 
 
@@ -254,7 +260,7 @@ def auth_return(request):
         #    id_token = request.session['google_session_token']
 
         # revoke previous credential if exists
-        revoke_credential(user.id, id_token)
+        revoke_credential(user.id, access_token)
         # store new credential
         Credentials.objects.create(
             id=user,

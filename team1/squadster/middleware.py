@@ -17,11 +17,13 @@ class SquadsterAuthMiddleware(object):
     def __call__(self, request):
         print(request.path)
         p = request.path
-        if not (p.startswith('/api/auth') or p.startswith('/api/oauth2return')) :
+        if not (p.startswith('/app') or
+                p.startswith('/api/auth') or
+                p.startswith('/api/oauth2return')) :
             auth = GoogleSessionAuthentication().authenticate(request)
             if auth is None:
 
-                response = HttpResponseRedirect('/api/auth')
+                response = HttpResponseRedirect('/app/login')
                 for key in request.COOKIES:
                     response.delete_cookie(key)
                 return response
