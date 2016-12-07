@@ -102,7 +102,10 @@ export class SearchBarComponent {
         this.lat = latitude;
         this.lon = longitude;
         let input = (<HTMLInputElement>document.getElementById("box")).value;
-        this.updateSearch(input);
+        if (this.router.url.indexOf("app/map-view") !== -1 ||
+            this.router.url.indexOf("app/list-view") !== -1) {
+              this.updateSearch(input);
+            }
     }
 
     updateSearch( search: string ) {
