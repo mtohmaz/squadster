@@ -229,10 +229,10 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
         return queryset
 
 
-class UserHostedEventViewSet(viewsets.ViewSet):
+class UserHostedEventViewSet(viewsets.ViewSet, viewsets.GenericViewSet):
     authentication_classes = (GoogleSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
-    #pagination_class = SquadsterPagination
+    pagination_class = SquadsterPagination
 
     def list(self, request, user_id):
         # check current user is authorized to see these
@@ -255,10 +255,10 @@ class UserHostedEventViewSet(viewsets.ViewSet):
         user = self.request.user
         queryset = user.hostedevents.all().order_by('date')
 
-class UserAttendedEventViewSet(viewsets.ViewSet):
+class UserAttendedEventViewSet(viewsets.ViewSet, viewsets.GenericViewSet):
     authentication_classes = (GoogleSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
-    #pagination_class = SquadsterPagination
+    pagination_class = SquadsterPagination
 
     def list(self, request, user_id):
         # check current user is authorized to see these
