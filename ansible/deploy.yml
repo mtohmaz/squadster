@@ -13,7 +13,7 @@
       private: yes
 
 - name: Install packages
-  hosts: all
+  hosts: db*, app*
   remote_user: squadsterdev
   become: yes
   roles:

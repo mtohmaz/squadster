@@ -9,3 +9,8 @@
 
 - name: Replace listaddress
   command: sed -i "s/#listen_addresses.*/listen_addresses = '*'/g" /etc/postgresql/9.5/main/postgresql.conf
+
+- name: Restart postgresql
+  service:
+    name: postgresql
+    state: restarted
