@@ -29,7 +29,7 @@
       </div>
       <div class="col-xs-2">
         {{event.summary_fields.number_of_attendees}}/{{event.max_attendees}}
-        <button type="button" (click)="joinEvent($event, event)" class="btn btn-success">Join</button>
+        <a (click)="joinEvent($event, event)"> Join!</a>
       </div>
     </div>
     <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" (pageChanged)="pageChanged($event)" [rotate]="false" [maxSize]="maxSize"></pagination>
