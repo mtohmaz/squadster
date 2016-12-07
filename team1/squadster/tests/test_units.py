@@ -38,13 +38,15 @@ class TestEvents(TestCase):
         #response = EventViewSet.as_view({'get': 'list'})(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(0, len(response.data['results']))
-"""
+
     def test_create_event(self):
         request = self.client.post(local + '/events', {'host': self.user.profile.user_id, 'title': 'test event', 'date':'12/12/12 12:12 PM', 
                                                         'max_attendees':2})
+        print("Resonse:" + str(response.data))
+
         response = EventViewSet.as_view({'get': 'list'})(request)
         self.assertEqual(response.data, {'id':'1', 'title':'test event'})
-        
+"""        
     def test_get_event_detail(self):
         request = self.client.get(local + '/event/1/')
         response = EventViewSet.as_view({'get':'retrieve'})(request)
