@@ -66,6 +66,7 @@ class Command(BaseCommand):
             "DELETE FROM squadster_event",
             "DELETE FROM authtoken_token",
             "DELETE FROM squadster_credentials",
+            "DELETE FROM squadster_squadstersession",
             "DELETE FROM django_session",
             "DELETE FROM squadster_squadsteruser",
             "DELETE FROM auth_user",
