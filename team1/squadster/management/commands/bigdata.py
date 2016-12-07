@@ -63,6 +63,7 @@ class Command(BaseCommand):
         cursor = conn.cursor()
         queries = [
             "DELETE FROM squadster_comment",
+            "DELETE FROM squadster_event_attendees",
             "DELETE FROM squadster_event",
             "DELETE FROM authtoken_token",
             "DELETE FROM squadster_credentials",
