@@ -86,7 +86,7 @@ export class EventDetailsComponent {
   }
 
   addComment() {
-    this.eventService.addComment(this.event.comments, this.inputComment).then(function(response){this.comments = [];this.getComments()});
+    this.eventService.addComment(this.event.comments, this.inputComment).then(response => {this.comments = [];this.getComments()});
     this.inputComment = '';
   }
 }
