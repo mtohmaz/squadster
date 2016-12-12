@@ -1,40 +1,79 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Event } from './event';
 import { EventService } from './event.service';
 
 @Component({
   selector: 'my-events',
-  template: `
-    <h1>{{title}}</h1>
-    <h2>My Events</h2>
-    <ul class="events">
-      <li *ngFor="let event of events"
-        [class.selected]="event === selectedEvent"
-        (click)="onSelect(event)">
-        <span class="badge">{{event.id}}</span> {{event.title}}
-      </li>
-    </ul>
-    <myEventDetail [event]="selectedEvent"></myEventDetail>
-  `,
+  templateUrl: 'html/my-events.component.html',
   styleUrls: ['styles/my-events.component.css'],
   providers: [EventService]
 })
 export class MyEventsComponent {
-  title = 'My Events';
-  events: Event[];
+  attendTitle = 'Events I\'m Attending';
+  hostTitle = 'Events I\'m Hosting';
+  attended: Event[];
+  hosted: Event[];
+  noAttendedEvents:boolean = false;
+  noHostedEvents:boolean = false;
   selectedEvent: Event;
 
-  constructor(private eventService: EventService) { }
+  totalAttendItems:number;
+  totalHostItems:number;
+  currentAttendPage:number = 1;
+  currentHostPage:number = 1;
+  userId:number;
+  maxSize:number = 10;
 
-  getAllEvents(): void {
-    //this.eventService.getAllEvents().then(events => this.events = events);
-  }
+  constructor(
+    private eventService: EventService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private ref: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
-    //this.getAllEvents();
+    this.getCurrentUserId();
+    this.getAttendedEvents();
+    this.getHostedEvents();
+  }
+
+  getCurrentUserId(){
+    this.eventService.getCurrentUserId().subscribe(response => {
+      this.userId = JSON.parse(response.id);
+      this.ref.detectChanges();
+    });
+  }
+
+  getAttendedEvents(){
+    this.eventService.getAttendedEvents(this.userId, this.currentAttendPage).subscribe(response => {
+      this.noAttendedEvents = response.count == 0 ? true : false;
+      this.attended = response.results;
+      this.totalAttendItems = response.count;
+      this.ref.detectChanges();
+    });
+  }
+
+  getHostedEvents(){
+    this.eventService.getHostedEvents(this.userId, this.currentHostPage).subscribe(response => {
+      this.noHostedEvents = response.count == 0 ? true : false;
+      this.hosted = response.results;
+      this.totalHostItems = response.count;
+      this.ref.detectChanges();
+    });
   }
 
   onSelect(event: Event): void {
     this.selectedEvent = event;
+  }
+
+  attendedPageChanged(event:any):void {
+    this.currentAttendPage = event.page;
+    this.getAttendedEvents();
+  }
+
+  hostedPageChanged(event:any):void {
+    this.currentHostPage = event.page;
+    this.getHostedEvents();
   }
 }

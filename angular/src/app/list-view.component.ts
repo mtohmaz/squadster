@@ -16,6 +16,7 @@ export class ListViewComponent implements OnInit {
   totalItems:number;
   currentPage:number = 1;
   maxSize:number = 10;
+  noEvents:boolean = false;
 
   lat: number;
   lon: number;
@@ -36,10 +37,12 @@ export class ListViewComponent implements OnInit {
   joinEvent($event, e: Event): void {
     event.stopPropagation();
     this.eventService.joinEvent(e.event_id);
+    this.getEvents(this.range, this.s);
   }
 
   getEvents(range: number, s: string): void {
     this.eventService.getEvents(this.lat, this.lon, range, s, this.currentPage).subscribe(response => {
+      this.noEvents = response.count == 0 ? true : false;
       this.events = response.results;
       this.totalItems = response.count;
       this.ref.detectChanges();

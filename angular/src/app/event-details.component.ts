@@ -66,6 +66,9 @@ export class EventDetailsComponent {
         this.comments = this.comments.concat(response.results);
         this.totalItems = response.count;
         this.totalPages = Math.ceil( this.totalItems/this.maxSize );
+        if( this.pageCount == this.totalPages){
+          this.noMoreComments = true;
+        }
         this.ref.detectChanges();
       }
     });
@@ -83,7 +86,7 @@ export class EventDetailsComponent {
   }
 
   addComment() {
-    this.eventService.addComment(this.event.comments, this.inputComment).then(response => this.getMoreComments());
+    this.eventService.addComment(this.event.comments, this.inputComment).then(response => {this.comments = [];this.getComments()});
     this.inputComment = '';
   }
 }

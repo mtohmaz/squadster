@@ -229,9 +229,10 @@ class EventViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
         return queryset
 
 
-class UserHostedEventViewSet(viewsets.ViewSet, APIView):
+class UserHostedEventViewSet(viewsets.ViewSet, viewsets.GenericViewSet):
     authentication_classes = (GoogleSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
+    pagination_class = SquadsterPagination
 
     def list(self, request, user_id):
         # check current user is authorized to see these
@@ -254,9 +255,10 @@ class UserHostedEventViewSet(viewsets.ViewSet, APIView):
         user = self.request.user
         queryset = user.hostedevents.all().order_by('date')
 
-class UserAttendedEventViewSet(viewsets.ViewSet, APIView):
+class UserAttendedEventViewSet(viewsets.ViewSet, viewsets.GenericViewSet):
     authentication_classes = (GoogleSessionAuthentication,)
     permission_classes = (IsAuthenticated,)
+    pagination_class = SquadsterPagination
 
     def list(self, request, user_id):
         # check current user is authorized to see these
@@ -289,7 +291,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     def list(self, request, event_id, parent_comment=None, format=None):
         req_event_id = event_id
         req_parent_comment = parent_comment
-        comments = Comment.objects.filter(parent_event=req_event_id, parent_comment=req_parent_comment).order_by('date_added')
+        comments = Comment.objects.filter(parent_event=req_event_id, parent_comment=req_parent_comment).order_by('-date_added')
         page = self.paginate_queryset(comments)
         serializer = CommentSerializer(
                 page,

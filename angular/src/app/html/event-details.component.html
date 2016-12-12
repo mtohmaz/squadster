@@ -11,7 +11,7 @@
   </div>
   <div>
     <label>Description:</label>
-    <textarea rows="2" cols="3" class="form-control" [(ngModel)]="event.description" maxlength="250" readonly="readonly">
+    <textarea rows="2" cols="3" class="form-control shadow margins" [(ngModel)]="event.description" maxlength="250" readonly="readonly">
     </textarea>
     <br>
   </div>
@@ -30,16 +30,14 @@
   </sebm-google-map>
   <div>
     <h2>Comments:</h2>
-    <div *ngFor="let comment of comments" class="comments">
+    <div>
+      <textarea rows="5" cols="5" class="form-control shadow margins" [(ngModel)]="inputComment" placeholder="Add a new comment here..." maxlength="250"></textarea>
+      <button (click)="addComment()" class="addButton">Add Comment</button><br>
+    </div>
+    <div *ngFor="let comment of comments" class="comments shadow margins">
       <span>{{comment.text}}</span>
       <span class="details italics footer">{{comment.summary_fields.author_email}} Posted at {{comment.date_added | date:'shortTime'}} on {{comment.date_added | date:'yMMMMd'}}</span><br>
     </div>
     <a *ngIf="!noMoreComments" (click) = "getMoreComments()">Show more...</a>
-    <div>
-      <br>
-      <textarea rows="5" cols="5" class="form-control" [(ngModel)]="inputComment" placeholder="Add a new comment here..." maxlength="250"></textarea>
-      <br>
-      <button (click)="addComment()">Add Comment</button>
-    </div>
   </div>
 </div>

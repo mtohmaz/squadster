@@ -1,0 +1,77 @@
+<div id="myevents">
+  <h2>{{attendTitle}}</h2>
+  <div class="row headers">
+    <div class="col-xs-4">
+      <strong> Title </strong>
+    </div>
+    <div class="col-xs-3">
+      <strong> Location </strong>
+    </div>
+    <div class="col-xs-3">
+      <strong> Date and Time </strong>
+    </div>
+    <div class="col-xs-2">
+      <strong> # of Guests </strong>
+    </div>
+  </div>
+  <div *ngIf="!noAttendedEvents">
+    <div *ngFor="let event of events" [class.selected]="event === selectedEvent" (click)="onSelect(event)"
+      class="events">
+      <div class="col-xs-4">
+        {{event.title}}
+      </div>
+      <div class="col-xs-3">
+        {{event.location}}
+      </div>
+      <div class="col-xs-3">
+        {{event.date | date:'yMMMd'}} at
+        {{event.date | date:'shortTime'}}
+      </div>
+      <div class="col-xs-2">
+        {{event.summary_fields.number_of_attendees}}/{{event.max_attendees}}
+      </div>
+    </div>
+    <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" (pageChanged)="attendedPageChanged($event)" [rotate]="false" [maxSize]="maxSize"></pagination>
+  </div>
+  <div *ngIf="noAttendedEvents" class="empty-results">
+    Not attending any events, go find some now!
+  </div>
+
+  <h2>{{hostTitle}}</h2>
+  <div class="row headers">
+    <div class="col-xs-4">
+      <strong> Title </strong>
+    </div>
+    <div class="col-xs-3">
+      <strong> Location </strong>
+    </div>
+    <div class="col-xs-3">
+      <strong> Date and Time </strong>
+    </div>
+    <div class="col-xs-2">
+      <strong> # of Guests </strong>
+    </div>
+  </div>
+  <div *ngIf="!noHostedEvents">
+    <div *ngFor="let event of events" [class.selected]="event === selectedEvent" (click)="onSelect(event)"
+      class="events">
+      <div class="col-xs-4">
+        {{event.title}}
+      </div>
+      <div class="col-xs-3">
+        {{event.location}}
+      </div>
+      <div class="col-xs-3">
+        {{event.date | date:'yMMMd'}} at
+        {{event.date | date:'shortTime'}}
+      </div>
+      <div class="col-xs-2">
+        {{event.summary_fields.number_of_attendees}}/{{event.max_attendees}}
+      </div>
+    </div>
+    <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" (pageChanged)="hostedPageChanged($event)" [rotate]="false" [maxSize]="maxSize"></pagination>
+  </div>
+  <div *ngIf="noHostedEvents" class="empty-results">
+    You haven't hosted any events!
+  </div>
+</div>

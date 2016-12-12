@@ -44,7 +44,7 @@ class GoogleSessionAuthentication(authentication.BaseAuthentication):
             timeout_seconds = request.session['google_session_timeout']
             timeout = timedelta(seconds=timeout_seconds)
             current_time = datetime.now(utctz) #timezone.now()
-
+            
             if (current_time - last_auth) > timeout:
                 request.session.flush()
 

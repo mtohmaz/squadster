@@ -15,6 +15,6 @@ export class LoginComponent {
 
   login() {
     this.loggedIn = !this.loggedIn;
-    this.router.navigate(['app/list-view']);
+    this.router.navigate(['api/auth']);
   }
 }

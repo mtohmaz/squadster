@@ -63,9 +63,11 @@ class Command(BaseCommand):
         cursor = conn.cursor()
         queries = [
             "DELETE FROM squadster_comment",
+            "DELETE FROM squadster_event_attendees",
             "DELETE FROM squadster_event",
             "DELETE FROM authtoken_token",
             "DELETE FROM squadster_credentials",
+            "DELETE FROM squadster_squadstersession",
             "DELETE FROM django_session",
             "DELETE FROM squadster_squadsteruser",
             "DELETE FROM auth_user",
@@ -133,8 +135,9 @@ class Command(BaseCommand):
                     'date': eventtime.strftime(dateformat),
                     'location': 'location for ' + eventname
                 }
-                resp = requests.post('http://localhost/api/events/', cookies=cookies[i], data=event)
+                resp = requests.post('https://localhost/api/events/', cookies=cookies[i], data=event, verify=False)
                 respobj = json.loads(resp.text)
+                #print(respobj)
                 eventids.append(respobj['event_id'])
         return eventids
 
@@ -152,9 +155,10 @@ class Command(BaseCommand):
                     #'parent_comment': ''
                 }
                 resp = requests.post(
-                    'http://localhost/api/events/'+str(eventid)+'/comments/',
+                    'https://localhost/api/events/'+str(eventid)+'/comments/',
                     cookies = cookies[useridx],
-                    data=comment)
+                    data=comment,
+                    verify=False)
                 #print(resp.text)
                 respobj = json.loads(resp.text)
                 commentids.append(respobj['comment_id'])

@@ -26,3 +26,11 @@
 #eventlist .btn-success {
   margin-left: 100px;
 }
+
+#eventlist .empty-results{
+  font-size: 36px;
+  text-align: center;
+  padding-top: 100px;
+  padding-bottom: 100px;
+  color: gray;
+}

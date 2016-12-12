@@ -10,7 +10,7 @@ from squadster.viewsets import *
 from team1 import settings
 
 
-local = 'localhost/api'
+local = 'http://localhost/api'
 
 
 class TestEvents(TestCase):
@@ -32,7 +32,7 @@ class TestEvents(TestCase):
         session.save()
         
     def test_get_events(self):
-        response = self.client.get('http://localhost/api/events/', {'lat': 90, 'lon': '180', 'radius': 1})
+        response = self.client.get(local + '/events/', {'lat': 90, 'lon': '180', 'radius': 1})
         print("Resonse:" + str(response.data))
         # Test list() as if it were deployed at /events
         #response = EventViewSet.as_view({'get': 'list'})(request)
@@ -40,11 +40,11 @@ class TestEvents(TestCase):
         self.assertEqual(0, len(response.data['results']))
 
     def test_create_event(self):
-        request = self.client.post(local + '/events', {'host': self.user.profile.user_id, 'title': 'test event', 'date':'12/12/12 12:12 PM', 
+        response = self.client.post(local + '/events', {'host': self.user.profile.user_id, 'title': 'test event', 'date':'12/12/12 12:12 PM', 
                                                         'max_attendees':2})
         print("Resonse:" + str(response.data))
 
-        response = EventViewSet.as_view({'get': 'list'})(request)
+        #response = EventViewSet.as_view({'get': 'list'})(request)
         self.assertEqual(response.data, {'id':'1', 'title':'test event'})
 """        
     def test_get_event_detail(self):

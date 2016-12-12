@@ -55,9 +55,12 @@ class Command(BaseCommand):
     def cleardata(self, conn):
         cursor = conn.cursor()
         queries = [
+            "DELETE FROM squadster_event_attendees",
             "DELETE FROM squadster_event",
             "DELETE FROM authtoken_token",
             "DELETE FROM squadster_credentials",
+            "DELETE FROM squadster_squadstersession",
+            "DELETE FROM django_session",
             "DELETE FROM squadster_squadsteruser",
             "DELETE FROM auth_user",
         ]
@@ -215,5 +218,5 @@ class Command(BaseCommand):
 
         for event in events:
 
-            req = requests.post('http://localhost/api/events/', cookies=cookie, data=event)
+            req = requests.post('https://localhost/api/events/', cookies=cookie, data=event, verify=False)
             print(req.text)

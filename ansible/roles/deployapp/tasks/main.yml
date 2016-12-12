@@ -8,10 +8,10 @@
   command: sed -i 's/localhost/db-instance/g' /home/squadsterdev/squadster/team1/team1/settings.py
 
 - name: Replace localhost with squadster.io in view.py
-  command: sed -i 's/localhost/squadster.io/g' /home/squadsterdev/squadster/team1/squadster/views.py
+  command: sed -i 's/http:\/\/localhost/https:\/\/squadster.io/g' /home/squadsterdev/squadster/team1/squadster/views.py
 
 - name: Replace localhost with squadster.io in client_secrets.json
-  command: sed -i 's/localhost/squadster.io/g' /home/squadsterdev/squadster/team1/squadster/client_secrets.json
+  command: sed -i 's/http:\/\/localhost/https:\/\/squadster.io/g' /home/squadsterdev/squadster/team1/squadster/client_secrets.json
 
 - name: Run make install ubuntu
   make: chdir=/home/squadsterdev/squadster target=install_appserver
