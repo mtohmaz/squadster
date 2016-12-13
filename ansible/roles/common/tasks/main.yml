@@ -7,6 +7,13 @@
   file: path=~/squadster state=absent
   when: directory_exists.stat.exists == True
 
+- stat: path=~/.ssh
+  register: ssh_directory_exists
+
+- name: Delete known hosts
+  file: path=~/.ssh/known_hosts
+  when: ssh_directory_exists.stat.exists == True
+  
 - name: Get squadster repo
 #x  delegate_to: localhost
   git: repo=https://{{ githubuser }}:{{ githubpassword }}@github.ncsu.edu/engr-csc-sdc/2016FallTeam01.git dest=~/squadster
