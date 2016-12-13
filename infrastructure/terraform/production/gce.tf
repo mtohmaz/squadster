@@ -34,12 +34,21 @@ resource "google_compute_firewall" "default" {
     target_tags = ["app"]
 }
 
-resource "google_compute_forwarding_rule" "default" {
-    name = "fwd-rule"
+//resource "google_compute_forwarding_rule" "http" {
+//    name = "fwd-rule-http"
+//    ip_address = "35.185.12.220"
+//    ip_protocol = "TCP"
+//    target = "${google_compute_target_pool.webservers.self_link}"
+//    port_range = "80-80"
+//    region = "us-east1"
+//}
+
+resource "google_compute_forwarding_rule" "https" {
+    name = "fwd-rule-https"
     ip_address = "35.185.12.220"
     ip_protocol = "TCP"
     target = "${google_compute_target_pool.webservers.self_link}"
-    port_range = "80-80"
+    port_range = "443-443"
     region = "us-east1"
 }
 
