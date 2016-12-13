@@ -9,12 +9,12 @@ class TestCreateEvent(unittest.TestCase):
     
     def test_create_event(self):
         driver = self.driver
-        driver.get('localhost')
+        driver.get(local + '/app/login')
         self.assertIn('Squadster', driver.title)
-        elem = driver.find_elements_by_xpath("//*[contains(text(), 'Host a New Event')]")
+        driver.find_element_by_xpath("//*[contains(text(), 'Login')]").click()
         
-    def tearDown(self):
-        self.driver.close()
+    #def tearDown(self):
+        #self.driver.close()
 
 if __name__ == "__main__":
     unittest.main()
