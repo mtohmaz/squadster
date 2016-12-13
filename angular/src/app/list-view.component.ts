@@ -24,7 +24,7 @@ export class ListViewComponent implements OnInit {
   range: number;
   s: string;
 
-  title = 'Events';
+  title = 'List of Events';
   events: Event[];
 
   constructor(
