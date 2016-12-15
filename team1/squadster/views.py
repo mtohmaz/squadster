@@ -268,6 +268,7 @@ def auth_return(request):
         )
         response = HttpResponseRedirect("/")
 
+
         request.session['user_id'] = user.id
 
         update_session_from_credentials(request.session, credentials)
